@@ -62,6 +62,56 @@ export type Database = {
         }
         Relationships: []
       }
+      bank_accounts: {
+        Row: {
+          account_holder: string
+          account_number: string | null
+          bank_name: string
+          created_at: string
+          iban: string | null
+          id: string
+          is_active: boolean
+          notes: string | null
+          sort_order: number
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          account_holder: string
+          account_number?: string | null
+          bank_name: string
+          created_at?: string
+          iban?: string | null
+          id?: string
+          is_active?: boolean
+          notes?: string | null
+          sort_order?: number
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          account_holder?: string
+          account_number?: string | null
+          bank_name?: string
+          created_at?: string
+          iban?: string | null
+          id?: string
+          is_active?: boolean
+          notes?: string | null
+          sort_order?: number
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bank_accounts_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bundle_courses: {
         Row: {
           bundle_id: string
@@ -319,6 +369,7 @@ export type Database = {
           created_at: string
           id: string
           progress: number
+          source: string
           student_id: string
           tenant_id: string
         }
@@ -328,6 +379,7 @@ export type Database = {
           created_at?: string
           id?: string
           progress?: number
+          source?: string
           student_id: string
           tenant_id: string
         }
@@ -337,6 +389,7 @@ export type Database = {
           created_at?: string
           id?: string
           progress?: number
+          source?: string
           student_id?: string
           tenant_id?: string
         }
@@ -516,6 +569,92 @@ export type Database = {
           },
           {
             foreignKeyName: "majors_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payment_requests: {
+        Row: {
+          admin_notes: string | null
+          amount: number
+          bank_account_id: string | null
+          bundle_id: string | null
+          course_id: string | null
+          created_at: string
+          currency: string
+          id: string
+          receipt_url: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: Database["public"]["Enums"]["payment_request_status"]
+          student_id: string
+          student_notes: string | null
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          amount: number
+          bank_account_id?: string | null
+          bundle_id?: string | null
+          course_id?: string | null
+          created_at?: string
+          currency?: string
+          id?: string
+          receipt_url?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["payment_request_status"]
+          student_id: string
+          student_notes?: string | null
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          admin_notes?: string | null
+          amount?: number
+          bank_account_id?: string | null
+          bundle_id?: string | null
+          course_id?: string | null
+          created_at?: string
+          currency?: string
+          id?: string
+          receipt_url?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["payment_request_status"]
+          student_id?: string
+          student_notes?: string | null
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payment_requests_bank_account_id_fkey"
+            columns: ["bank_account_id"]
+            isOneToOne: false
+            referencedRelation: "bank_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_requests_bundle_id_fkey"
+            columns: ["bundle_id"]
+            isOneToOne: false
+            referencedRelation: "course_bundles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_requests_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_requests_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "tenants"
@@ -958,6 +1097,10 @@ export type Database = {
     }
     Functions: {
       approve_course: { Args: { _course_id: string }; Returns: undefined }
+      approve_payment_request: {
+        Args: { _notes?: string; _req_id: string }
+        Returns: undefined
+      }
       bump_global_logout: { Args: { _user_id: string }; Returns: undefined }
       course_tenant: { Args: { _course_id: string }; Returns: string }
       enrollment_student: { Args: { _enrollment_id: string }; Returns: string }
@@ -989,12 +1132,17 @@ export type Database = {
         Args: { _course_id: string; _reason: string }
         Returns: undefined
       }
+      reject_payment_request: {
+        Args: { _notes?: string; _req_id: string }
+        Returns: undefined
+      }
       section_course: { Args: { _section_id: string }; Returns: string }
     }
     Enums: {
       app_role: "super_admin"
       course_status: "draft" | "published" | "archived" | "pending_approval"
       lesson_type: "video" | "text" | "pdf"
+      payment_request_status: "pending" | "approved" | "rejected" | "cancelled"
       tenant_plan: "free" | "starter" | "pro" | "enterprise"
       tenant_role: "owner" | "instructor" | "student" | "admin"
       tenant_status: "active" | "suspended" | "trial"
@@ -1129,6 +1277,7 @@ export const Constants = {
       app_role: ["super_admin"],
       course_status: ["draft", "published", "archived", "pending_approval"],
       lesson_type: ["video", "text", "pdf"],
+      payment_request_status: ["pending", "approved", "rejected", "cancelled"],
       tenant_plan: ["free", "starter", "pro", "enterprise"],
       tenant_role: ["owner", "instructor", "student", "admin"],
       tenant_status: ["active", "suspended", "trial"],
