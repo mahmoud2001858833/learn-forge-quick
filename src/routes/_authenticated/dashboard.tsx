@@ -49,6 +49,21 @@ function Dashboard() {
     },
   });
 
+  const { data: isSuper } = useQuery({
+    queryKey: ["is-super-admin", user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user!.id)
+        .eq("role", "super_admin")
+        .maybeSingle();
+      return !!data;
+    },
+  });
+
+
   async function signOut() {
     await qc.cancelQueries();
     qc.clear();
