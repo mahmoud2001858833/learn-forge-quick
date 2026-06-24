@@ -8,6 +8,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { PlayCircle, FileText, FileType, Lock } from "lucide-react";
 import { toast } from "sonner";
 import { PaymentRequestDialog } from "@/components/payment-request-dialog";
+import { CourseReviews } from "@/components/course-reviews";
+import { Star } from "lucide-react";
 
 export const Route = createFileRoute("/t/$slug/courses/$courseSlug")({
   component: CourseDetail,
@@ -80,6 +82,13 @@ function CourseDetail() {
         <div className="md:col-span-2 space-y-6">
           <div>
             <h1 className="text-3xl font-bold">{course.title}</h1>
+            {course.reviews_count > 0 && (
+              <div className="flex items-center gap-1 mt-2 text-sm">
+                <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
+                <span className="font-bold">{Number(course.average_rating).toFixed(1)}</span>
+                <span className="text-muted-foreground">({course.reviews_count} تقييم)</span>
+              </div>
+            )}
             <p className="text-muted-foreground mt-2">{course.description}</p>
           </div>
           <div>
@@ -102,6 +111,9 @@ function CourseDetail() {
                 </Card>
               ))}
             </div>
+          </div>
+          <div className="pt-4">
+            <CourseReviews courseId={course.id} canReview={!!enrollment} />
           </div>
         </div>
         <aside>
