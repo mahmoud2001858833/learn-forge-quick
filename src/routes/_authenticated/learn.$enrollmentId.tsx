@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight, Check, PlayCircle, FileText, FileType } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { VideoPlayer } from "@/components/video-player";
 
 export const Route = createFileRoute("/_authenticated/learn/$enrollmentId")({
   component: LearnPage,
