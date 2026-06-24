@@ -192,7 +192,7 @@ function CourseEditor() {
       </div>
 
       <div className="space-y-4">
-        {sections?.map((s) => <SectionCard key={s.id} section={s} />)}
+        {sections?.map((s) => <SectionCard key={s.id} section={s} tenantId={course.tenant_id} />)}
       </div>
     </div>
   );
