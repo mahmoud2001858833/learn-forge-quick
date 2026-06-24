@@ -135,7 +135,7 @@ function CourseDetail() {
         tenantId={tenant.id}
         amount={course.price}
         currency={tenant.currency ?? "ر.س"}
-        target={{ type: "course", courseId: course.id }}
+        target={{ type: "course", courseId: course.id, allowInstallments: course.allow_installments, minInstallment: course.min_installment_amount }}
         onSuccess={() => navigate({ to: "/my-payments" })}
       />
     </main>

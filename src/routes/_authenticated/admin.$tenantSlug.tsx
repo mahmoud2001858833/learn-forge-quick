@@ -1,7 +1,7 @@
 import { createFileRoute, Link, Outlet, useParams } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { LayoutDashboard, BookOpen, Users, Settings, ArrowRight, GraduationCap, Package, Landmark, Receipt } from "lucide-react";
+import { LayoutDashboard, BookOpen, Users, Settings, ArrowRight, GraduationCap, Package, Landmark, Receipt, Ticket, Share2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/admin/$tenantSlug")({
@@ -40,6 +40,8 @@ function AdminLayout() {
         <NavItem to="/admin/$tenantSlug/students" params={{ tenantSlug }} icon={Users} label="الطلاب" />
         <NavItem to="/admin/$tenantSlug/payments" params={{ tenantSlug }} icon={Receipt} label="طلبات الدفع" />
         <NavItem to="/admin/$tenantSlug/bank-accounts" params={{ tenantSlug }} icon={Landmark} label="الحسابات البنكية" />
+        <NavItem to="/admin/$tenantSlug/coupons" params={{ tenantSlug }} icon={Ticket} label="الكوبونات" />
+        <NavItem to="/admin/$tenantSlug/referrals" params={{ tenantSlug }} icon={Share2} label="الإحالات" />
         <NavItem to="/admin/$tenantSlug/settings" params={{ tenantSlug }} icon={Settings} label="الإعدادات" />
       </aside>
       <main className="flex-1 p-8 overflow-auto">
