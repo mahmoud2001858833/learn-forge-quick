@@ -9,38 +9,178 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedLearnEnrollmentIdRouteImport } from './routes/_authenticated/learn.$enrollmentId'
+import { Route as AuthenticatedAdminTenantSlugRouteImport } from './routes/_authenticated/admin.$tenantSlug'
+import { Route as AuthenticatedAdminTenantSlugIndexRouteImport } from './routes/_authenticated/admin.$tenantSlug.index'
+import { Route as AuthenticatedAdminTenantSlugStudentsRouteImport } from './routes/_authenticated/admin.$tenantSlug.students'
+import { Route as AuthenticatedAdminTenantSlugSettingsRouteImport } from './routes/_authenticated/admin.$tenantSlug.settings'
+import { Route as AuthenticatedAdminTenantSlugCoursesRouteImport } from './routes/_authenticated/admin.$tenantSlug.courses'
+import { Route as AuthenticatedAdminTenantSlugCoursesCourseIdRouteImport } from './routes/_authenticated/admin.$tenantSlug.courses.$courseId'
 
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedLearnEnrollmentIdRoute =
+  AuthenticatedLearnEnrollmentIdRouteImport.update({
+    id: '/learn/$enrollmentId',
+    path: '/learn/$enrollmentId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminTenantSlugRoute =
+  AuthenticatedAdminTenantSlugRouteImport.update({
+    id: '/admin/$tenantSlug',
+    path: '/admin/$tenantSlug',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedAdminTenantSlugIndexRoute =
+  AuthenticatedAdminTenantSlugIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedAdminTenantSlugRoute,
+  } as any)
+const AuthenticatedAdminTenantSlugStudentsRoute =
+  AuthenticatedAdminTenantSlugStudentsRouteImport.update({
+    id: '/students',
+    path: '/students',
+    getParentRoute: () => AuthenticatedAdminTenantSlugRoute,
+  } as any)
+const AuthenticatedAdminTenantSlugSettingsRoute =
+  AuthenticatedAdminTenantSlugSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => AuthenticatedAdminTenantSlugRoute,
+  } as any)
+const AuthenticatedAdminTenantSlugCoursesRoute =
+  AuthenticatedAdminTenantSlugCoursesRouteImport.update({
+    id: '/courses',
+    path: '/courses',
+    getParentRoute: () => AuthenticatedAdminTenantSlugRoute,
+  } as any)
+const AuthenticatedAdminTenantSlugCoursesCourseIdRoute =
+  AuthenticatedAdminTenantSlugCoursesCourseIdRouteImport.update({
+    id: '/$courseId',
+    path: '/$courseId',
+    getParentRoute: () => AuthenticatedAdminTenantSlugCoursesRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/admin/$tenantSlug': typeof AuthenticatedAdminTenantSlugRouteWithChildren
+  '/learn/$enrollmentId': typeof AuthenticatedLearnEnrollmentIdRoute
+  '/admin/$tenantSlug/courses': typeof AuthenticatedAdminTenantSlugCoursesRouteWithChildren
+  '/admin/$tenantSlug/settings': typeof AuthenticatedAdminTenantSlugSettingsRoute
+  '/admin/$tenantSlug/students': typeof AuthenticatedAdminTenantSlugStudentsRoute
+  '/admin/$tenantSlug/': typeof AuthenticatedAdminTenantSlugIndexRoute
+  '/admin/$tenantSlug/courses/$courseId': typeof AuthenticatedAdminTenantSlugCoursesCourseIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/learn/$enrollmentId': typeof AuthenticatedLearnEnrollmentIdRoute
+  '/admin/$tenantSlug/courses': typeof AuthenticatedAdminTenantSlugCoursesRouteWithChildren
+  '/admin/$tenantSlug/settings': typeof AuthenticatedAdminTenantSlugSettingsRoute
+  '/admin/$tenantSlug/students': typeof AuthenticatedAdminTenantSlugStudentsRoute
+  '/admin/$tenantSlug': typeof AuthenticatedAdminTenantSlugIndexRoute
+  '/admin/$tenantSlug/courses/$courseId': typeof AuthenticatedAdminTenantSlugCoursesCourseIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/admin/$tenantSlug': typeof AuthenticatedAdminTenantSlugRouteWithChildren
+  '/_authenticated/learn/$enrollmentId': typeof AuthenticatedLearnEnrollmentIdRoute
+  '/_authenticated/admin/$tenantSlug/courses': typeof AuthenticatedAdminTenantSlugCoursesRouteWithChildren
+  '/_authenticated/admin/$tenantSlug/settings': typeof AuthenticatedAdminTenantSlugSettingsRoute
+  '/_authenticated/admin/$tenantSlug/students': typeof AuthenticatedAdminTenantSlugStudentsRoute
+  '/_authenticated/admin/$tenantSlug/': typeof AuthenticatedAdminTenantSlugIndexRoute
+  '/_authenticated/admin/$tenantSlug/courses/$courseId': typeof AuthenticatedAdminTenantSlugCoursesCourseIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/dashboard'
+    | '/admin/$tenantSlug'
+    | '/learn/$enrollmentId'
+    | '/admin/$tenantSlug/courses'
+    | '/admin/$tenantSlug/settings'
+    | '/admin/$tenantSlug/students'
+    | '/admin/$tenantSlug/'
+    | '/admin/$tenantSlug/courses/$courseId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth'
+    | '/dashboard'
+    | '/learn/$enrollmentId'
+    | '/admin/$tenantSlug/courses'
+    | '/admin/$tenantSlug/settings'
+    | '/admin/$tenantSlug/students'
+    | '/admin/$tenantSlug'
+    | '/admin/$tenantSlug/courses/$courseId'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/_authenticated/dashboard'
+    | '/_authenticated/admin/$tenantSlug'
+    | '/_authenticated/learn/$enrollmentId'
+    | '/_authenticated/admin/$tenantSlug/courses'
+    | '/_authenticated/admin/$tenantSlug/settings'
+    | '/_authenticated/admin/$tenantSlug/students'
+    | '/_authenticated/admin/$tenantSlug/'
+    | '/_authenticated/admin/$tenantSlug/courses/$courseId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,22 +188,125 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/learn/$enrollmentId': {
+      id: '/_authenticated/learn/$enrollmentId'
+      path: '/learn/$enrollmentId'
+      fullPath: '/learn/$enrollmentId'
+      preLoaderRoute: typeof AuthenticatedLearnEnrollmentIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/$tenantSlug': {
+      id: '/_authenticated/admin/$tenantSlug'
+      path: '/admin/$tenantSlug'
+      fullPath: '/admin/$tenantSlug'
+      preLoaderRoute: typeof AuthenticatedAdminTenantSlugRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/$tenantSlug/': {
+      id: '/_authenticated/admin/$tenantSlug/'
+      path: '/'
+      fullPath: '/admin/$tenantSlug/'
+      preLoaderRoute: typeof AuthenticatedAdminTenantSlugIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminTenantSlugRoute
+    }
+    '/_authenticated/admin/$tenantSlug/students': {
+      id: '/_authenticated/admin/$tenantSlug/students'
+      path: '/students'
+      fullPath: '/admin/$tenantSlug/students'
+      preLoaderRoute: typeof AuthenticatedAdminTenantSlugStudentsRouteImport
+      parentRoute: typeof AuthenticatedAdminTenantSlugRoute
+    }
+    '/_authenticated/admin/$tenantSlug/settings': {
+      id: '/_authenticated/admin/$tenantSlug/settings'
+      path: '/settings'
+      fullPath: '/admin/$tenantSlug/settings'
+      preLoaderRoute: typeof AuthenticatedAdminTenantSlugSettingsRouteImport
+      parentRoute: typeof AuthenticatedAdminTenantSlugRoute
+    }
+    '/_authenticated/admin/$tenantSlug/courses': {
+      id: '/_authenticated/admin/$tenantSlug/courses'
+      path: '/courses'
+      fullPath: '/admin/$tenantSlug/courses'
+      preLoaderRoute: typeof AuthenticatedAdminTenantSlugCoursesRouteImport
+      parentRoute: typeof AuthenticatedAdminTenantSlugRoute
+    }
+    '/_authenticated/admin/$tenantSlug/courses/$courseId': {
+      id: '/_authenticated/admin/$tenantSlug/courses/$courseId'
+      path: '/$courseId'
+      fullPath: '/admin/$tenantSlug/courses/$courseId'
+      preLoaderRoute: typeof AuthenticatedAdminTenantSlugCoursesCourseIdRouteImport
+      parentRoute: typeof AuthenticatedAdminTenantSlugCoursesRoute
+    }
   }
 }
 
+interface AuthenticatedAdminTenantSlugCoursesRouteChildren {
+  AuthenticatedAdminTenantSlugCoursesCourseIdRoute: typeof AuthenticatedAdminTenantSlugCoursesCourseIdRoute
+}
+
+const AuthenticatedAdminTenantSlugCoursesRouteChildren: AuthenticatedAdminTenantSlugCoursesRouteChildren =
+  {
+    AuthenticatedAdminTenantSlugCoursesCourseIdRoute:
+      AuthenticatedAdminTenantSlugCoursesCourseIdRoute,
+  }
+
+const AuthenticatedAdminTenantSlugCoursesRouteWithChildren =
+  AuthenticatedAdminTenantSlugCoursesRoute._addFileChildren(
+    AuthenticatedAdminTenantSlugCoursesRouteChildren,
+  )
+
+interface AuthenticatedAdminTenantSlugRouteChildren {
+  AuthenticatedAdminTenantSlugCoursesRoute: typeof AuthenticatedAdminTenantSlugCoursesRouteWithChildren
+  AuthenticatedAdminTenantSlugSettingsRoute: typeof AuthenticatedAdminTenantSlugSettingsRoute
+  AuthenticatedAdminTenantSlugStudentsRoute: typeof AuthenticatedAdminTenantSlugStudentsRoute
+  AuthenticatedAdminTenantSlugIndexRoute: typeof AuthenticatedAdminTenantSlugIndexRoute
+}
+
+const AuthenticatedAdminTenantSlugRouteChildren: AuthenticatedAdminTenantSlugRouteChildren =
+  {
+    AuthenticatedAdminTenantSlugCoursesRoute:
+      AuthenticatedAdminTenantSlugCoursesRouteWithChildren,
+    AuthenticatedAdminTenantSlugSettingsRoute:
+      AuthenticatedAdminTenantSlugSettingsRoute,
+    AuthenticatedAdminTenantSlugStudentsRoute:
+      AuthenticatedAdminTenantSlugStudentsRoute,
+    AuthenticatedAdminTenantSlugIndexRoute:
+      AuthenticatedAdminTenantSlugIndexRoute,
+  }
+
+const AuthenticatedAdminTenantSlugRouteWithChildren =
+  AuthenticatedAdminTenantSlugRoute._addFileChildren(
+    AuthenticatedAdminTenantSlugRouteChildren,
+  )
+
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedAdminTenantSlugRoute: typeof AuthenticatedAdminTenantSlugRouteWithChildren
+  AuthenticatedLearnEnrollmentIdRoute: typeof AuthenticatedLearnEnrollmentIdRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedAdminTenantSlugRoute:
+    AuthenticatedAdminTenantSlugRouteWithChildren,
+  AuthenticatedLearnEnrollmentIdRoute: AuthenticatedLearnEnrollmentIdRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
