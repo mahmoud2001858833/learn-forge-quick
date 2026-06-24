@@ -35,6 +35,7 @@ function AdminLayout() {
         </div>
         <NavItem to="/admin/$tenantSlug" params={{ tenantSlug }} icon={LayoutDashboard} label="نظرة عامة" exact />
         <NavItem to="/admin/$tenantSlug/courses" params={{ tenantSlug }} icon={BookOpen} label="الدورات" />
+        <NavItem to="/admin/$tenantSlug/academic" params={{ tenantSlug }} icon={GraduationCap} label="الهيكل الأكاديمي" />
         <NavItem to="/admin/$tenantSlug/students" params={{ tenantSlug }} icon={Users} label="الطلاب" />
         <NavItem to="/admin/$tenantSlug/settings" params={{ tenantSlug }} icon={Settings} label="الإعدادات" />
       </aside>
