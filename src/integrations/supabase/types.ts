@@ -62,52 +62,139 @@ export type Database = {
         }
         Relationships: []
       }
+      colleges: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          name_en: string | null
+          sort_order: number
+          tenant_id: string
+          university_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          name_en?: string | null
+          sort_order?: number
+          tenant_id: string
+          university_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          name_en?: string | null
+          sort_order?: number
+          tenant_id?: string
+          university_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "colleges_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "colleges_university_id_fkey"
+            columns: ["university_id"]
+            isOneToOne: false
+            referencedRelation: "universities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       courses: {
         Row: {
+          college_id: string | null
           cover_url: string | null
           created_at: string
           description: string | null
           id: string
           instructor_id: string
+          major_id: string | null
           price: number
+          semester: string | null
           slug: string
           status: Database["public"]["Enums"]["course_status"]
           tenant_id: string
           title: string
+          university_id: string | null
           updated_at: string
+          year_number: number | null
         }
         Insert: {
+          college_id?: string | null
           cover_url?: string | null
           created_at?: string
           description?: string | null
           id?: string
           instructor_id: string
+          major_id?: string | null
           price?: number
+          semester?: string | null
           slug: string
           status?: Database["public"]["Enums"]["course_status"]
           tenant_id: string
           title: string
+          university_id?: string | null
           updated_at?: string
+          year_number?: number | null
         }
         Update: {
+          college_id?: string | null
           cover_url?: string | null
           created_at?: string
           description?: string | null
           id?: string
           instructor_id?: string
+          major_id?: string | null
           price?: number
+          semester?: string | null
           slug?: string
           status?: Database["public"]["Enums"]["course_status"]
           tenant_id?: string
           title?: string
+          university_id?: string | null
           updated_at?: string
+          year_number?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "courses_college_id_fkey"
+            columns: ["college_id"]
+            isOneToOne: false
+            referencedRelation: "colleges"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "courses_major_id_fkey"
+            columns: ["major_id"]
+            isOneToOne: false
+            referencedRelation: "majors"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "courses_tenant_id_fkey"
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "courses_university_id_fkey"
+            columns: ["university_id"]
+            isOneToOne: false
+            referencedRelation: "universities"
             referencedColumns: ["id"]
           },
         ]
@@ -246,6 +333,60 @@ export type Database = {
           },
         ]
       }
+      majors: {
+        Row: {
+          college_id: string
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          name_en: string | null
+          sort_order: number
+          tenant_id: string
+          updated_at: string
+          years_count: number
+        }
+        Insert: {
+          college_id: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          name_en?: string | null
+          sort_order?: number
+          tenant_id: string
+          updated_at?: string
+          years_count?: number
+        }
+        Update: {
+          college_id?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          name_en?: string | null
+          sort_order?: number
+          tenant_id?: string
+          updated_at?: string
+          years_count?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "majors_college_id_fkey"
+            columns: ["college_id"]
+            isOneToOne: false
+            referencedRelation: "colleges"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "majors_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       platform_settings: {
         Row: {
           allow_signups: boolean
@@ -302,44 +443,68 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          college_id: string | null
           created_at: string
           full_name: string | null
           global_logout_at: string
           id: string
+          major_id: string | null
           phone: string | null
           phone_country_code: string | null
           research_consent: boolean
           study_year: string | null
+          study_year_number: number | null
           university_id: string | null
           updated_at: string
         }
         Insert: {
           avatar_url?: string | null
+          college_id?: string | null
           created_at?: string
           full_name?: string | null
           global_logout_at?: string
           id: string
+          major_id?: string | null
           phone?: string | null
           phone_country_code?: string | null
           research_consent?: boolean
           study_year?: string | null
+          study_year_number?: number | null
           university_id?: string | null
           updated_at?: string
         }
         Update: {
           avatar_url?: string | null
+          college_id?: string | null
           created_at?: string
           full_name?: string | null
           global_logout_at?: string
           id?: string
+          major_id?: string | null
           phone?: string | null
           phone_country_code?: string | null
           research_consent?: boolean
           study_year?: string | null
+          study_year_number?: number | null
           university_id?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_college_id_fkey"
+            columns: ["college_id"]
+            isOneToOne: false
+            referencedRelation: "colleges"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profiles_major_id_fkey"
+            columns: ["major_id"]
+            isOneToOne: false
+            referencedRelation: "majors"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       sections: {
         Row: {
@@ -503,6 +668,56 @@ export type Database = {
         }
         Relationships: []
       }
+      universities: {
+        Row: {
+          city: string | null
+          country: string | null
+          created_at: string
+          id: string
+          is_active: boolean
+          logo_url: string | null
+          name: string
+          name_en: string | null
+          sort_order: number
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          logo_url?: string | null
+          name: string
+          name_en?: string | null
+          sort_order?: number
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          logo_url?: string | null
+          name?: string
+          name_en?: string | null
+          sort_order?: number
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "universities_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -563,7 +778,7 @@ export type Database = {
       course_status: "draft" | "published" | "archived"
       lesson_type: "video" | "text" | "pdf"
       tenant_plan: "free" | "starter" | "pro" | "enterprise"
-      tenant_role: "owner" | "instructor" | "student"
+      tenant_role: "owner" | "instructor" | "student" | "admin"
       tenant_status: "active" | "suspended" | "trial"
     }
     CompositeTypes: {
@@ -696,7 +911,7 @@ export const Constants = {
       course_status: ["draft", "published", "archived"],
       lesson_type: ["video", "text", "pdf"],
       tenant_plan: ["free", "starter", "pro", "enterprise"],
-      tenant_role: ["owner", "instructor", "student"],
+      tenant_role: ["owner", "instructor", "student", "admin"],
       tenant_status: ["active", "suspended", "trial"],
     },
   },
