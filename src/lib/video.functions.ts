@@ -70,6 +70,9 @@ export const initVideoUpload = createServerFn({ method: "POST" })
       original_filename: data.filename,
       mime_type: data.mimeType,
       size_bytes: data.sizeBytes,
+      duration_seconds: data.durationSeconds ?? null,
+      width: data.width ?? null,
+      height: data.height ?? null,
     }).select("id").single();
     if (error) throw error;
     return { assetId: asset.id, key, uploadId };
