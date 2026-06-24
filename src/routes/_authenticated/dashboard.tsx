@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { toast } from "sonner";
 import { GraduationCap, Plus, LogOut, BookOpen, Settings, ExternalLink, Shield, Award, Sparkles, Share2, Receipt } from "lucide-react";
 import { createTenant } from "@/lib/tenants.functions";
+import { NotificationsBell } from "@/components/notifications-bell";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   component: Dashboard,
@@ -79,16 +80,19 @@ function Dashboard() {
             <GraduationCap className="h-6 w-6 text-primary" />
             EduForge
           </div>
-          <Button variant="ghost" size="sm" onClick={signOut}>
-            <LogOut className="h-4 w-4 ml-2" /> خروج
-          </Button>
-          {isSuper && (
-            <Link to="/super-admin">
-              <Button variant="outline" size="sm">
-                <Shield className="h-4 w-4 ml-2" /> سوبر-أدمن
-              </Button>
-            </Link>
-          )}
+          <div className="flex items-center gap-2">
+            <NotificationsBell />
+            {isSuper && (
+              <Link to="/super-admin">
+                <Button variant="outline" size="sm">
+                  <Shield className="h-4 w-4 ml-2" /> سوبر-أدمن
+                </Button>
+              </Link>
+            )}
+            <Button variant="ghost" size="sm" onClick={signOut}>
+              <LogOut className="h-4 w-4 ml-2" /> خروج
+            </Button>
+          </div>
         </div>
       </header>
 

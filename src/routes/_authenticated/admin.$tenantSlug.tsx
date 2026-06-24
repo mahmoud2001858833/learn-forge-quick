@@ -1,8 +1,9 @@
 import { createFileRoute, Link, Outlet, useParams } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { LayoutDashboard, BookOpen, Users, Settings, ArrowRight, GraduationCap, Package, Landmark, Receipt, Ticket, Share2 } from "lucide-react";
+import { LayoutDashboard, BookOpen, Users, Settings, ArrowRight, GraduationCap, Package, Landmark, Receipt, Ticket, Share2, Activity } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { NotificationsBell } from "@/components/notifications-bell";
 
 export const Route = createFileRoute("/_authenticated/admin/$tenantSlug")({
   component: AdminLayout,
@@ -42,10 +43,14 @@ function AdminLayout() {
         <NavItem to="/admin/$tenantSlug/bank-accounts" params={{ tenantSlug }} icon={Landmark} label="الحسابات البنكية" />
         <NavItem to="/admin/$tenantSlug/coupons" params={{ tenantSlug }} icon={Ticket} label="الكوبونات" />
         <NavItem to="/admin/$tenantSlug/referrals" params={{ tenantSlug }} icon={Share2} label="الإحالات" />
+        <NavItem to="/admin/$tenantSlug/activity" params={{ tenantSlug }} icon={Activity} label="سجل النشاط" />
         <NavItem to="/admin/$tenantSlug/settings" params={{ tenantSlug }} icon={Settings} label="الإعدادات" />
       </aside>
-      <main className="flex-1 p-8 overflow-auto">
-        <Outlet />
+      <main className="flex-1 overflow-auto">
+        <header className="flex items-center justify-end gap-2 px-6 py-3 border-b bg-background">
+          <NotificationsBell />
+        </header>
+        <div className="p-8"><Outlet /></div>
       </main>
     </div>
   );
