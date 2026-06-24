@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { GraduationCap, Plus, LogOut, BookOpen, Settings, ExternalLink, Shield } from "lucide-react";
+import { GraduationCap, Plus, LogOut, BookOpen, Settings, ExternalLink, Shield, Award, Sparkles, Share2, Receipt } from "lucide-react";
 import { createTenant } from "@/lib/tenants.functions";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
@@ -128,6 +128,16 @@ function Dashboard() {
         </section>
 
         <section>
+          <h2 className="text-lg font-bold mb-3">روابط سريعة</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <QuickLink to="/my-certificates" icon={Award} label="شهاداتي" color="text-amber-500" />
+            <QuickLink to="/my-badges" icon={Sparkles} label="شاراتي" color="text-blue-500" />
+            <QuickLink to="/my-referrals" icon={Share2} label="إحالاتي" color="text-green-500" />
+            <QuickLink to="/my-payments" icon={Receipt} label="طلبات الدفع" color="text-purple-500" />
+          </div>
+        </section>
+
+        <section>
           <h2 className="text-2xl font-bold mb-4">دوراتي</h2>
           {enrollments && enrollments.length === 0 && (
             <Card><CardContent className="p-10 text-center text-muted-foreground">لم تسجل في أي دورة بعد.</CardContent></Card>
@@ -150,6 +160,19 @@ function Dashboard() {
         </section>
       </main>
     </div>
+  );
+}
+
+function QuickLink({ to, icon: Icon, label, color }: { to: string; icon: React.ComponentType<{ className?: string }>; label: string; color: string }) {
+  return (
+    <Link to={to}>
+      <Card className="hover:shadow-md transition-shadow cursor-pointer">
+        <CardContent className="p-4 flex items-center gap-3">
+          <Icon className={`h-6 w-6 ${color}`} />
+          <span className="font-medium">{label}</span>
+        </CardContent>
+      </Card>
+    </Link>
   );
 }
 

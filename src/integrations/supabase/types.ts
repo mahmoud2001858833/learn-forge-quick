@@ -62,6 +62,47 @@ export type Database = {
         }
         Relationships: []
       }
+      badges: {
+        Row: {
+          code: string
+          color: string
+          created_at: string
+          description: string | null
+          icon: string
+          id: string
+          name: string
+          tenant_id: string | null
+        }
+        Insert: {
+          code: string
+          color?: string
+          created_at?: string
+          description?: string | null
+          icon?: string
+          id?: string
+          name: string
+          tenant_id?: string | null
+        }
+        Update: {
+          code?: string
+          color?: string
+          created_at?: string
+          description?: string | null
+          icon?: string
+          id?: string
+          name?: string
+          tenant_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "badges_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bank_accounts: {
         Row: {
           account_holder: string
@@ -141,6 +182,70 @@ export type Database = {
             columns: ["course_id"]
             isOneToOne: false
             referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      certificates: {
+        Row: {
+          certificate_number: string
+          course_id: string
+          course_title: string
+          enrollment_id: string
+          final_score: number | null
+          id: string
+          issued_at: string
+          student_id: string
+          student_name: string
+          tenant_id: string
+          tenant_name: string
+        }
+        Insert: {
+          certificate_number: string
+          course_id: string
+          course_title: string
+          enrollment_id: string
+          final_score?: number | null
+          id?: string
+          issued_at?: string
+          student_id: string
+          student_name: string
+          tenant_id: string
+          tenant_name: string
+        }
+        Update: {
+          certificate_number?: string
+          course_id?: string
+          course_title?: string
+          enrollment_id?: string
+          final_score?: number | null
+          id?: string
+          issued_at?: string
+          student_id?: string
+          student_name?: string
+          tenant_id?: string
+          tenant_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "certificates_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "certificates_enrollment_id_fkey"
+            columns: ["enrollment_id"]
+            isOneToOne: false
+            referencedRelation: "enrollments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "certificates_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
             referencedColumns: ["id"]
           },
         ]
@@ -498,6 +603,7 @@ export type Database = {
           paid_amount: number
           progress: number
           source: string
+          status: string
           student_id: string
           tenant_id: string
           total_amount: number
@@ -510,6 +616,7 @@ export type Database = {
           paid_amount?: number
           progress?: number
           source?: string
+          status?: string
           student_id: string
           tenant_id: string
           total_amount?: number
@@ -522,6 +629,7 @@ export type Database = {
           paid_amount?: number
           progress?: number
           source?: string
+          status?: string
           student_id?: string
           tenant_id?: string
           total_amount?: number
@@ -964,6 +1072,196 @@ export type Database = {
           },
         ]
       }
+      quiz_attempts: {
+        Row: {
+          answers: Json
+          enrollment_id: string | null
+          id: string
+          max_score: number
+          passed: boolean
+          percent: number
+          quiz_id: string
+          score: number
+          started_at: string
+          student_id: string
+          submitted_at: string | null
+        }
+        Insert: {
+          answers?: Json
+          enrollment_id?: string | null
+          id?: string
+          max_score?: number
+          passed?: boolean
+          percent?: number
+          quiz_id: string
+          score?: number
+          started_at?: string
+          student_id: string
+          submitted_at?: string | null
+        }
+        Update: {
+          answers?: Json
+          enrollment_id?: string | null
+          id?: string
+          max_score?: number
+          passed?: boolean
+          percent?: number
+          quiz_id?: string
+          score?: number
+          started_at?: string
+          student_id?: string
+          submitted_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_attempts_enrollment_id_fkey"
+            columns: ["enrollment_id"]
+            isOneToOne: false
+            referencedRelation: "enrollments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quiz_attempts_quiz_id_fkey"
+            columns: ["quiz_id"]
+            isOneToOne: false
+            referencedRelation: "quizzes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quiz_choices: {
+        Row: {
+          id: string
+          is_correct: boolean
+          order_index: number
+          question_id: string
+          text: string
+        }
+        Insert: {
+          id?: string
+          is_correct?: boolean
+          order_index?: number
+          question_id: string
+          text: string
+        }
+        Update: {
+          id?: string
+          is_correct?: boolean
+          order_index?: number
+          question_id?: string
+          text?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_choices_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "quiz_questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quiz_questions: {
+        Row: {
+          created_at: string
+          explanation: string | null
+          id: string
+          order_index: number
+          points: number
+          quiz_id: string
+          text: string
+          type: Database["public"]["Enums"]["quiz_question_type"]
+        }
+        Insert: {
+          created_at?: string
+          explanation?: string | null
+          id?: string
+          order_index?: number
+          points?: number
+          quiz_id: string
+          text: string
+          type?: Database["public"]["Enums"]["quiz_question_type"]
+        }
+        Update: {
+          created_at?: string
+          explanation?: string | null
+          id?: string
+          order_index?: number
+          points?: number
+          quiz_id?: string
+          text?: string
+          type?: Database["public"]["Enums"]["quiz_question_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_questions_quiz_id_fkey"
+            columns: ["quiz_id"]
+            isOneToOne: false
+            referencedRelation: "quizzes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quizzes: {
+        Row: {
+          attempts_limit: number | null
+          course_id: string
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          is_final: boolean
+          passing_score: number
+          tenant_id: string
+          time_limit_minutes: number | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          attempts_limit?: number | null
+          course_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          is_final?: boolean
+          passing_score?: number
+          tenant_id: string
+          time_limit_minutes?: number | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          attempts_limit?: number | null
+          course_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          is_final?: boolean
+          passing_score?: number
+          tenant_id?: string
+          time_limit_minutes?: number | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quizzes_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quizzes_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       referrals: {
         Row: {
           commission_amount: number
@@ -1243,6 +1541,45 @@ export type Database = {
           },
         ]
       }
+      user_badges: {
+        Row: {
+          awarded_at: string
+          badge_id: string
+          id: string
+          tenant_id: string | null
+          user_id: string
+        }
+        Insert: {
+          awarded_at?: string
+          badge_id: string
+          id?: string
+          tenant_id?: string | null
+          user_id: string
+        }
+        Update: {
+          awarded_at?: string
+          badge_id?: string
+          id?: string
+          tenant_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_badges_badge_id_fkey"
+            columns: ["badge_id"]
+            isOneToOne: false
+            referencedRelation: "badges"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_badges_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -1331,13 +1668,45 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      quiz_choices_public: {
+        Row: {
+          id: string | null
+          order_index: number | null
+          question_id: string | null
+          text: string | null
+        }
+        Insert: {
+          id?: string | null
+          order_index?: number | null
+          question_id?: string | null
+          text?: string | null
+        }
+        Update: {
+          id?: string | null
+          order_index?: number | null
+          question_id?: string | null
+          text?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_choices_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "quiz_questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
       approve_course: { Args: { _course_id: string }; Returns: undefined }
       approve_payment_request: {
         Args: { _notes?: string; _req_id: string }
         Returns: undefined
+      }
+      award_badge: {
+        Args: { _code: string; _tenant_id?: string; _user_id: string }
+        Returns: string
       }
       bump_global_logout: { Args: { _user_id: string }; Returns: undefined }
       course_tenant: { Args: { _course_id: string }; Returns: string }
@@ -1366,6 +1735,7 @@ export type Database = {
         Args: { _tenant_id: string; _user_id: string }
         Returns: boolean
       }
+      issue_certificate: { Args: { _enrollment_id: string }; Returns: string }
       reject_course: {
         Args: { _course_id: string; _reason: string }
         Returns: undefined
@@ -1375,6 +1745,10 @@ export type Database = {
         Returns: undefined
       }
       section_course: { Args: { _section_id: string }; Returns: string }
+      submit_quiz_attempt: {
+        Args: { _answers: Json; _quiz_id: string }
+        Returns: string
+      }
       validate_coupon: {
         Args: {
           _amount: number
@@ -1398,6 +1772,7 @@ export type Database = {
       course_status: "draft" | "published" | "archived" | "pending_approval"
       lesson_type: "video" | "text" | "pdf"
       payment_request_status: "pending" | "approved" | "rejected" | "cancelled"
+      quiz_question_type: "mcq" | "true_false"
       tenant_plan: "free" | "starter" | "pro" | "enterprise"
       tenant_role: "owner" | "instructor" | "student" | "admin"
       tenant_status: "active" | "suspended" | "trial"
@@ -1535,6 +1910,7 @@ export const Constants = {
       course_status: ["draft", "published", "archived", "pending_approval"],
       lesson_type: ["video", "text", "pdf"],
       payment_request_status: ["pending", "approved", "rejected", "cancelled"],
+      quiz_question_type: ["mcq", "true_false"],
       tenant_plan: ["free", "starter", "pro", "enterprise"],
       tenant_role: ["owner", "instructor", "student", "admin"],
       tenant_status: ["active", "suspended", "trial"],
