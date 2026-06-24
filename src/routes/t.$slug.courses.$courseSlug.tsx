@@ -1,4 +1,5 @@
 import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
+import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -6,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { PlayCircle, FileText, FileType, Lock } from "lucide-react";
 import { toast } from "sonner";
+import { PaymentRequestDialog } from "@/components/payment-request-dialog";
 
 export const Route = createFileRoute("/t/$slug/courses/$courseSlug")({
   component: CourseDetail,
