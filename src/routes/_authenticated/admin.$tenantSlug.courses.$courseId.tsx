@@ -42,8 +42,9 @@ function CourseEditor() {
     },
   });
 
+  type CourseUpdate = Database["public"]["Tables"]["courses"]["Update"];
   const update = useMutation({
-    mutationFn: async (patch: Partial<Record<string, string | number | boolean | null>>) => {
+    mutationFn: async (patch: CourseUpdate) => {
       const { error } = await supabase.from("courses").update(patch).eq("id", courseId);
       if (error) throw error;
     },
