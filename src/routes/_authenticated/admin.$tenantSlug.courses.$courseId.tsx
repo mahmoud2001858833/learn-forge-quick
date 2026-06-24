@@ -224,20 +224,27 @@ function NewSectionDialog({ courseId }: { courseId: string }) {
   );
 }
 
-type SectionWithLessons = { id: string; title: string; lessons: Array<{ id: string; title: string; type: string; is_preview: boolean; content_url: string | null }> };
+type SectionWithLessons = { id: string; title: string; lessons: Array<{ id: string; title: string; type: string; is_preview: boolean; content_url: string | null; video_asset_id: string | null }> };
 
-function SectionCard({ section }: { section: SectionWithLessons }) {
+function SectionCard({ section, tenantId }: { section: SectionWithLessons; tenantId: string }) {
   const qc = useQueryClient();
   const del = useMutation({
     mutationFn: async () => { const { error } = await supabase.from("sections").delete().eq("id", section.id); if (error) throw error; },
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["course-sections"] }); toast.success("حُذف"); },
+  });
+  const togglePreview = useMutation({
+    mutationFn: async (l: { id: string; is_preview: boolean }) => {
+      const { error } = await supabase.from("lessons").update({ is_preview: !l.is_preview }).eq("id", l.id);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["course-sections"] }),
   });
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-base">{section.title}</CardTitle>
         <div className="flex gap-2">
-          <NewLessonDialog sectionId={section.id} />
+          <NewLessonDialog sectionId={section.id} tenantId={tenantId} />
           <Button variant="ghost" size="sm" onClick={() => del.mutate()}><Trash2 className="h-4 w-4" /></Button>
         </div>
       </CardHeader>
@@ -245,8 +252,11 @@ function SectionCard({ section }: { section: SectionWithLessons }) {
         {section.lessons.length === 0 && <p className="text-sm text-muted-foreground">لا توجد دروس</p>}
         <ul className="space-y-2">
           {section.lessons.map((l) => (
-            <li key={l.id} className="flex items-center justify-between p-2 bg-muted/40 rounded text-sm">
-              <span>{l.title} {l.is_preview && <span className="text-xs text-primary">(معاينة مجانية)</span>}</span>
+            <li key={l.id} className="flex items-center justify-between p-2 bg-muted/40 rounded text-sm gap-2">
+              <span className="flex-1 truncate">{l.title} {l.is_preview && <span className="text-xs text-primary">(معاينة مجانية)</span>}</span>
+              <Button variant="ghost" size="sm" title={l.is_preview ? "إلغاء المعاينة" : "تفعيل المعاينة"} onClick={() => togglePreview.mutate({ id: l.id, is_preview: l.is_preview })}>
+                {l.is_preview ? <Eye className="h-3 w-3" /> : <EyeOff className="h-3 w-3" />}
+              </Button>
               <DeleteLessonBtn id={l.id} />
             </li>
           ))}
