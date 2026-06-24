@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowRight, Check, PlayCircle, FileText, FileType } from "lucide-react";
+import { ArrowRight, Check, PlayCircle, FileText, FileType, ClipboardCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { VideoPlayer } from "@/components/video-player";
 
@@ -35,6 +35,15 @@ function LearnPage() {
       const { data, error } = await supabase.from("lesson_progress").select("*").eq("enrollment_id", enrollmentId);
       if (error) throw error;
       return data;
+    },
+  });
+  const { data: quizzes } = useQuery({
+    queryKey: ["course-quizzes-learn", enrollment?.course_id],
+    enabled: !!enrollment?.course_id,
+    queryFn: async () => {
+      const { data } = await supabase.from("quizzes").select("id, title, is_final, passing_score, is_active")
+        .eq("course_id", enrollment!.course_id).eq("is_active", true).order("is_final");
+      return data ?? [];
     },
   });
 
@@ -94,6 +103,19 @@ function LearnPage() {
             </li>
           ))}
         </ul>
+        {quizzes && quizzes.length > 0 && (
+          <div className="p-3 border-t">
+            <div className="text-xs font-bold text-muted-foreground mb-2 px-1">الاختبارات</div>
+            {quizzes.map((q) => (
+              <Link key={q.id} to="/quiz/$quizId" params={{ quizId: q.id }}
+                className="flex items-center gap-2 p-2 hover:bg-accent rounded text-sm">
+                <ClipboardCheck className={cn("h-4 w-4", q.is_final ? "text-amber-500" : "text-muted-foreground")} />
+                <span className="truncate flex-1">{q.title}</span>
+                {q.is_final && <span className="text-xs text-amber-600">نهائي</span>}
+              </Link>
+            ))}
+          </div>
+        )}
       </aside>
 
       <main className="flex-1 p-8 overflow-auto">
