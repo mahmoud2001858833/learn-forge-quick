@@ -113,15 +113,31 @@ function CourseDetail() {
               </div>
               {enrollment ? (
                 <Button className="w-full" onClick={() => navigate({ to: "/learn/$enrollmentId", params: { enrollmentId: enrollment.id } })}>متابعة التعلم</Button>
-              ) : (
+              ) : course.is_free || course.price === 0 ? (
                 <Button className="w-full" onClick={() => enroll.mutate()} disabled={enroll.isPending} style={{ background: tenant.primary_color }}>
-                  {course.price > 0 ? "اشترك الآن" : "سجل مجاناً"}
+                  سجل مجاناً
+                </Button>
+              ) : (
+                <Button className="w-full" onClick={() => {
+                  if (!user) { navigate({ to: "/auth" }); return; }
+                  setPaymentOpen(true);
+                }} style={{ background: tenant.primary_color }}>
+                  اشترك الآن
                 </Button>
               )}
             </CardContent>
           </Card>
         </aside>
       </div>
+      <PaymentRequestDialog
+        open={paymentOpen}
+        onOpenChange={setPaymentOpen}
+        tenantId={tenant.id}
+        amount={course.price}
+        currency={tenant.currency ?? "ر.س"}
+        target={{ type: "course", courseId: course.id }}
+        onSuccess={() => navigate({ to: "/my-payments" })}
+      />
     </main>
   );
 }
