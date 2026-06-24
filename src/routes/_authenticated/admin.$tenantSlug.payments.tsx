@@ -74,10 +74,6 @@ function PaymentsAdminPage() {
     onError: (e: Error) => toast.error(e.message),
   });
 
-  const viewReceipt = async (path: string) => {
-    const { data } = await supabase.storage.from("receipts").createSignedUrl(path, 300);
-    if (data?.signedUrl) setReceiptUrl(data.signedUrl);
-  };
 
   const statusBadge = (s: string) => {
     const map: Record<string, string> = { pending: "bg-yellow-500", approved: "bg-green-500", rejected: "bg-red-500", cancelled: "bg-gray-500" };
@@ -112,7 +108,7 @@ function PaymentsAdminPage() {
                       {r.courses?.title || r.course_bundles?.name || "—"}
                     </div>
                     <div className="text-sm text-muted-foreground">
-                      الطالب: {r.profiles?.full_name || "غير معروف"} {r.profiles?.phone && `• ${r.profiles.phone}`}
+                      الطالب: {r.profile?.full_name || "غير معروف"} {r.profile?.phone && `• ${r.profile.phone}`}
                     </div>
                     <div className="text-sm">
                       المبلغ: <span className="font-bold">{r.amount} {r.currency}</span>
