@@ -62,6 +62,39 @@ export type Database = {
         }
         Relationships: []
       }
+      bundle_courses: {
+        Row: {
+          bundle_id: string
+          course_id: string
+          sort_order: number
+        }
+        Insert: {
+          bundle_id: string
+          course_id: string
+          sort_order?: number
+        }
+        Update: {
+          bundle_id?: string
+          course_id?: string
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bundle_courses_bundle_id_fkey"
+            columns: ["bundle_id"]
+            isOneToOne: false
+            referencedRelation: "course_bundles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bundle_courses_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       colleges: {
         Row: {
           created_at: string
@@ -113,57 +146,137 @@ export type Database = {
           },
         ]
       }
+      course_bundles: {
+        Row: {
+          cover_url: string | null
+          created_at: string
+          description: string | null
+          discount_percent: number
+          id: string
+          is_active: boolean
+          name: string
+          price: number
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          cover_url?: string | null
+          created_at?: string
+          description?: string | null
+          discount_percent?: number
+          id?: string
+          is_active?: boolean
+          name: string
+          price?: number
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          cover_url?: string | null
+          created_at?: string
+          description?: string | null
+          discount_percent?: number
+          id?: string
+          is_active?: boolean
+          name?: string
+          price?: number
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_bundles_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       courses: {
         Row: {
+          ad_style: number
+          ai_image_prompt: string | null
+          approved_at: string | null
+          approved_by: string | null
           college_id: string | null
           cover_url: string | null
           created_at: string
           description: string | null
           id: string
           instructor_id: string
+          is_free: boolean
           major_id: string | null
           price: number
+          qr_code_url: string | null
+          rejection_reason: string | null
+          requires_approval: boolean
           semester: string | null
+          short_description: string | null
           slug: string
           status: Database["public"]["Enums"]["course_status"]
+          students_count: number
           tenant_id: string
           title: string
+          total_duration_seconds: number
           university_id: string | null
           updated_at: string
           year_number: number | null
         }
         Insert: {
+          ad_style?: number
+          ai_image_prompt?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
           college_id?: string | null
           cover_url?: string | null
           created_at?: string
           description?: string | null
           id?: string
           instructor_id: string
+          is_free?: boolean
           major_id?: string | null
           price?: number
+          qr_code_url?: string | null
+          rejection_reason?: string | null
+          requires_approval?: boolean
           semester?: string | null
+          short_description?: string | null
           slug: string
           status?: Database["public"]["Enums"]["course_status"]
+          students_count?: number
           tenant_id: string
           title: string
+          total_duration_seconds?: number
           university_id?: string | null
           updated_at?: string
           year_number?: number | null
         }
         Update: {
+          ad_style?: number
+          ai_image_prompt?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
           college_id?: string | null
           cover_url?: string | null
           created_at?: string
           description?: string | null
           id?: string
           instructor_id?: string
+          is_free?: boolean
           major_id?: string | null
           price?: number
+          qr_code_url?: string | null
+          rejection_reason?: string | null
+          requires_approval?: boolean
           semester?: string | null
+          short_description?: string | null
           slug?: string
           status?: Database["public"]["Enums"]["course_status"]
+          students_count?: number
           tenant_id?: string
           title?: string
+          total_duration_seconds?: number
           university_id?: string | null
           updated_at?: string
           year_number?: number | null
@@ -288,6 +401,7 @@ export type Database = {
       }
       lessons: {
         Row: {
+          content_data: Json
           content_text: string | null
           content_url: string | null
           created_at: string
@@ -296,10 +410,12 @@ export type Database = {
           is_preview: boolean
           order_index: number
           section_id: string
+          tenant_id: string | null
           title: string
           type: Database["public"]["Enums"]["lesson_type"]
         }
         Insert: {
+          content_data?: Json
           content_text?: string | null
           content_url?: string | null
           created_at?: string
@@ -308,10 +424,12 @@ export type Database = {
           is_preview?: boolean
           order_index?: number
           section_id: string
+          tenant_id?: string | null
           title: string
           type?: Database["public"]["Enums"]["lesson_type"]
         }
         Update: {
+          content_data?: Json
           content_text?: string | null
           content_url?: string | null
           created_at?: string
@@ -320,6 +438,7 @@ export type Database = {
           is_preview?: boolean
           order_index?: number
           section_id?: string
+          tenant_id?: string | null
           title?: string
           type?: Database["public"]["Enums"]["lesson_type"]
         }
@@ -329,6 +448,13 @@ export type Database = {
             columns: ["section_id"]
             isOneToOne: false
             referencedRelation: "sections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lessons_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
             referencedColumns: ["id"]
           },
         ]
@@ -510,21 +636,27 @@ export type Database = {
         Row: {
           course_id: string
           created_at: string
+          description: string | null
           id: string
+          is_locked: boolean
           order_index: number
           title: string
         }
         Insert: {
           course_id: string
           created_at?: string
+          description?: string | null
           id?: string
+          is_locked?: boolean
           order_index?: number
           title: string
         }
         Update: {
           course_id?: string
           created_at?: string
+          description?: string | null
           id?: string
+          is_locked?: boolean
           order_index?: number
           title?: string
         }
@@ -744,6 +876,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      approve_course: { Args: { _course_id: string }; Returns: undefined }
       bump_global_logout: { Args: { _user_id: string }; Returns: undefined }
       course_tenant: { Args: { _course_id: string }; Returns: string }
       enrollment_student: { Args: { _enrollment_id: string }; Returns: string }
@@ -771,11 +904,15 @@ export type Database = {
         Args: { _tenant_id: string; _user_id: string }
         Returns: boolean
       }
+      reject_course: {
+        Args: { _course_id: string; _reason: string }
+        Returns: undefined
+      }
       section_course: { Args: { _section_id: string }; Returns: string }
     }
     Enums: {
       app_role: "super_admin"
-      course_status: "draft" | "published" | "archived"
+      course_status: "draft" | "published" | "archived" | "pending_approval"
       lesson_type: "video" | "text" | "pdf"
       tenant_plan: "free" | "starter" | "pro" | "enterprise"
       tenant_role: "owner" | "instructor" | "student" | "admin"
@@ -908,7 +1045,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["super_admin"],
-      course_status: ["draft", "published", "archived"],
+      course_status: ["draft", "published", "archived", "pending_approval"],
       lesson_type: ["video", "text", "pdf"],
       tenant_plan: ["free", "starter", "pro", "enterprise"],
       tenant_role: ["owner", "instructor", "student", "admin"],
