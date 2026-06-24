@@ -355,6 +355,3 @@ function NewLessonDialog({ sectionId, tenantId }: { sectionId: string; tenantId:
     </Dialog>
   );
 }
-
-// Unused export kept to satisfy tree-shaking inspectors; used elsewhere in editor.
-export { VideoPlayer as _VP };
