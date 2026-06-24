@@ -36,15 +36,26 @@ function PaymentsAdminPage() {
     queryFn: async () => {
       let q = supabase
         .from("payment_requests")
-        .select("*, courses(title), course_bundles(name), bank_accounts(bank_name), profiles!payment_requests_student_id_fkey(full_name, phone)")
+        .select("*, courses(title), course_bundles(name), bank_accounts(bank_name)")
         .eq("tenant_id", tenant!.id)
         .order("created_at", { ascending: false });
       if (tab !== "all") q = q.eq("status", tab);
       const { data, error } = await q;
       if (error) throw error;
-      return data;
+      const ids = Array.from(new Set((data ?? []).map((r) => r.student_id)));
+      const profilesMap = new Map<string, { full_name: string | null; phone: string | null }>();
+      if (ids.length) {
+        const { data: profs } = await supabase.from("profiles").select("id, full_name, phone").in("id", ids);
+        profs?.forEach((p) => profilesMap.set(p.id, { full_name: p.full_name, phone: p.phone }));
+      }
+      return (data ?? []).map((r) => ({ ...r, profile: profilesMap.get(r.student_id) ?? null }));
     },
   });
+
+  const viewReceipt = async (path: string) => {
+    const { data } = await supabase.storage.from("receipts").createSignedUrl(path, 300);
+    if (data?.signedUrl) setReceiptUrl(data.signedUrl);
+  };
 
   const review = useMutation({
     mutationFn: async () => {
