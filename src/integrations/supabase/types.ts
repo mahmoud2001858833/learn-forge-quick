@@ -14,16 +14,380 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      courses: {
+        Row: {
+          cover_url: string | null
+          created_at: string
+          description: string | null
+          id: string
+          instructor_id: string
+          price: number
+          slug: string
+          status: Database["public"]["Enums"]["course_status"]
+          tenant_id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          cover_url?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          instructor_id: string
+          price?: number
+          slug: string
+          status?: Database["public"]["Enums"]["course_status"]
+          tenant_id: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          cover_url?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          instructor_id?: string
+          price?: number
+          slug?: string
+          status?: Database["public"]["Enums"]["course_status"]
+          tenant_id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "courses_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      enrollments: {
+        Row: {
+          completed_at: string | null
+          course_id: string
+          created_at: string
+          id: string
+          progress: number
+          student_id: string
+          tenant_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          course_id: string
+          created_at?: string
+          id?: string
+          progress?: number
+          student_id: string
+          tenant_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          course_id?: string
+          created_at?: string
+          id?: string
+          progress?: number
+          student_id?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "enrollments_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "enrollments_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lesson_progress: {
+        Row: {
+          completed: boolean
+          enrollment_id: string
+          id: string
+          lesson_id: string
+          updated_at: string
+          watched_seconds: number
+        }
+        Insert: {
+          completed?: boolean
+          enrollment_id: string
+          id?: string
+          lesson_id: string
+          updated_at?: string
+          watched_seconds?: number
+        }
+        Update: {
+          completed?: boolean
+          enrollment_id?: string
+          id?: string
+          lesson_id?: string
+          updated_at?: string
+          watched_seconds?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lesson_progress_enrollment_id_fkey"
+            columns: ["enrollment_id"]
+            isOneToOne: false
+            referencedRelation: "enrollments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lesson_progress_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lessons: {
+        Row: {
+          content_text: string | null
+          content_url: string | null
+          created_at: string
+          duration_seconds: number | null
+          id: string
+          is_preview: boolean
+          order_index: number
+          section_id: string
+          title: string
+          type: Database["public"]["Enums"]["lesson_type"]
+        }
+        Insert: {
+          content_text?: string | null
+          content_url?: string | null
+          created_at?: string
+          duration_seconds?: number | null
+          id?: string
+          is_preview?: boolean
+          order_index?: number
+          section_id: string
+          title: string
+          type?: Database["public"]["Enums"]["lesson_type"]
+        }
+        Update: {
+          content_text?: string | null
+          content_url?: string | null
+          created_at?: string
+          duration_seconds?: number | null
+          id?: string
+          is_preview?: boolean
+          order_index?: number
+          section_id?: string
+          title?: string
+          type?: Database["public"]["Enums"]["lesson_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lessons_section_id_fkey"
+            columns: ["section_id"]
+            isOneToOne: false
+            referencedRelation: "sections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          full_name: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      sections: {
+        Row: {
+          course_id: string
+          created_at: string
+          id: string
+          order_index: number
+          title: string
+        }
+        Insert: {
+          course_id: string
+          created_at?: string
+          id?: string
+          order_index?: number
+          title: string
+        }
+        Update: {
+          course_id?: string
+          created_at?: string
+          id?: string
+          order_index?: number
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sections_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tenant_members: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["tenant_role"]
+          tenant_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["tenant_role"]
+          tenant_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["tenant_role"]
+          tenant_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tenant_members_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tenants: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          logo_url: string | null
+          name: string
+          owner_id: string
+          plan: Database["public"]["Enums"]["tenant_plan"]
+          primary_color: string
+          slug: string
+          status: Database["public"]["Enums"]["tenant_status"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          logo_url?: string | null
+          name: string
+          owner_id: string
+          plan?: Database["public"]["Enums"]["tenant_plan"]
+          primary_color?: string
+          slug: string
+          status?: Database["public"]["Enums"]["tenant_status"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          logo_url?: string | null
+          name?: string
+          owner_id?: string
+          plan?: Database["public"]["Enums"]["tenant_plan"]
+          primary_color?: string
+          slug?: string
+          status?: Database["public"]["Enums"]["tenant_status"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      course_tenant: { Args: { _course_id: string }; Returns: string }
+      enrollment_student: { Args: { _enrollment_id: string }; Returns: string }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      has_tenant_role: {
+        Args: {
+          _roles: Database["public"]["Enums"]["tenant_role"][]
+          _tenant_id: string
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_tenant_member: {
+        Args: { _tenant_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_tenant_owner: {
+        Args: { _tenant_id: string; _user_id: string }
+        Returns: boolean
+      }
+      section_course: { Args: { _section_id: string }; Returns: string }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "super_admin"
+      course_status: "draft" | "published" | "archived"
+      lesson_type: "video" | "text" | "pdf"
+      tenant_plan: "free" | "starter" | "pro" | "enterprise"
+      tenant_role: "owner" | "instructor" | "student"
+      tenant_status: "active" | "suspended" | "trial"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +514,13 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["super_admin"],
+      course_status: ["draft", "published", "archived"],
+      lesson_type: ["video", "text", "pdf"],
+      tenant_plan: ["free", "starter", "pro", "enterprise"],
+      tenant_role: ["owner", "instructor", "student"],
+      tenant_status: ["active", "suspended", "trial"],
+    },
   },
 } as const

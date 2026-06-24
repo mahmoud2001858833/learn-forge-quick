@@ -1,0 +1,180 @@
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/use-auth";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import { toast } from "sonner";
+import { GraduationCap, Plus, LogOut, BookOpen, Settings, ExternalLink } from "lucide-react";
+
+export const Route = createFileRoute("/_authenticated/dashboard")({
+  component: Dashboard,
+});
+
+function Dashboard() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const qc = useQueryClient();
+
+  const { data: ownedTenants } = useQuery({
+    queryKey: ["my-tenants", user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("tenants")
+        .select("*")
+        .eq("owner_id", user!.id)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const { data: enrollments } = useQuery({
+    queryKey: ["my-enrollments", user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("enrollments")
+        .select("*, courses(title, cover_url, slug, tenants(slug, name))")
+        .eq("student_id", user!.id);
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  async function signOut() {
+    await qc.cancelQueries();
+    qc.clear();
+    await supabase.auth.signOut();
+    navigate({ to: "/auth", replace: true });
+  }
+
+  return (
+    <div className="min-h-screen bg-muted/20">
+      <header className="border-b bg-background">
+        <div className="container mx-auto flex items-center justify-between px-6 py-4">
+          <div className="flex items-center gap-2 font-bold">
+            <GraduationCap className="h-6 w-6 text-primary" />
+            EduForge
+          </div>
+          <Button variant="ghost" size="sm" onClick={signOut}>
+            <LogOut className="h-4 w-4 ml-2" /> خروج
+          </Button>
+        </div>
+      </header>
+
+      <main className="container mx-auto px-6 py-8 space-y-10">
+        <section>
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h2 className="text-2xl font-bold">منصاتي</h2>
+              <p className="text-muted-foreground text-sm">المنصات التعليمية التي تملكها</p>
+            </div>
+            <CreateTenantDialog />
+          </div>
+          {ownedTenants && ownedTenants.length === 0 && (
+            <Card><CardContent className="p-10 text-center text-muted-foreground">لم تنشئ أي منصة بعد. اضغط "منصة جديدة" للبدء.</CardContent></Card>
+          )}
+          <div className="grid md:grid-cols-3 gap-4">
+            {ownedTenants?.map((t) => (
+              <Card key={t.id}>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <span className="w-3 h-3 rounded-full" style={{ background: t.primary_color }} />
+                    {t.name}
+                  </CardTitle>
+                  <CardDescription>/{t.slug}</CardDescription>
+                </CardHeader>
+                <CardContent className="flex gap-2">
+                  <Link to="/admin/$tenantSlug" params={{ tenantSlug: t.slug }} className="flex-1">
+                    <Button variant="default" size="sm" className="w-full"><Settings className="h-4 w-4 ml-1" /> إدارة</Button>
+                  </Link>
+                  <Link to="/t/$slug" params={{ slug: t.slug }} className="flex-1">
+                    <Button variant="outline" size="sm" className="w-full"><ExternalLink className="h-4 w-4 ml-1" /> عرض</Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </section>
+
+        <section>
+          <h2 className="text-2xl font-bold mb-4">دوراتي</h2>
+          {enrollments && enrollments.length === 0 && (
+            <Card><CardContent className="p-10 text-center text-muted-foreground">لم تسجل في أي دورة بعد.</CardContent></Card>
+          )}
+          <div className="grid md:grid-cols-3 gap-4">
+            {enrollments?.map((e) => (
+              <Card key={e.id}>
+                <CardHeader>
+                  <CardTitle className="text-base">{e.courses?.title}</CardTitle>
+                  <CardDescription>{e.courses?.tenants?.name}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Link to="/learn/$enrollmentId" params={{ enrollmentId: e.id }}>
+                    <Button size="sm" className="w-full"><BookOpen className="h-4 w-4 ml-1" /> متابعة التعلم</Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </section>
+      </main>
+    </div>
+  );
+}
+
+function CreateTenantDialog() {
+  const { user } = useAuth();
+  const qc = useQueryClient();
+  const [open, setOpen] = useState(false);
+  const [name, setName] = useState("");
+  const [slug, setSlug] = useState("");
+  const [color, setColor] = useState("#6366f1");
+  const [description, setDescription] = useState("");
+
+  useEffect(() => {
+    setSlug(name.toLowerCase().replace(/[^a-z0-9-]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 40));
+  }, [name]);
+
+  const create = useMutation({
+    mutationFn: async () => {
+      const { data, error } = await supabase.from("tenants").insert({
+        name, slug, primary_color: color, description, owner_id: user!.id,
+      }).select().single();
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      toast.success("تم إنشاء المنصة!");
+      qc.invalidateQueries({ queryKey: ["my-tenants"] });
+      setOpen(false);
+      setName(""); setSlug(""); setDescription("");
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button><Plus className="h-4 w-4 ml-1" /> منصة جديدة</Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader><DialogTitle>إنشاء منصة جديدة</DialogTitle></DialogHeader>
+        <form onSubmit={(e) => { e.preventDefault(); create.mutate(); }} className="space-y-4">
+          <div><Label>اسم المنصة</Label><Input required value={name} onChange={(e) => setName(e.target.value)} placeholder="أكاديمية الإبداع" /></div>
+          <div><Label>المعرّف (slug)</Label><Input required pattern="[a-z0-9-]+" value={slug} onChange={(e) => setSlug(e.target.value)} /></div>
+          <div><Label>اللون الأساسي</Label><Input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="h-10 w-20" /></div>
+          <div><Label>وصف قصير</Label><Textarea value={description} onChange={(e) => setDescription(e.target.value)} /></div>
+          <DialogFooter><Button type="submit" disabled={create.isPending}>{create.isPending ? "جارٍ..." : "إنشاء"}</Button></DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
