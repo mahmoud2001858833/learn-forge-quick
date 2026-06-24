@@ -7,6 +7,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight, Check, PlayCircle, FileText, FileType, ClipboardCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { VideoPlayer } from "@/components/video-player";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { LessonComments } from "@/components/lesson-comments";
+import { CourseQA } from "@/components/course-qa";
+import { CourseReviews } from "@/components/course-reviews";
 
 export const Route = createFileRoute("/_authenticated/learn/$enrollmentId")({
   component: LearnPage,
@@ -131,6 +135,23 @@ function LearnPage() {
               <Check className="h-4 w-4 ml-1" />
               {completedIds.has(activeLesson.id) ? "تم — إلغاء" : "وضع علامة مكتمل"}
             </Button>
+
+            <Tabs defaultValue="comments" className="mt-8">
+              <TabsList>
+                <TabsTrigger value="comments">المناقشة</TabsTrigger>
+                <TabsTrigger value="qa">أسئلة الدورة</TabsTrigger>
+                <TabsTrigger value="reviews">التقييمات</TabsTrigger>
+              </TabsList>
+              <TabsContent value="comments" className="pt-4">
+                <LessonComments lessonId={activeLesson.id} />
+              </TabsContent>
+              <TabsContent value="qa" className="pt-4">
+                {enrollment.course_id && <CourseQA courseId={enrollment.course_id} />}
+              </TabsContent>
+              <TabsContent value="reviews" className="pt-4">
+                {enrollment.course_id && <CourseReviews courseId={enrollment.course_id} canReview />}
+              </TabsContent>
+            </Tabs>
           </div>
         ) : (
           <div className="text-center text-muted-foreground py-20">لا توجد دروس في هذه الدورة بعد</div>
