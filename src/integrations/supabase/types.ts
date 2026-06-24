@@ -246,6 +246,59 @@ export type Database = {
           },
         ]
       }
+      platform_settings: {
+        Row: {
+          allow_signups: boolean
+          created_at: string
+          custom_settings: Json
+          default_commission_pct: number
+          id: string
+          maintenance_message: string | null
+          maintenance_mode: boolean
+          marquee_color: string | null
+          marquee_enabled: boolean
+          marquee_text: string | null
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          allow_signups?: boolean
+          created_at?: string
+          custom_settings?: Json
+          default_commission_pct?: number
+          id?: string
+          maintenance_message?: string | null
+          maintenance_mode?: boolean
+          marquee_color?: string | null
+          marquee_enabled?: boolean
+          marquee_text?: string | null
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          allow_signups?: boolean
+          created_at?: string
+          custom_settings?: Json
+          default_commission_pct?: number
+          id?: string
+          maintenance_message?: string | null
+          maintenance_mode?: boolean
+          marquee_color?: string | null
+          marquee_enabled?: boolean
+          marquee_text?: string | null
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "platform_settings_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: true
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -352,9 +405,49 @@ export type Database = {
           },
         ]
       }
-      tenants: {
+      tenant_secrets: {
         Row: {
           created_at: string
+          description: string | null
+          id: string
+          name: string
+          tenant_id: string
+          updated_at: string
+          value: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          tenant_id: string
+          updated_at?: string
+          value: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          tenant_id?: string
+          updated_at?: string
+          value?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tenant_secrets_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tenants: {
+        Row: {
+          activated_at: string | null
+          created_at: string
+          currency: string
           description: string | null
           id: string
           logo_url: string | null
@@ -362,12 +455,18 @@ export type Database = {
           owner_id: string
           plan: Database["public"]["Enums"]["tenant_plan"]
           primary_color: string
+          secondary_color: string
           slug: string
           status: Database["public"]["Enums"]["tenant_status"]
+          suspended_at: string | null
+          suspension_reason: string | null
           updated_at: string
+          welcome_message: string | null
         }
         Insert: {
+          activated_at?: string | null
           created_at?: string
+          currency?: string
           description?: string | null
           id?: string
           logo_url?: string | null
@@ -375,12 +474,18 @@ export type Database = {
           owner_id: string
           plan?: Database["public"]["Enums"]["tenant_plan"]
           primary_color?: string
+          secondary_color?: string
           slug: string
           status?: Database["public"]["Enums"]["tenant_status"]
+          suspended_at?: string | null
+          suspension_reason?: string | null
           updated_at?: string
+          welcome_message?: string | null
         }
         Update: {
+          activated_at?: string | null
           created_at?: string
+          currency?: string
           description?: string | null
           id?: string
           logo_url?: string | null
@@ -388,9 +493,13 @@ export type Database = {
           owner_id?: string
           plan?: Database["public"]["Enums"]["tenant_plan"]
           primary_color?: string
+          secondary_color?: string
           slug?: string
           status?: Database["public"]["Enums"]["tenant_status"]
+          suspended_at?: string | null
+          suspension_reason?: string | null
           updated_at?: string
+          welcome_message?: string | null
         }
         Relationships: []
       }
