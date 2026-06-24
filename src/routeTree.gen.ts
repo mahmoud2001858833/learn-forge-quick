@@ -13,6 +13,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TSlugRouteImport } from './routes/t.$slug'
+import { Route as AuthenticatedSuperAdminRouteImport } from './routes/_authenticated/super-admin'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as TSlugIndexRouteImport } from './routes/t.$slug.index'
 import { Route as AuthenticatedLearnEnrollmentIdRouteImport } from './routes/_authenticated/learn.$enrollmentId'
@@ -42,6 +43,11 @@ const TSlugRoute = TSlugRouteImport.update({
   id: '/t/$slug',
   path: '/t/$slug',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedSuperAdminRoute = AuthenticatedSuperAdminRouteImport.update({
+  id: '/super-admin',
+  path: '/super-admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
@@ -105,6 +111,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/super-admin': typeof AuthenticatedSuperAdminRoute
   '/t/$slug': typeof TSlugRouteWithChildren
   '/admin/$tenantSlug': typeof AuthenticatedAdminTenantSlugRouteWithChildren
   '/learn/$enrollmentId': typeof AuthenticatedLearnEnrollmentIdRoute
@@ -120,6 +127,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/super-admin': typeof AuthenticatedSuperAdminRoute
   '/learn/$enrollmentId': typeof AuthenticatedLearnEnrollmentIdRoute
   '/t/$slug': typeof TSlugIndexRoute
   '/admin/$tenantSlug/courses': typeof AuthenticatedAdminTenantSlugCoursesRouteWithChildren
@@ -135,6 +143,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/super-admin': typeof AuthenticatedSuperAdminRoute
   '/t/$slug': typeof TSlugRouteWithChildren
   '/_authenticated/admin/$tenantSlug': typeof AuthenticatedAdminTenantSlugRouteWithChildren
   '/_authenticated/learn/$enrollmentId': typeof AuthenticatedLearnEnrollmentIdRoute
@@ -152,6 +161,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/dashboard'
+    | '/super-admin'
     | '/t/$slug'
     | '/admin/$tenantSlug'
     | '/learn/$enrollmentId'
@@ -167,6 +177,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/dashboard'
+    | '/super-admin'
     | '/learn/$enrollmentId'
     | '/t/$slug'
     | '/admin/$tenantSlug/courses'
@@ -181,6 +192,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/dashboard'
+    | '/_authenticated/super-admin'
     | '/t/$slug'
     | '/_authenticated/admin/$tenantSlug'
     | '/_authenticated/learn/$enrollmentId'
@@ -229,6 +241,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/t/$slug'
       preLoaderRoute: typeof TSlugRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/super-admin': {
+      id: '/_authenticated/super-admin'
+      path: '/super-admin'
+      fullPath: '/super-admin'
+      preLoaderRoute: typeof AuthenticatedSuperAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
@@ -344,12 +363,14 @@ const AuthenticatedAdminTenantSlugRouteWithChildren =
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedSuperAdminRoute: typeof AuthenticatedSuperAdminRoute
   AuthenticatedAdminTenantSlugRoute: typeof AuthenticatedAdminTenantSlugRouteWithChildren
   AuthenticatedLearnEnrollmentIdRoute: typeof AuthenticatedLearnEnrollmentIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedSuperAdminRoute: AuthenticatedSuperAdminRoute,
   AuthenticatedAdminTenantSlugRoute:
     AuthenticatedAdminTenantSlugRouteWithChildren,
   AuthenticatedLearnEnrollmentIdRoute: AuthenticatedLearnEnrollmentIdRoute,

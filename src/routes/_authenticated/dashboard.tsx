@@ -10,7 +10,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { GraduationCap, Plus, LogOut, BookOpen, Settings, ExternalLink } from "lucide-react";
+import { GraduationCap, Plus, LogOut, BookOpen, Settings, ExternalLink, Shield } from "lucide-react";
+import { createTenant } from "@/lib/tenants.functions";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   component: Dashboard,
@@ -48,6 +49,21 @@ function Dashboard() {
     },
   });
 
+  const { data: isSuper } = useQuery({
+    queryKey: ["is-super-admin", user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user!.id)
+        .eq("role", "super_admin")
+        .maybeSingle();
+      return !!data;
+    },
+  });
+
+
   async function signOut() {
     await qc.cancelQueries();
     qc.clear();
@@ -66,6 +82,13 @@ function Dashboard() {
           <Button variant="ghost" size="sm" onClick={signOut}>
             <LogOut className="h-4 w-4 ml-2" /> خروج
           </Button>
+          {isSuper && (
+            <Link to="/super-admin">
+              <Button variant="outline" size="sm">
+                <Shield className="h-4 w-4 ml-2" /> سوبر-أدمن
+              </Button>
+            </Link>
+          )}
         </div>
       </header>
 
@@ -131,31 +154,30 @@ function Dashboard() {
 }
 
 function CreateTenantDialog() {
-  const { user } = useAuth();
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
-  const [color, setColor] = useState("#6366f1");
+  const [primary_color, setPrimary] = useState("#6366f1");
+  const [secondary_color, setSecondary] = useState("#D4AF37");
+  const [currency, setCurrency] = useState("SAR");
   const [description, setDescription] = useState("");
+  const [welcome_message, setWelcome] = useState("");
 
   useEffect(() => {
     setSlug(name.toLowerCase().replace(/[^a-z0-9-]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 40));
   }, [name]);
 
   const create = useMutation({
-    mutationFn: async () => {
-      const { data, error } = await supabase.from("tenants").insert({
-        name, slug, primary_color: color, description, owner_id: user!.id,
-      }).select().single();
-      if (error) throw error;
-      return data;
-    },
+    mutationFn: () =>
+      createTenant({
+        data: { name, slug, primary_color, secondary_color, currency, description, welcome_message },
+      }),
     onSuccess: () => {
       toast.success("تم إنشاء المنصة!");
       qc.invalidateQueries({ queryKey: ["my-tenants"] });
       setOpen(false);
-      setName(""); setSlug(""); setDescription("");
+      setName(""); setSlug(""); setDescription(""); setWelcome("");
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -169,9 +191,14 @@ function CreateTenantDialog() {
         <DialogHeader><DialogTitle>إنشاء منصة جديدة</DialogTitle></DialogHeader>
         <form onSubmit={(e) => { e.preventDefault(); create.mutate(); }} className="space-y-4">
           <div><Label>اسم المنصة</Label><Input required value={name} onChange={(e) => setName(e.target.value)} placeholder="أكاديمية الإبداع" /></div>
-          <div><Label>المعرّف (slug)</Label><Input required pattern="[a-z0-9-]+" value={slug} onChange={(e) => setSlug(e.target.value)} /></div>
-          <div><Label>اللون الأساسي</Label><Input type="color" value={color} onChange={(e) => setColor(e.target.value)} className="h-10 w-20" /></div>
+          <div><Label>المعرّف (slug)</Label><Input required pattern="[a-z0-9-]{3,40}" value={slug} onChange={(e) => setSlug(e.target.value)} /></div>
+          <div className="grid grid-cols-3 gap-2">
+            <div><Label>لون أساسي</Label><Input type="color" value={primary_color} onChange={(e) => setPrimary(e.target.value)} className="h-10" /></div>
+            <div><Label>لون ثانوي</Label><Input type="color" value={secondary_color} onChange={(e) => setSecondary(e.target.value)} className="h-10" /></div>
+            <div><Label>العملة</Label><Input value={currency} onChange={(e) => setCurrency(e.target.value.toUpperCase())} maxLength={5} /></div>
+          </div>
           <div><Label>وصف قصير</Label><Textarea value={description} onChange={(e) => setDescription(e.target.value)} /></div>
+          <div><Label>رسالة ترحيبية</Label><Textarea value={welcome_message} onChange={(e) => setWelcome(e.target.value)} placeholder="اختياري" /></div>
           <DialogFooter><Button type="submit" disabled={create.isPending}>{create.isPending ? "جارٍ..." : "إنشاء"}</Button></DialogFooter>
         </form>
       </DialogContent>
