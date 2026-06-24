@@ -23,6 +23,7 @@ import { Route as TSlugCoursesCourseSlugRouteImport } from './routes/t.$slug.cou
 import { Route as AuthenticatedAdminTenantSlugStudentsRouteImport } from './routes/_authenticated/admin.$tenantSlug.students'
 import { Route as AuthenticatedAdminTenantSlugSettingsRouteImport } from './routes/_authenticated/admin.$tenantSlug.settings'
 import { Route as AuthenticatedAdminTenantSlugCoursesRouteImport } from './routes/_authenticated/admin.$tenantSlug.courses'
+import { Route as AuthenticatedAdminTenantSlugBundlesRouteImport } from './routes/_authenticated/admin.$tenantSlug.bundles'
 import { Route as AuthenticatedAdminTenantSlugAcademicRouteImport } from './routes/_authenticated/admin.$tenantSlug.academic'
 import { Route as AuthenticatedAdminTenantSlugCoursesCourseIdRouteImport } from './routes/_authenticated/admin.$tenantSlug.courses.$courseId'
 
@@ -101,6 +102,12 @@ const AuthenticatedAdminTenantSlugCoursesRoute =
     path: '/courses',
     getParentRoute: () => AuthenticatedAdminTenantSlugRoute,
   } as any)
+const AuthenticatedAdminTenantSlugBundlesRoute =
+  AuthenticatedAdminTenantSlugBundlesRouteImport.update({
+    id: '/bundles',
+    path: '/bundles',
+    getParentRoute: () => AuthenticatedAdminTenantSlugRoute,
+  } as any)
 const AuthenticatedAdminTenantSlugAcademicRoute =
   AuthenticatedAdminTenantSlugAcademicRouteImport.update({
     id: '/academic',
@@ -124,6 +131,7 @@ export interface FileRoutesByFullPath {
   '/learn/$enrollmentId': typeof AuthenticatedLearnEnrollmentIdRoute
   '/t/$slug/': typeof TSlugIndexRoute
   '/admin/$tenantSlug/academic': typeof AuthenticatedAdminTenantSlugAcademicRoute
+  '/admin/$tenantSlug/bundles': typeof AuthenticatedAdminTenantSlugBundlesRoute
   '/admin/$tenantSlug/courses': typeof AuthenticatedAdminTenantSlugCoursesRouteWithChildren
   '/admin/$tenantSlug/settings': typeof AuthenticatedAdminTenantSlugSettingsRoute
   '/admin/$tenantSlug/students': typeof AuthenticatedAdminTenantSlugStudentsRoute
@@ -139,6 +147,7 @@ export interface FileRoutesByTo {
   '/learn/$enrollmentId': typeof AuthenticatedLearnEnrollmentIdRoute
   '/t/$slug': typeof TSlugIndexRoute
   '/admin/$tenantSlug/academic': typeof AuthenticatedAdminTenantSlugAcademicRoute
+  '/admin/$tenantSlug/bundles': typeof AuthenticatedAdminTenantSlugBundlesRoute
   '/admin/$tenantSlug/courses': typeof AuthenticatedAdminTenantSlugCoursesRouteWithChildren
   '/admin/$tenantSlug/settings': typeof AuthenticatedAdminTenantSlugSettingsRoute
   '/admin/$tenantSlug/students': typeof AuthenticatedAdminTenantSlugStudentsRoute
@@ -158,6 +167,7 @@ export interface FileRoutesById {
   '/_authenticated/learn/$enrollmentId': typeof AuthenticatedLearnEnrollmentIdRoute
   '/t/$slug/': typeof TSlugIndexRoute
   '/_authenticated/admin/$tenantSlug/academic': typeof AuthenticatedAdminTenantSlugAcademicRoute
+  '/_authenticated/admin/$tenantSlug/bundles': typeof AuthenticatedAdminTenantSlugBundlesRoute
   '/_authenticated/admin/$tenantSlug/courses': typeof AuthenticatedAdminTenantSlugCoursesRouteWithChildren
   '/_authenticated/admin/$tenantSlug/settings': typeof AuthenticatedAdminTenantSlugSettingsRoute
   '/_authenticated/admin/$tenantSlug/students': typeof AuthenticatedAdminTenantSlugStudentsRoute
@@ -177,6 +187,7 @@ export interface FileRouteTypes {
     | '/learn/$enrollmentId'
     | '/t/$slug/'
     | '/admin/$tenantSlug/academic'
+    | '/admin/$tenantSlug/bundles'
     | '/admin/$tenantSlug/courses'
     | '/admin/$tenantSlug/settings'
     | '/admin/$tenantSlug/students'
@@ -192,6 +203,7 @@ export interface FileRouteTypes {
     | '/learn/$enrollmentId'
     | '/t/$slug'
     | '/admin/$tenantSlug/academic'
+    | '/admin/$tenantSlug/bundles'
     | '/admin/$tenantSlug/courses'
     | '/admin/$tenantSlug/settings'
     | '/admin/$tenantSlug/students'
@@ -210,6 +222,7 @@ export interface FileRouteTypes {
     | '/_authenticated/learn/$enrollmentId'
     | '/t/$slug/'
     | '/_authenticated/admin/$tenantSlug/academic'
+    | '/_authenticated/admin/$tenantSlug/bundles'
     | '/_authenticated/admin/$tenantSlug/courses'
     | '/_authenticated/admin/$tenantSlug/settings'
     | '/_authenticated/admin/$tenantSlug/students'
@@ -325,6 +338,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminTenantSlugCoursesRouteImport
       parentRoute: typeof AuthenticatedAdminTenantSlugRoute
     }
+    '/_authenticated/admin/$tenantSlug/bundles': {
+      id: '/_authenticated/admin/$tenantSlug/bundles'
+      path: '/bundles'
+      fullPath: '/admin/$tenantSlug/bundles'
+      preLoaderRoute: typeof AuthenticatedAdminTenantSlugBundlesRouteImport
+      parentRoute: typeof AuthenticatedAdminTenantSlugRoute
+    }
     '/_authenticated/admin/$tenantSlug/academic': {
       id: '/_authenticated/admin/$tenantSlug/academic'
       path: '/academic'
@@ -359,6 +379,7 @@ const AuthenticatedAdminTenantSlugCoursesRouteWithChildren =
 
 interface AuthenticatedAdminTenantSlugRouteChildren {
   AuthenticatedAdminTenantSlugAcademicRoute: typeof AuthenticatedAdminTenantSlugAcademicRoute
+  AuthenticatedAdminTenantSlugBundlesRoute: typeof AuthenticatedAdminTenantSlugBundlesRoute
   AuthenticatedAdminTenantSlugCoursesRoute: typeof AuthenticatedAdminTenantSlugCoursesRouteWithChildren
   AuthenticatedAdminTenantSlugSettingsRoute: typeof AuthenticatedAdminTenantSlugSettingsRoute
   AuthenticatedAdminTenantSlugStudentsRoute: typeof AuthenticatedAdminTenantSlugStudentsRoute
@@ -369,6 +390,8 @@ const AuthenticatedAdminTenantSlugRouteChildren: AuthenticatedAdminTenantSlugRou
   {
     AuthenticatedAdminTenantSlugAcademicRoute:
       AuthenticatedAdminTenantSlugAcademicRoute,
+    AuthenticatedAdminTenantSlugBundlesRoute:
+      AuthenticatedAdminTenantSlugBundlesRoute,
     AuthenticatedAdminTenantSlugCoursesRoute:
       AuthenticatedAdminTenantSlugCoursesRouteWithChildren,
     AuthenticatedAdminTenantSlugSettingsRoute:

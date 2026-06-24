@@ -1,7 +1,7 @@
 import { createFileRoute, Link, Outlet, useParams } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { LayoutDashboard, BookOpen, Users, Settings, ArrowRight, GraduationCap } from "lucide-react";
+import { LayoutDashboard, BookOpen, Users, Settings, ArrowRight, GraduationCap, Package } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/admin/$tenantSlug")({
