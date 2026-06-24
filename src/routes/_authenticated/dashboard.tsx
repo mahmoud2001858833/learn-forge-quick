@@ -82,6 +82,13 @@ function Dashboard() {
           <Button variant="ghost" size="sm" onClick={signOut}>
             <LogOut className="h-4 w-4 ml-2" /> خروج
           </Button>
+          {isSuper && (
+            <Link to="/super-admin">
+              <Button variant="outline" size="sm">
+                <Shield className="h-4 w-4 ml-2" /> سوبر-أدمن
+              </Button>
+            </Link>
+          )}
         </div>
       </header>
 
