@@ -117,7 +117,10 @@ function LearnPage() {
   );
 }
 
-function LessonContent({ lesson }: { lesson: { type: string; content_url: string | null; content_text: string | null } }) {
+function LessonContent({ lesson }: { lesson: { type: string; content_url: string | null; content_text: string | null; video_asset_id?: string | null } }) {
+  if (lesson.type === "video" && lesson.video_asset_id) {
+    return <VideoPlayer assetId={lesson.video_asset_id} className="w-full aspect-video" />;
+  }
   if (lesson.type === "video" && lesson.content_url) {
     const ytMatch = lesson.content_url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([\w-]+)/);
     if (ytMatch) {
