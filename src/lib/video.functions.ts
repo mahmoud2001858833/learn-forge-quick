@@ -41,6 +41,9 @@ export const initVideoUpload = createServerFn({ method: "POST" })
     filename: z.string().min(1).max(255),
     mimeType: z.string().min(1).max(120),
     sizeBytes: z.number().int().positive(),
+    durationSeconds: z.number().int().nonnegative().optional(),
+    width: z.number().int().positive().optional(),
+    height: z.number().int().positive().optional(),
   }).parse(d))
   .handler(async ({ data, context }) => {
     await ensureTenantAdmin(context.supabase, context.userId, data.tenantId);
