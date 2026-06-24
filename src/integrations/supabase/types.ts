@@ -14,6 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
+      active_sessions: {
+        Row: {
+          created_at: string
+          device_label: string | null
+          ip: string | null
+          session_token: string
+          updated_at: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          device_label?: string | null
+          ip?: string | null
+          session_token: string
+          updated_at?: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          device_label?: string | null
+          ip?: string | null
+          session_token?: string
+          updated_at?: string
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      admin_emails: {
+        Row: {
+          created_at: string
+          email: string
+          note: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          note?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          note?: string | null
+        }
+        Relationships: []
+      }
       courses: {
         Row: {
           cover_url: string | null
@@ -203,21 +251,39 @@ export type Database = {
           avatar_url: string | null
           created_at: string
           full_name: string | null
+          global_logout_at: string
           id: string
+          phone: string | null
+          phone_country_code: string | null
+          research_consent: boolean
+          study_year: string | null
+          university_id: string | null
           updated_at: string
         }
         Insert: {
           avatar_url?: string | null
           created_at?: string
           full_name?: string | null
+          global_logout_at?: string
           id: string
+          phone?: string | null
+          phone_country_code?: string | null
+          research_consent?: boolean
+          study_year?: string | null
+          university_id?: string | null
           updated_at?: string
         }
         Update: {
           avatar_url?: string | null
           created_at?: string
           full_name?: string | null
+          global_logout_at?: string
           id?: string
+          phone?: string | null
+          phone_country_code?: string | null
+          research_consent?: boolean
+          study_year?: string | null
+          university_id?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -354,6 +420,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      bump_global_logout: { Args: { _user_id: string }; Returns: undefined }
       course_tenant: { Args: { _course_id: string }; Returns: string }
       enrollment_student: { Args: { _enrollment_id: string }; Returns: string }
       has_role: {
@@ -371,6 +438,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_admin_email: { Args: { _email: string }; Returns: boolean }
       is_tenant_member: {
         Args: { _tenant_id: string; _user_id: string }
         Returns: boolean
