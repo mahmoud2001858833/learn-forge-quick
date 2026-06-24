@@ -1,15 +1,25 @@
 import { createFileRoute, Link, Outlet, useParams } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { GraduationCap } from "lucide-react";
 import { useTenantSettings, MarqueeBar, MaintenanceGate } from "@/components/tenant/platform-bars";
 
 export const Route = createFileRoute("/t/$slug")({
   component: TenantLayout,
+  validateSearch: (s: Record<string, unknown>) => ({ ref: typeof s.ref === "string" ? s.ref : undefined }),
 });
 
 function TenantLayout() {
   const { slug } = useParams({ from: "/t/$slug" });
+  const search = Route.useSearch();
+
+  useEffect(() => {
+    if (search.ref && typeof window !== "undefined") {
+      localStorage.setItem("ref_code", search.ref.toUpperCase());
+    }
+  }, [search.ref]);
+
   const { data: tenant } = useQuery({
     queryKey: ["public-tenant", slug],
     queryFn: async () => (await supabase.from("tenants").select("*").eq("slug", slug).maybeSingle()).data,
