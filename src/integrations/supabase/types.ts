@@ -44,6 +44,47 @@ export type Database = {
         }
         Relationships: []
       }
+      activity_logs: {
+        Row: {
+          action: string
+          actor_id: string | null
+          created_at: string
+          entity_id: string | null
+          entity_type: string | null
+          id: string
+          metadata: Json
+          tenant_id: string | null
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          metadata?: Json
+          tenant_id?: string | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          metadata?: Json
+          tenant_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_logs_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       admin_emails: {
         Row: {
           created_at: string
@@ -1004,6 +1045,53 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          created_at: string
+          id: string
+          is_read: boolean
+          link: string | null
+          message: string | null
+          metadata: Json
+          tenant_id: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          link?: string | null
+          message?: string | null
+          metadata?: Json
+          tenant_id?: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          link?: string | null
+          message?: string | null
+          metadata?: Json
+          tenant_id?: string | null
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       payment_requests: {
         Row: {
           admin_notes: string | null
@@ -1897,6 +1985,18 @@ export type Database = {
       }
       bump_global_logout: { Args: { _user_id: string }; Returns: undefined }
       course_tenant: { Args: { _course_id: string }; Returns: string }
+      create_notification: {
+        Args: {
+          _link?: string
+          _message?: string
+          _metadata?: Json
+          _tenant_id: string
+          _title: string
+          _type: string
+          _user_id: string
+        }
+        Returns: string
+      }
       enrollment_student: { Args: { _enrollment_id: string }; Returns: string }
       has_role: {
         Args: {
@@ -1923,6 +2023,18 @@ export type Database = {
         Returns: boolean
       }
       issue_certificate: { Args: { _enrollment_id: string }; Returns: string }
+      log_activity: {
+        Args: {
+          _action: string
+          _actor_id: string
+          _entity_id?: string
+          _entity_type?: string
+          _metadata?: Json
+          _tenant_id: string
+        }
+        Returns: undefined
+      }
+      mark_all_notifications_read: { Args: never; Returns: number }
       recompute_course_rating: {
         Args: { _course_id: string }
         Returns: undefined
