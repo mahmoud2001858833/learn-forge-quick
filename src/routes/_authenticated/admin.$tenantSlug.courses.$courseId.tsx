@@ -86,9 +86,13 @@ function CourseEditor() {
 
   return (
     <div className="space-y-6 max-w-5xl" dir="rtl">
-      <Link to="/admin/$tenantSlug/courses" params={{ tenantSlug }} className="text-sm text-muted-foreground flex items-center gap-1 hover:text-foreground">
-        <ArrowRight className="h-3 w-3" /> العودة للدورات
-      </Link>
+      <div className="flex items-center justify-between">
+        <Link to="/admin/$tenantSlug/courses" params={{ tenantSlug }} className="text-sm text-muted-foreground flex items-center gap-1 hover:text-foreground">
+          <ArrowRight className="h-3 w-3" /> العودة للدورات
+        </Link>
+        <Link to="/admin/$tenantSlug/courses/$courseId/quizzes" params={{ tenantSlug, courseId }}
+          className="text-sm font-medium text-primary hover:underline">إدارة الاختبارات ←</Link>
+      </div>
 
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1">
