@@ -1,0 +1,13 @@
+name = "eduforge-video"
+main = "src/index.ts"
+compatibility_date = "2025-01-01"
+
+# Bind your R2 bucket here (same bucket used for multipart uploads).
+[[r2_buckets]]
+binding = "R2_BUCKET"
+bucket_name = "eduforge-videos"
+
+# Supabase env (set via `wrangler secret put SUPABASE_SERVICE_ROLE_KEY`).
+[vars]
+SUPABASE_URL = "https://hrgurvuadqymycoxbbqb.supabase.co"
+# SUPABASE_SERVICE_ROLE_KEY → set as a Worker secret, NOT in vars.
