@@ -69,15 +69,21 @@ export const setTenantStatus = createServerFn({ method: "POST" })
     });
     if (!isSuper) throw new Error("صلاحيات السوبر-أدمن مطلوبة");
 
-    const patch: Record<string, unknown> = { status: data.status };
-    if (data.status === "suspended") {
-      patch.suspended_at = new Date().toISOString();
-      patch.suspension_reason = data.reason ?? null;
-    } else if (data.status === "active") {
-      patch.suspended_at = null;
-      patch.suspension_reason = null;
-      patch.activated_at = new Date().toISOString();
-    }
+    const patch =
+      data.status === "suspended"
+        ? {
+            status: data.status,
+            suspended_at: new Date().toISOString(),
+            suspension_reason: data.reason ?? null,
+          }
+        : data.status === "active"
+          ? {
+              status: data.status,
+              suspended_at: null,
+              suspension_reason: null,
+              activated_at: new Date().toISOString(),
+            }
+          : { status: data.status };
     const { error } = await supabaseAdmin.from("tenants").update(patch).eq("id", data.tenant_id);
     if (error) throw new Error(error.message);
     return { ok: true };
