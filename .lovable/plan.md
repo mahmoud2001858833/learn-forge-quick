@@ -1,74 +1,147 @@
 
-# خطة البناء — EduForge MVP (Multi-tenant)
+# خطة EduForge الشاملة — استنساخ جسور لكل منصة
 
-## القرارات المعتمدة
-- **Multi-tenant من البداية** (كل منصة معزولة بـ `tenant_id` + RLS)
-- **Supabase خارجي** (حسابك الخاص — سيتم ربطه عبر تكامل Supabase في Lovable)
-- بدون AI / بدون بث مباشر / بدون دومينات مخصصة في هذه المرحلة
+## القرارات الأساسية
+- **النموذج**: عزل كامل لكل منصة + **سوبر أدمن مركزي** يدير المنصات والفوترة
+- **الفيديو**: Cloudflare R2 + Worker + FFmpeg WASM من البداية
+- **الدفع**: تحويل بنكي يدوي فقط (مع طبقة Provider قابلة للتوسعة لاحقاً)
+- **التنفيذ**: مرحلة بمرحلة، بعد كل مرحلة أوقف وأعرض ما تم وأطلب موافقتك للانتقال للتالية
 
-## ما قبل البدء (مطلوب منك)
-1. **ربط Supabase الخارجي**: من Lovable → Integrations → Supabase → أدخل بيانات مشروعك (URL + Service Role Key). بدون هذه الخطوة لا يمكنني إنشاء قاعدة البيانات.
-2. (لاحقاً) Stripe — لمّا نوصل لمرحلة الدفع.
-
----
-
-## نطاق المرحلة الأولى (Phase 1)
-
-### قاعدة البيانات (Supabase + RLS صارم على tenant_id)
-
-```text
-tenants            (id, slug, name, logo_url, primary_color, plan, status, owner_id)
-profiles           (id → auth.users, full_name, avatar_url)
-tenant_members     (tenant_id, user_id, role: owner|instructor|student)
-user_roles         (user_id, role: super_admin)  -- منفصل للأمان
-courses            (id, tenant_id, instructor_id, title, slug, description, price, cover_url, status)
-sections           (id, course_id, title, order_index)
-lessons            (id, section_id, title, type: video|text|pdf, content_url, duration, order_index)
-enrollments        (id, tenant_id, course_id, student_id, progress, completed_at)
-lesson_progress    (enrollment_id, lesson_id, watched_seconds, completed)
-```
-
-كل جدول له `tenant_id` + RLS policy تتحقق عبر `has_tenant_access(auth.uid(), tenant_id)` (دالة SECURITY DEFINER).
-
-### الواجهات (Routes)
-
-```text
-/                            صفحة EduForge الرئيسية (تسويقية)
-/auth                        تسجيل دخول/إنشاء حساب
-/onboarding                  إنشاء أول منصة (slug, name, logo, لون)
-/t/$slug                     الواجهة العامة للمنصة (متجر الدورات)
-/t/$slug/courses/$courseSlug صفحة الدورة + زر التسجيل
-/_authenticated/
-  dashboard                  لوحة الطالب (دوراتي + التقدم)
-  learn/$enrollmentId        مشغل الفيديو + قائمة الدروس
-  admin/$tenantSlug/
-    overview                 إحصائيات سريعة
-    courses                  إدارة الدورات + الفصول + الدروس (CRUD)
-    students                 قائمة الطلاب
-    settings                 إعدادات المنصة (هوية بصرية)
-```
-
-### الأدوار في Phase 1
-- **Tenant Owner**: ينشئ المنصة، يدير الدورات والطلاب
-- **Student**: يسجل، يتصفح، يلتحق بدورة (مجاناً الآن)، يشاهد، يتتبع تقدمه
-- (Super Admin و Instructor منفصل — يُؤجلان لـ Phase 2)
-
-### الميزات المؤجلة لمراحل قادمة
-| ميزة | المرحلة |
-|------|---------|
-| Stripe + الدفع | Phase 1.5 (بعد نجاح الـ MVP الأساسي) |
-| دومينات مخصصة | Phase 2 |
-| AI Tutor + التفريغ | Phase 2 |
-| بث مباشر + اختبارات | Phase 3 |
-| Multi-instructor + Affiliate | Phase 3 |
+## المبدأ المعماري
+كل ميزة تُبنى مرة واحدة على مستوى الكود، وتُعزل بيانياً عبر `tenant_id` في كل جدول، مع RLS صارم يضمن أن كل منصة ترى بياناتها فقط. السوبر-أدمن يتجاوز RLS عبر دوال `SECURITY DEFINER` محمية بـ `has_role(_, 'super_admin')`.
 
 ---
 
-## تقدير الكريدتس لهذه المرحلة
-**400–600 credit** تقريباً (multi-tenant من البداية أكلف من single-tenant بـ ~30%).
+## المراحل (13 مرحلة)
 
-## الخطوة التالية بعد موافقتك
-1. تربط Supabase الخارجي.
-2. أبدأ بإنشاء: schema + RLS → صفحة auth → onboarding → dashboard المنصة → إدارة الدورات → مشغل الفيديو → الواجهة العامة.
+### المرحلة 1 — المصادقة الكاملة (Auth Core)
+- تسجيل بالبريد + Google OAuth (عبر Lovable broker)
+- OTP إجباري قبل إنشاء الحساب (Edge Function + Resend)
+- حقل رقم الهاتف الإجباري مع رمز الدولة
+- استرجاع كلمة المرور عبر OTP (3 خطوات: طلب → تحقق → تعيين جديد)
+- جلسة جهاز واحد فقط (جدول `active_sessions` + Realtime)
+- تسجيل خروج عالمي عند تغيير كلمة المرور
+- كود رئيسي `112233` لتجاوز OTP (للأدمن فقط، عبر سيرفر)
+- ملف شخصي: السنة الدراسية، موافقة البحث، الجامعة
+- الأدوار في `user_roles` المنفصل: `super_admin`, `tenant_owner`, `instructor`, `student`
 
-**هل تعتمد هذه الخطة لأبدأ التنفيذ؟**
+### المرحلة 2 — Multi-Tenant Core + لوحة السوبر أدمن
+- إنشاء المنصة (Tenant onboarding wizard)
+- توجيه `/t/$slug` + نطاقات فرعية لاحقاً
+- لوحة السوبر أدمن: قائمة المنصات، تفعيل/تعطيل، إحصائيات شاملة
+- إعدادات منصة عامة (`platform_settings`) عبر Realtime لكل tenant
+- وضع الصيانة (يتجاوزه الأدمن)
+- شريط إعلانات marquee
+- إدارة Secrets لكل منصة
+
+### المرحلة 3 — إدارة الأكاديمي (Universities/Colleges/Majors)
+- جداول `universities`, `colleges`, `majors` (مع `tenant_id`)
+- قوائم متسلسلة (cascading dropdowns)
+- صفحة لكل جامعة مع شعار
+- فلتر جامعات على الصفحة الرئيسية
+- لوحة أدمن للإدارة الكاملة
+
+### المرحلة 4 — هيكل الكورسات
+- `courses` > `sections` > `lessons` (موجود جزئياً، توسعة)
+- موافقة الأدمن (Pending → Approved/Rejected) مع سجل
+- شارات الدروس (فيديو/ملف/كويز) — أنواع متعددة
+- `is_preview` لمعاينة مجانية
+- تسجيل تلقائي مجاني للكورسات بسعر 0
+- صفحة منهج عامة للزوار (SSR + SEO)
+- حزم كورسات (Bundles)
+- مولّد QR للمشاركة
+- توليد صورة الكورس بـ AI (Lovable AI Gateway)
+- مولّد إعلانات (6 ستايلات + QR)
+
+### المرحلة 5 — البنية التحتية للفيديو (R2 + Worker)
+- إعداد Cloudflare R2 bucket + Worker (سأطلب منك المفاتيح)
+- رفع متعدد الأجزاء 5MB/جزء عبر Worker (presigned URLs)
+- محرر فيديو بالمتصفح (FFmpeg WASM في `public/wasm/`)
+- جودات متعددة (transcoding عبر Worker queue)
+- جدول `video_assets` + `video_renditions`
+
+### المرحلة 6 — مشغل الفيديو المحمي
+- علامة مائية ديناميكية (اسم المستخدم + IP + وقت)
+- منع تسجيل الشاشة (Page Visibility API + Picture-in-Picture lock)
+- تسجيل محاولات الالتقاط في `screen_capture_attempts`
+- اختصارات لوحة المفاتيح + دعم اللمس
+- ملاحظات بطابع زمني (`lesson_notes`)
+- إحصائيات المشاهدة (إجمالي، نسبة إكمال، اتجاه يومي)
+- مساعد AI لكل درس مبني على نسخ الصوت (Whisper عبر AI Gateway)
+
+### المرحلة 7 — الكويزات والمهام
+- بنك أسئلة مركزي بالوسوم (`question_bank`, `question_tags`)
+- كويزات عشوائية من البنك
+- تقييم الإجابات على السيرفر (Server Function، ليس Edge)
+- رفع PDF لتوليد كويز (AI Gateway)
+- الواجبات (`assignments`, `assignment_submissions`)
+
+### المرحلة 8 — المدفوعات والمحاسبة
+- تحويل بنكي يدوي + رفع إيصال (Storage bucket)
+- طبقة `PaymentProvider` مجردة (Stripe/ClickPay/AlinmaPay لاحقاً)
+- تقسيط مرن (30 يوم بين الأقساط، `payment_plans`)
+- فتح الفصول تدريجياً حسب `paid_percentage`
+- كوبونات (نسبة/ثابت، صلاحية، حد استخدام)
+- دفتر محاسبة شامل + لوحة مالية
+- طلبات سحب من المعلمين + Payouts يدوية
+- عمولة لكل معلم (نسبة افتراضية قابلة للتعديل)
+- استرداد تلقائي يلغي التسجيل
+- إعادة تعيين مالية يدوية
+
+### المرحلة 9 — التحفيز (Gamification)
+- نقاط (`user_points`, `point_events`)
+- لوحة متصدرين (Materialized view + Realtime)
+- شارات إنجاز (`achievements`, `user_achievements`)
+- إحالة (`referrals`) مع كود فريد
+- شهادات إتمام + صفحة تحقق عامة (`/verify/$certId`)
+
+### المرحلة 10 — التواصل والشات
+- شات مباشر لكل كورس (Realtime channels)
+- دعم فني مع الأدمن
+- صور بالشات (Storage RLS بمسار `tenantId/courseId/userId/`)
+- مساعد AI للدعم (Smart Guide)
+- محادثات طلبات الكورسات المخصصة
+
+### المرحلة 11 — طلبات الكورسات المخصصة
+- إرسال طلب من الطالب مع مرفقات
+- تحليل الملفات بـ AI
+- تنزيل ملفات الطلب كـ ZIP
+- لوحة Kanban للأدمن
+- تتبع المتأخرات (SLA)
+
+### المرحلة 12 — البريد والإشعارات
+- Resend عبر connector + قالب `noreply@<tenant-domain>`
+- إشعارات داخلية + بريد (`notifications` table + Realtime)
+- محفزات تلقائية (دفع، تسجيل، رفع كورس...)
+- قوالب بريد قابلة للتخصيص لكل منصة
+
+### المرحلة 13 — UX + SEO + الأمن النهائي
+- ثيم داكن أخضر/ذهبي + glassmorphism (CSS variables)
+- RTL كامل (عربي/إنجليزي) — i18n
+- بحث عام (Global Search عبر `pg_trgm`)
+- Onboarding wizard + نافذة ترحيب
+- خطة دراسية وتقويم للطالب
+- JSON-LD + Meta + Sitemap لكل منصة
+- مراجعة RLS شاملة + اختبارات
+- تحقق توقيع Webhook صارم
+- تنظيف أسماء الملفات (regex)
+- CSV بـ UTF-8 BOM
+
+---
+
+## تفاصيل تقنية مهمة
+- **Stack**: TanStack Start + Supabase (موجود) + Cloudflare R2/Worker + Resend
+- **RLS**: كل جدول له `tenant_id` + policy عبر `is_tenant_member(auth.uid(), tenant_id)`
+- **السوبر أدمن**: دوال `SECURITY DEFINER` تتحقق `has_role(auth.uid(), 'super_admin')`
+- **الأسرار**: R2 keys, Resend, Cloudflare API tokens — عبر `add_secret`
+- **العملة الافتراضية**: قابلة للتعديل لكل منصة (`tenants.currency`)
+
+## آلية العمل
+بعد موافقتك على هذه الخطة، أبدأ بـ **المرحلة 1 فقط**. عند الانتهاء، أكتب لك:
+1. ما تم بناؤه (جداول، ملفات، صفحات)
+2. ما يحتاج منك (مفاتيح، إعدادات Supabase Auth، تفعيل Google)
+3. طلب الموافقة على المرحلة 2
+
+ثم أنتقل للمرحلة التالية فقط بعد موافقتك.
+
+**هل أبدأ بالمرحلة 1 (المصادقة الكاملة)؟**
