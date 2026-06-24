@@ -18,6 +18,7 @@ function CourseDetail() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const qc = useQueryClient();
+  const [paymentOpen, setPaymentOpen] = useState(false);
 
   const { data: tenant } = useQuery({
     queryKey: ["public-tenant", slug],
