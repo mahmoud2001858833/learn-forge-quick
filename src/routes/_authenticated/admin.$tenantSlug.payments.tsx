@@ -61,7 +61,7 @@ function PaymentsAdminPage() {
     mutationFn: async () => {
       if (!reviewing) return;
       const rpc = reviewing.action === "approve" ? "approve_payment_request" : "reject_payment_request";
-      const { error } = await supabase.rpc(rpc, { _req_id: reviewing.id, _notes: adminNotes || null });
+      const { error } = await supabase.rpc(rpc, { _req_id: reviewing.id, _notes: adminNotes || undefined });
       if (error) throw error;
     },
     onSuccess: () => {
