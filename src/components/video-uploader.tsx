@@ -27,14 +27,39 @@ export function VideoUploader({ tenantId, onUploaded }: Props) {
   const completeFn = useServerFn(completeVideoUpload);
   const abortFn = useServerFn(abortVideoUpload);
 
+  async function probeMeta(file: File): Promise<{ durationSeconds?: number; width?: number; height?: number }> {
+    return new Promise((resolve) => {
+      const url = URL.createObjectURL(file);
+      const v = document.createElement("video");
+      v.preload = "metadata";
+      v.muted = true;
+      v.src = url;
+      const cleanup = () => { URL.revokeObjectURL(url); };
+      v.onloadedmetadata = () => {
+        const out = {
+          durationSeconds: Number.isFinite(v.duration) ? Math.round(v.duration) : undefined,
+          width: v.videoWidth || undefined,
+          height: v.videoHeight || undefined,
+        };
+        cleanup();
+        resolve(out);
+      };
+      v.onerror = () => { cleanup(); resolve({}); };
+    });
+  }
+
   async function handleFile(file: File) {
     setUploading(true);
     setProgress(0);
     setFilename(file.name);
     aborted.current = false;
     try {
+      const meta = await probeMeta(file);
       const { assetId } = await initFn({
-        data: { tenantId, filename: file.name, mimeType: file.type || "video/mp4", sizeBytes: file.size },
+        data: {
+          tenantId, filename: file.name, mimeType: file.type || "video/mp4", sizeBytes: file.size,
+          ...meta,
+        },
       });
       currentAsset.current = assetId;
 

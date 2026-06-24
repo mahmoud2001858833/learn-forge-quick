@@ -15,8 +15,9 @@ import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Plus, Trash2, ArrowRight, Sparkles, Send, QrCode } from "lucide-react";
+import { Plus, Trash2, ArrowRight, Sparkles, Send, QrCode, Eye, EyeOff } from "lucide-react";
 import { CourseCard } from "@/components/course-card";
+import { VideoUploader } from "@/components/video-uploader";
 
 export const Route = createFileRoute("/_authenticated/admin/$tenantSlug/courses/$courseId")({
   component: CourseEditor,
@@ -190,7 +191,7 @@ function CourseEditor() {
       </div>
 
       <div className="space-y-4">
-        {sections?.map((s) => <SectionCard key={s.id} section={s} />)}
+        {sections?.map((s) => <SectionCard key={s.id} section={s} tenantId={course.tenant_id} />)}
       </div>
     </div>
   );
@@ -222,20 +223,27 @@ function NewSectionDialog({ courseId }: { courseId: string }) {
   );
 }
 
-type SectionWithLessons = { id: string; title: string; lessons: Array<{ id: string; title: string; type: string; is_preview: boolean; content_url: string | null }> };
+type SectionWithLessons = { id: string; title: string; lessons: Array<{ id: string; title: string; type: string; is_preview: boolean; content_url: string | null; video_asset_id: string | null }> };
 
-function SectionCard({ section }: { section: SectionWithLessons }) {
+function SectionCard({ section, tenantId }: { section: SectionWithLessons; tenantId: string }) {
   const qc = useQueryClient();
   const del = useMutation({
     mutationFn: async () => { const { error } = await supabase.from("sections").delete().eq("id", section.id); if (error) throw error; },
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["course-sections"] }); toast.success("حُذف"); },
+  });
+  const togglePreview = useMutation({
+    mutationFn: async (l: { id: string; is_preview: boolean }) => {
+      const { error } = await supabase.from("lessons").update({ is_preview: !l.is_preview }).eq("id", l.id);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["course-sections"] }),
   });
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-base">{section.title}</CardTitle>
         <div className="flex gap-2">
-          <NewLessonDialog sectionId={section.id} />
+          <NewLessonDialog sectionId={section.id} tenantId={tenantId} />
           <Button variant="ghost" size="sm" onClick={() => del.mutate()}><Trash2 className="h-4 w-4" /></Button>
         </div>
       </CardHeader>
@@ -243,8 +251,11 @@ function SectionCard({ section }: { section: SectionWithLessons }) {
         {section.lessons.length === 0 && <p className="text-sm text-muted-foreground">لا توجد دروس</p>}
         <ul className="space-y-2">
           {section.lessons.map((l) => (
-            <li key={l.id} className="flex items-center justify-between p-2 bg-muted/40 rounded text-sm">
-              <span>{l.title} {l.is_preview && <span className="text-xs text-primary">(معاينة مجانية)</span>}</span>
+            <li key={l.id} className="flex items-center justify-between p-2 bg-muted/40 rounded text-sm gap-2">
+              <span className="flex-1 truncate">{l.title} {l.is_preview && <span className="text-xs text-primary">(معاينة مجانية)</span>}</span>
+              <Button variant="ghost" size="sm" title={l.is_preview ? "إلغاء المعاينة" : "تفعيل المعاينة"} onClick={() => togglePreview.mutate({ id: l.id, is_preview: l.is_preview })}>
+                {l.is_preview ? <Eye className="h-3 w-3" /> : <EyeOff className="h-3 w-3" />}
+              </Button>
               <DeleteLessonBtn id={l.id} />
             </li>
           ))}
@@ -263,7 +274,7 @@ function DeleteLessonBtn({ id }: { id: string }) {
   return <Button variant="ghost" size="sm" onClick={() => del.mutate()}><Trash2 className="h-3 w-3" /></Button>;
 }
 
-function NewLessonDialog({ sectionId }: { sectionId: string }) {
+function NewLessonDialog({ sectionId, tenantId }: { sectionId: string; tenantId: string }) {
   const qc = useQueryClient();
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
@@ -271,20 +282,26 @@ function NewLessonDialog({ sectionId }: { sectionId: string }) {
   const [url, setUrl] = useState("");
   const [text, setText] = useState("");
   const [isPreview, setIsPreview] = useState(false);
+  const [videoAssetId, setVideoAssetId] = useState<string | null>(null);
+  const [videoMode, setVideoMode] = useState<"upload" | "url">("upload");
 
   const create = useMutation({
     mutationFn: async () => {
+      if (type === "video" && videoMode === "upload" && !videoAssetId) {
+        throw new Error("الرجاء رفع فيديو أولاً");
+      }
       const { error } = await supabase.from("lessons").insert({
         section_id: sectionId, title, type,
-        content_url: type !== "text" ? url : null,
+        content_url: type === "video" && videoMode === "upload" ? null : (type !== "text" ? url : null),
         content_text: type === "text" ? text : null,
         is_preview: isPreview,
+        video_asset_id: type === "video" && videoMode === "upload" ? videoAssetId : null,
       });
       if (error) throw error;
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["course-sections"] });
-      setOpen(false); setTitle(""); setUrl(""); setText(""); setIsPreview(false);
+      setOpen(false); setTitle(""); setUrl(""); setText(""); setIsPreview(false); setVideoAssetId(null);
       toast.success("تمت إضافة الدرس");
     },
     onError: (e: Error) => toast.error(e.message),
@@ -293,7 +310,7 @@ function NewLessonDialog({ sectionId }: { sectionId: string }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild><Button size="sm" variant="outline"><Plus className="h-3 w-3 ml-1" /> درس</Button></DialogTrigger>
-      <DialogContent dir="rtl">
+      <DialogContent dir="rtl" className="max-w-lg">
         <DialogHeader><DialogTitle>درس جديد</DialogTitle></DialogHeader>
         <form onSubmit={(e) => { e.preventDefault(); create.mutate(); }} className="space-y-4">
           <div><Label>عنوان الدرس</Label><Input required value={title} onChange={(e) => setTitle(e.target.value)} /></div>
@@ -308,7 +325,22 @@ function NewLessonDialog({ sectionId }: { sectionId: string }) {
               </SelectContent>
             </Select>
           </div>
-          {type !== "text" ? (
+          {type === "video" ? (
+            <div className="space-y-2">
+              <div className="flex gap-2 text-xs">
+                <Button type="button" size="sm" variant={videoMode === "upload" ? "default" : "outline"} onClick={() => setVideoMode("upload")}>رفع إلى R2</Button>
+                <Button type="button" size="sm" variant={videoMode === "url" ? "default" : "outline"} onClick={() => setVideoMode("url")}>رابط خارجي / YouTube</Button>
+              </div>
+              {videoMode === "upload" ? (
+                <>
+                  <VideoUploader tenantId={tenantId} onUploaded={(id) => { setVideoAssetId(id); toast.success("الفيديو جاهز"); }} />
+                  {videoAssetId && <p className="text-xs text-green-600">✓ تم الرفع</p>}
+                </>
+              ) : (
+                <Input required value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://..." />
+              )}
+            </div>
+          ) : type === "pdf" ? (
             <div><Label>الرابط</Label><Input required value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://..." /></div>
           ) : (
             <div><Label>المحتوى</Label><Textarea rows={5} value={text} onChange={(e) => setText(e.target.value)} /></div>
