@@ -1,4 +1,5 @@
 import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
+import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -6,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { PlayCircle, FileText, FileType, Lock } from "lucide-react";
 import { toast } from "sonner";
+import { PaymentRequestDialog } from "@/components/payment-request-dialog";
 
 export const Route = createFileRoute("/t/$slug/courses/$courseSlug")({
   component: CourseDetail,
@@ -16,6 +18,7 @@ function CourseDetail() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const qc = useQueryClient();
+  const [paymentOpen, setPaymentOpen] = useState(false);
 
   const { data: tenant } = useQuery({
     queryKey: ["public-tenant", slug],
@@ -110,15 +113,31 @@ function CourseDetail() {
               </div>
               {enrollment ? (
                 <Button className="w-full" onClick={() => navigate({ to: "/learn/$enrollmentId", params: { enrollmentId: enrollment.id } })}>متابعة التعلم</Button>
-              ) : (
+              ) : course.is_free || course.price === 0 ? (
                 <Button className="w-full" onClick={() => enroll.mutate()} disabled={enroll.isPending} style={{ background: tenant.primary_color }}>
-                  {course.price > 0 ? "اشترك الآن" : "سجل مجاناً"}
+                  سجل مجاناً
+                </Button>
+              ) : (
+                <Button className="w-full" onClick={() => {
+                  if (!user) { navigate({ to: "/auth" }); return; }
+                  setPaymentOpen(true);
+                }} style={{ background: tenant.primary_color }}>
+                  اشترك الآن
                 </Button>
               )}
             </CardContent>
           </Card>
         </aside>
       </div>
+      <PaymentRequestDialog
+        open={paymentOpen}
+        onOpenChange={setPaymentOpen}
+        tenantId={tenant.id}
+        amount={course.price}
+        currency={tenant.currency ?? "ر.س"}
+        target={{ type: "course", courseId: course.id }}
+        onSuccess={() => navigate({ to: "/my-payments" })}
+      />
     </main>
   );
 }
