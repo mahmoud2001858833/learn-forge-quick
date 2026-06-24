@@ -498,6 +498,7 @@ export type Database = {
           paid_amount: number
           progress: number
           source: string
+          status: string
           student_id: string
           tenant_id: string
           total_amount: number
@@ -510,6 +511,7 @@ export type Database = {
           paid_amount?: number
           progress?: number
           source?: string
+          status?: string
           student_id: string
           tenant_id: string
           total_amount?: number
@@ -522,6 +524,7 @@ export type Database = {
           paid_amount?: number
           progress?: number
           source?: string
+          status?: string
           student_id?: string
           tenant_id?: string
           total_amount?: number
