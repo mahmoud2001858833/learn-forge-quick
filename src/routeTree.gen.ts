@@ -18,6 +18,7 @@ import { Route as TSlugIndexRouteImport } from './routes/t.$slug.index'
 import { Route as AuthenticatedLearnEnrollmentIdRouteImport } from './routes/_authenticated/learn.$enrollmentId'
 import { Route as AuthenticatedAdminTenantSlugRouteImport } from './routes/_authenticated/admin.$tenantSlug'
 import { Route as AuthenticatedAdminTenantSlugIndexRouteImport } from './routes/_authenticated/admin.$tenantSlug.index'
+import { Route as TSlugCoursesCourseSlugRouteImport } from './routes/t.$slug.courses.$courseSlug'
 import { Route as AuthenticatedAdminTenantSlugStudentsRouteImport } from './routes/_authenticated/admin.$tenantSlug.students'
 import { Route as AuthenticatedAdminTenantSlugSettingsRouteImport } from './routes/_authenticated/admin.$tenantSlug.settings'
 import { Route as AuthenticatedAdminTenantSlugCoursesRouteImport } from './routes/_authenticated/admin.$tenantSlug.courses'
@@ -70,6 +71,11 @@ const AuthenticatedAdminTenantSlugIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedAdminTenantSlugRoute,
   } as any)
+const TSlugCoursesCourseSlugRoute = TSlugCoursesCourseSlugRouteImport.update({
+  id: '/courses/$courseSlug',
+  path: '/courses/$courseSlug',
+  getParentRoute: () => TSlugRoute,
+} as any)
 const AuthenticatedAdminTenantSlugStudentsRoute =
   AuthenticatedAdminTenantSlugStudentsRouteImport.update({
     id: '/students',
@@ -106,6 +112,7 @@ export interface FileRoutesByFullPath {
   '/admin/$tenantSlug/courses': typeof AuthenticatedAdminTenantSlugCoursesRouteWithChildren
   '/admin/$tenantSlug/settings': typeof AuthenticatedAdminTenantSlugSettingsRoute
   '/admin/$tenantSlug/students': typeof AuthenticatedAdminTenantSlugStudentsRoute
+  '/t/$slug/courses/$courseSlug': typeof TSlugCoursesCourseSlugRoute
   '/admin/$tenantSlug/': typeof AuthenticatedAdminTenantSlugIndexRoute
   '/admin/$tenantSlug/courses/$courseId': typeof AuthenticatedAdminTenantSlugCoursesCourseIdRoute
 }
@@ -118,6 +125,7 @@ export interface FileRoutesByTo {
   '/admin/$tenantSlug/courses': typeof AuthenticatedAdminTenantSlugCoursesRouteWithChildren
   '/admin/$tenantSlug/settings': typeof AuthenticatedAdminTenantSlugSettingsRoute
   '/admin/$tenantSlug/students': typeof AuthenticatedAdminTenantSlugStudentsRoute
+  '/t/$slug/courses/$courseSlug': typeof TSlugCoursesCourseSlugRoute
   '/admin/$tenantSlug': typeof AuthenticatedAdminTenantSlugIndexRoute
   '/admin/$tenantSlug/courses/$courseId': typeof AuthenticatedAdminTenantSlugCoursesCourseIdRoute
 }
@@ -134,6 +142,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/$tenantSlug/courses': typeof AuthenticatedAdminTenantSlugCoursesRouteWithChildren
   '/_authenticated/admin/$tenantSlug/settings': typeof AuthenticatedAdminTenantSlugSettingsRoute
   '/_authenticated/admin/$tenantSlug/students': typeof AuthenticatedAdminTenantSlugStudentsRoute
+  '/t/$slug/courses/$courseSlug': typeof TSlugCoursesCourseSlugRoute
   '/_authenticated/admin/$tenantSlug/': typeof AuthenticatedAdminTenantSlugIndexRoute
   '/_authenticated/admin/$tenantSlug/courses/$courseId': typeof AuthenticatedAdminTenantSlugCoursesCourseIdRoute
 }
@@ -150,6 +159,7 @@ export interface FileRouteTypes {
     | '/admin/$tenantSlug/courses'
     | '/admin/$tenantSlug/settings'
     | '/admin/$tenantSlug/students'
+    | '/t/$slug/courses/$courseSlug'
     | '/admin/$tenantSlug/'
     | '/admin/$tenantSlug/courses/$courseId'
   fileRoutesByTo: FileRoutesByTo
@@ -162,6 +172,7 @@ export interface FileRouteTypes {
     | '/admin/$tenantSlug/courses'
     | '/admin/$tenantSlug/settings'
     | '/admin/$tenantSlug/students'
+    | '/t/$slug/courses/$courseSlug'
     | '/admin/$tenantSlug'
     | '/admin/$tenantSlug/courses/$courseId'
   id:
@@ -177,6 +188,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/$tenantSlug/courses'
     | '/_authenticated/admin/$tenantSlug/settings'
     | '/_authenticated/admin/$tenantSlug/students'
+    | '/t/$slug/courses/$courseSlug'
     | '/_authenticated/admin/$tenantSlug/'
     | '/_authenticated/admin/$tenantSlug/courses/$courseId'
   fileRoutesById: FileRoutesById
@@ -252,6 +264,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/$tenantSlug/'
       preLoaderRoute: typeof AuthenticatedAdminTenantSlugIndexRouteImport
       parentRoute: typeof AuthenticatedAdminTenantSlugRoute
+    }
+    '/t/$slug/courses/$courseSlug': {
+      id: '/t/$slug/courses/$courseSlug'
+      path: '/courses/$courseSlug'
+      fullPath: '/t/$slug/courses/$courseSlug'
+      preLoaderRoute: typeof TSlugCoursesCourseSlugRouteImport
+      parentRoute: typeof TSlugRoute
     }
     '/_authenticated/admin/$tenantSlug/students': {
       id: '/_authenticated/admin/$tenantSlug/students'
@@ -341,10 +360,12 @@ const AuthenticatedRouteRouteWithChildren =
 
 interface TSlugRouteChildren {
   TSlugIndexRoute: typeof TSlugIndexRoute
+  TSlugCoursesCourseSlugRoute: typeof TSlugCoursesCourseSlugRoute
 }
 
 const TSlugRouteChildren: TSlugRouteChildren = {
   TSlugIndexRoute: TSlugIndexRoute,
+  TSlugCoursesCourseSlugRoute: TSlugCoursesCourseSlugRoute,
 }
 
 const TSlugRouteWithChildren = TSlugRoute._addFileChildren(TSlugRouteChildren)
