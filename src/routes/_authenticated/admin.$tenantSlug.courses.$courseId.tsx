@@ -42,7 +42,7 @@ function CourseEditor() {
   });
 
   const update = useMutation({
-    mutationFn: async (patch: Record<string, unknown>) => {
+    mutationFn: async (patch: Partial<Record<string, string | number | boolean | null>>) => {
       const { error } = await supabase.from("courses").update(patch).eq("id", courseId);
       if (error) throw error;
     },
