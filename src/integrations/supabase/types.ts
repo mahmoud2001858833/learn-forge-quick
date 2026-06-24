@@ -196,6 +196,127 @@ export type Database = {
           },
         ]
       }
+      coupon_redemptions: {
+        Row: {
+          coupon_id: string
+          created_at: string
+          discount_amount: number
+          id: string
+          payment_request_id: string | null
+          user_id: string
+        }
+        Insert: {
+          coupon_id: string
+          created_at?: string
+          discount_amount: number
+          id?: string
+          payment_request_id?: string | null
+          user_id: string
+        }
+        Update: {
+          coupon_id?: string
+          created_at?: string
+          discount_amount?: number
+          id?: string
+          payment_request_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coupon_redemptions_coupon_id_fkey"
+            columns: ["coupon_id"]
+            isOneToOne: false
+            referencedRelation: "coupons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "coupon_redemptions_payment_request_id_fkey"
+            columns: ["payment_request_id"]
+            isOneToOne: false
+            referencedRelation: "payment_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      coupons: {
+        Row: {
+          bundle_id: string | null
+          code: string
+          course_id: string | null
+          created_at: string
+          expires_at: string | null
+          id: string
+          is_active: boolean
+          max_uses: number | null
+          min_amount: number
+          per_user_limit: number
+          scope: Database["public"]["Enums"]["coupon_scope"]
+          tenant_id: string
+          type: Database["public"]["Enums"]["coupon_type"]
+          updated_at: string
+          used_count: number
+          value: number
+        }
+        Insert: {
+          bundle_id?: string | null
+          code: string
+          course_id?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          max_uses?: number | null
+          min_amount?: number
+          per_user_limit?: number
+          scope?: Database["public"]["Enums"]["coupon_scope"]
+          tenant_id: string
+          type?: Database["public"]["Enums"]["coupon_type"]
+          updated_at?: string
+          used_count?: number
+          value: number
+        }
+        Update: {
+          bundle_id?: string | null
+          code?: string
+          course_id?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          max_uses?: number | null
+          min_amount?: number
+          per_user_limit?: number
+          scope?: Database["public"]["Enums"]["coupon_scope"]
+          tenant_id?: string
+          type?: Database["public"]["Enums"]["coupon_type"]
+          updated_at?: string
+          used_count?: number
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coupons_bundle_id_fkey"
+            columns: ["bundle_id"]
+            isOneToOne: false
+            referencedRelation: "course_bundles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "coupons_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "coupons_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       course_bundles: {
         Row: {
           cover_url: string | null
@@ -247,6 +368,7 @@ export type Database = {
         Row: {
           ad_style: number
           ai_image_prompt: string | null
+          allow_installments: boolean
           approved_at: string | null
           approved_by: string | null
           college_id: string | null
@@ -257,6 +379,7 @@ export type Database = {
           instructor_id: string
           is_free: boolean
           major_id: string | null
+          min_installment_amount: number | null
           price: number
           qr_code_url: string | null
           rejection_reason: string | null
@@ -276,6 +399,7 @@ export type Database = {
         Insert: {
           ad_style?: number
           ai_image_prompt?: string | null
+          allow_installments?: boolean
           approved_at?: string | null
           approved_by?: string | null
           college_id?: string | null
@@ -286,6 +410,7 @@ export type Database = {
           instructor_id: string
           is_free?: boolean
           major_id?: string | null
+          min_installment_amount?: number | null
           price?: number
           qr_code_url?: string | null
           rejection_reason?: string | null
@@ -305,6 +430,7 @@ export type Database = {
         Update: {
           ad_style?: number
           ai_image_prompt?: string | null
+          allow_installments?: boolean
           approved_at?: string | null
           approved_by?: string | null
           college_id?: string | null
@@ -315,6 +441,7 @@ export type Database = {
           instructor_id?: string
           is_free?: boolean
           major_id?: string | null
+          min_installment_amount?: number | null
           price?: number
           qr_code_url?: string | null
           rejection_reason?: string | null
@@ -368,30 +495,36 @@ export type Database = {
           course_id: string
           created_at: string
           id: string
+          paid_amount: number
           progress: number
           source: string
           student_id: string
           tenant_id: string
+          total_amount: number
         }
         Insert: {
           completed_at?: string | null
           course_id: string
           created_at?: string
           id?: string
+          paid_amount?: number
           progress?: number
           source?: string
           student_id: string
           tenant_id: string
+          total_amount?: number
         }
         Update: {
           completed_at?: string | null
           course_id?: string
           created_at?: string
           id?: string
+          paid_amount?: number
           progress?: number
           source?: string
           student_id?: string
           tenant_id?: string
+          total_amount?: number
         }
         Relationships: [
           {
@@ -582,11 +715,16 @@ export type Database = {
           amount: number
           bank_account_id: string | null
           bundle_id: string | null
+          coupon_id: string | null
           course_id: string | null
           created_at: string
           currency: string
+          discount_amount: number
+          enrollment_id: string | null
           id: string
+          original_amount: number | null
           receipt_url: string | null
+          referral_code_used: string | null
           reviewed_at: string | null
           reviewed_by: string | null
           status: Database["public"]["Enums"]["payment_request_status"]
@@ -600,11 +738,16 @@ export type Database = {
           amount: number
           bank_account_id?: string | null
           bundle_id?: string | null
+          coupon_id?: string | null
           course_id?: string | null
           created_at?: string
           currency?: string
+          discount_amount?: number
+          enrollment_id?: string | null
           id?: string
+          original_amount?: number | null
           receipt_url?: string | null
+          referral_code_used?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
           status?: Database["public"]["Enums"]["payment_request_status"]
@@ -618,11 +761,16 @@ export type Database = {
           amount?: number
           bank_account_id?: string | null
           bundle_id?: string | null
+          coupon_id?: string | null
           course_id?: string | null
           created_at?: string
           currency?: string
+          discount_amount?: number
+          enrollment_id?: string | null
           id?: string
+          original_amount?: number | null
           receipt_url?: string | null
+          referral_code_used?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
           status?: Database["public"]["Enums"]["payment_request_status"]
@@ -647,10 +795,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "payment_requests_coupon_id_fkey"
+            columns: ["coupon_id"]
+            isOneToOne: false
+            referencedRelation: "coupons"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "payment_requests_course_id_fkey"
             columns: ["course_id"]
             isOneToOne: false
             referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payment_requests_enrollment_id_fkey"
+            columns: ["enrollment_id"]
+            isOneToOne: false
+            referencedRelation: "enrollments"
             referencedColumns: ["id"]
           },
           {
@@ -668,6 +830,7 @@ export type Database = {
           created_at: string
           custom_settings: Json
           default_commission_pct: number
+          enable_referrals: boolean
           id: string
           maintenance_message: string | null
           maintenance_mode: boolean
@@ -676,6 +839,7 @@ export type Database = {
           marquee_text: string | null
           playback_token_secret: string
           r2_public_worker_url: string | null
+          referral_commission_percent: number
           tenant_id: string
           updated_at: string
         }
@@ -684,6 +848,7 @@ export type Database = {
           created_at?: string
           custom_settings?: Json
           default_commission_pct?: number
+          enable_referrals?: boolean
           id?: string
           maintenance_message?: string | null
           maintenance_mode?: boolean
@@ -692,6 +857,7 @@ export type Database = {
           marquee_text?: string | null
           playback_token_secret?: string
           r2_public_worker_url?: string | null
+          referral_commission_percent?: number
           tenant_id: string
           updated_at?: string
         }
@@ -700,6 +866,7 @@ export type Database = {
           created_at?: string
           custom_settings?: Json
           default_commission_pct?: number
+          enable_referrals?: boolean
           id?: string
           maintenance_message?: string | null
           maintenance_mode?: boolean
@@ -708,6 +875,7 @@ export type Database = {
           marquee_text?: string | null
           playback_token_secret?: string
           r2_public_worker_url?: string | null
+          referral_commission_percent?: number
           tenant_id?: string
           updated_at?: string
         }
@@ -732,6 +900,9 @@ export type Database = {
           major_id: string | null
           phone: string | null
           phone_country_code: string | null
+          referral_balance: number
+          referral_code: string | null
+          referred_by: string | null
           research_consent: boolean
           study_year: string | null
           study_year_number: number | null
@@ -748,6 +919,9 @@ export type Database = {
           major_id?: string | null
           phone?: string | null
           phone_country_code?: string | null
+          referral_balance?: number
+          referral_code?: string | null
+          referred_by?: string | null
           research_consent?: boolean
           study_year?: string | null
           study_year_number?: number | null
@@ -764,6 +938,9 @@ export type Database = {
           major_id?: string | null
           phone?: string | null
           phone_country_code?: string | null
+          referral_balance?: number
+          referral_code?: string | null
+          referred_by?: string | null
           research_consent?: boolean
           study_year?: string | null
           study_year_number?: number | null
@@ -783,6 +960,67 @@ export type Database = {
             columns: ["major_id"]
             isOneToOne: false
             referencedRelation: "majors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      referrals: {
+        Row: {
+          commission_amount: number
+          course_id: string | null
+          created_at: string
+          id: string
+          paid_at: string | null
+          payment_request_id: string | null
+          referred_user_id: string
+          referrer_id: string
+          status: string
+          tenant_id: string
+        }
+        Insert: {
+          commission_amount: number
+          course_id?: string | null
+          created_at?: string
+          id?: string
+          paid_at?: string | null
+          payment_request_id?: string | null
+          referred_user_id: string
+          referrer_id: string
+          status?: string
+          tenant_id: string
+        }
+        Update: {
+          commission_amount?: number
+          course_id?: string | null
+          created_at?: string
+          id?: string
+          paid_at?: string | null
+          payment_request_id?: string | null
+          referred_user_id?: string
+          referrer_id?: string
+          status?: string
+          tenant_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referrals_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referrals_payment_request_id_fkey"
+            columns: ["payment_request_id"]
+            isOneToOne: false
+            referencedRelation: "payment_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referrals_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
             referencedColumns: ["id"]
           },
         ]
@@ -1137,9 +1375,26 @@ export type Database = {
         Returns: undefined
       }
       section_course: { Args: { _section_id: string }; Returns: string }
+      validate_coupon: {
+        Args: {
+          _amount: number
+          _bundle_id?: string
+          _code: string
+          _course_id?: string
+          _tenant_id: string
+        }
+        Returns: {
+          coupon_id: string
+          discount: number
+          final_amount: number
+          message: string
+        }[]
+      }
     }
     Enums: {
       app_role: "super_admin"
+      coupon_scope: "all" | "course" | "bundle"
+      coupon_type: "percent" | "fixed"
       course_status: "draft" | "published" | "archived" | "pending_approval"
       lesson_type: "video" | "text" | "pdf"
       payment_request_status: "pending" | "approved" | "rejected" | "cancelled"
@@ -1275,6 +1530,8 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["super_admin"],
+      coupon_scope: ["all", "course", "bundle"],
+      coupon_type: ["percent", "fixed"],
       course_status: ["draft", "published", "archived", "pending_approval"],
       lesson_type: ["video", "text", "pdf"],
       payment_request_status: ["pending", "approved", "rejected", "cancelled"],
