@@ -413,6 +413,7 @@ export type Database = {
           tenant_id: string | null
           title: string
           type: Database["public"]["Enums"]["lesson_type"]
+          video_asset_id: string | null
         }
         Insert: {
           content_data?: Json
@@ -427,6 +428,7 @@ export type Database = {
           tenant_id?: string | null
           title: string
           type?: Database["public"]["Enums"]["lesson_type"]
+          video_asset_id?: string | null
         }
         Update: {
           content_data?: Json
@@ -441,6 +443,7 @@ export type Database = {
           tenant_id?: string | null
           title?: string
           type?: Database["public"]["Enums"]["lesson_type"]
+          video_asset_id?: string | null
         }
         Relationships: [
           {
@@ -455,6 +458,13 @@ export type Database = {
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lessons_video_asset_id_fkey"
+            columns: ["video_asset_id"]
+            isOneToOne: false
+            referencedRelation: "video_assets"
             referencedColumns: ["id"]
           },
         ]
@@ -525,6 +535,8 @@ export type Database = {
           marquee_color: string | null
           marquee_enabled: boolean
           marquee_text: string | null
+          playback_token_secret: string
+          r2_public_worker_url: string | null
           tenant_id: string
           updated_at: string
         }
@@ -539,6 +551,8 @@ export type Database = {
           marquee_color?: string | null
           marquee_enabled?: boolean
           marquee_text?: string | null
+          playback_token_secret?: string
+          r2_public_worker_url?: string | null
           tenant_id: string
           updated_at?: string
         }
@@ -553,6 +567,8 @@ export type Database = {
           marquee_color?: string | null
           marquee_enabled?: boolean
           marquee_text?: string | null
+          playback_token_secret?: string
+          r2_public_worker_url?: string | null
           tenant_id?: string
           updated_at?: string
         }
@@ -871,6 +887,71 @@ export type Database = {
         }
         Relationships: []
       }
+      video_assets: {
+        Row: {
+          created_at: string
+          duration_seconds: number | null
+          error_message: string | null
+          height: number | null
+          id: string
+          mime_type: string | null
+          original_filename: string | null
+          r2_key: string
+          size_bytes: number | null
+          status: Database["public"]["Enums"]["video_status"]
+          tenant_id: string
+          thumbnail_key: string | null
+          updated_at: string
+          upload_id: string | null
+          uploaded_by: string | null
+          width: number | null
+        }
+        Insert: {
+          created_at?: string
+          duration_seconds?: number | null
+          error_message?: string | null
+          height?: number | null
+          id?: string
+          mime_type?: string | null
+          original_filename?: string | null
+          r2_key: string
+          size_bytes?: number | null
+          status?: Database["public"]["Enums"]["video_status"]
+          tenant_id: string
+          thumbnail_key?: string | null
+          updated_at?: string
+          upload_id?: string | null
+          uploaded_by?: string | null
+          width?: number | null
+        }
+        Update: {
+          created_at?: string
+          duration_seconds?: number | null
+          error_message?: string | null
+          height?: number | null
+          id?: string
+          mime_type?: string | null
+          original_filename?: string | null
+          r2_key?: string
+          size_bytes?: number | null
+          status?: Database["public"]["Enums"]["video_status"]
+          tenant_id?: string
+          thumbnail_key?: string | null
+          updated_at?: string
+          upload_id?: string | null
+          uploaded_by?: string | null
+          width?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "video_assets_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -917,6 +998,7 @@ export type Database = {
       tenant_plan: "free" | "starter" | "pro" | "enterprise"
       tenant_role: "owner" | "instructor" | "student" | "admin"
       tenant_status: "active" | "suspended" | "trial"
+      video_status: "pending" | "uploading" | "processing" | "ready" | "failed"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1050,6 +1132,7 @@ export const Constants = {
       tenant_plan: ["free", "starter", "pro", "enterprise"],
       tenant_role: ["owner", "instructor", "student", "admin"],
       tenant_status: ["active", "suspended", "trial"],
+      video_status: ["pending", "uploading", "processing", "ready", "failed"],
     },
   },
 } as const
