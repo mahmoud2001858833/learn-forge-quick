@@ -422,6 +422,47 @@ export type Database = {
           },
         ]
       }
+      course_answers: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          is_accepted: boolean
+          is_instructor_answer: boolean
+          question_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          is_accepted?: boolean
+          is_instructor_answer?: boolean
+          question_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          is_accepted?: boolean
+          is_instructor_answer?: boolean
+          question_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_answers_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "course_questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       course_bundles: {
         Row: {
           cover_url: string | null
@@ -469,6 +510,98 @@ export type Database = {
           },
         ]
       }
+      course_questions: {
+        Row: {
+          answers_count: number
+          body: string
+          course_id: string
+          created_at: string
+          id: string
+          is_answered: boolean
+          lesson_id: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          answers_count?: number
+          body: string
+          course_id: string
+          created_at?: string
+          id?: string
+          is_answered?: boolean
+          lesson_id?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          answers_count?: number
+          body?: string
+          course_id?: string
+          created_at?: string
+          id?: string
+          is_answered?: boolean
+          lesson_id?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_questions_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "course_questions_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      course_reviews: {
+        Row: {
+          course_id: string
+          created_at: string
+          id: string
+          rating: number
+          review: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          course_id: string
+          created_at?: string
+          id?: string
+          rating: number
+          review?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          course_id?: string
+          created_at?: string
+          id?: string
+          rating?: number
+          review?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "course_reviews_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       courses: {
         Row: {
           ad_style: number
@@ -476,6 +609,7 @@ export type Database = {
           allow_installments: boolean
           approved_at: string | null
           approved_by: string | null
+          average_rating: number
           college_id: string | null
           cover_url: string | null
           created_at: string
@@ -489,6 +623,7 @@ export type Database = {
           qr_code_url: string | null
           rejection_reason: string | null
           requires_approval: boolean
+          reviews_count: number
           semester: string | null
           short_description: string | null
           slug: string
@@ -507,6 +642,7 @@ export type Database = {
           allow_installments?: boolean
           approved_at?: string | null
           approved_by?: string | null
+          average_rating?: number
           college_id?: string | null
           cover_url?: string | null
           created_at?: string
@@ -520,6 +656,7 @@ export type Database = {
           qr_code_url?: string | null
           rejection_reason?: string | null
           requires_approval?: boolean
+          reviews_count?: number
           semester?: string | null
           short_description?: string | null
           slug: string
@@ -538,6 +675,7 @@ export type Database = {
           allow_installments?: boolean
           approved_at?: string | null
           approved_by?: string | null
+          average_rating?: number
           college_id?: string | null
           cover_url?: string | null
           created_at?: string
@@ -551,6 +689,7 @@ export type Database = {
           qr_code_url?: string | null
           rejection_reason?: string | null
           requires_approval?: boolean
+          reviews_count?: number
           semester?: string | null
           short_description?: string | null
           slug?: string
@@ -647,6 +786,54 @@ export type Database = {
             columns: ["tenant_id"]
             isOneToOne: false
             referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lesson_comments: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          is_pinned: boolean
+          lesson_id: string
+          parent_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          is_pinned?: boolean
+          lesson_id: string
+          parent_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          is_pinned?: boolean
+          lesson_id?: string
+          parent_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lesson_comments_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lesson_comments_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "lesson_comments"
             referencedColumns: ["id"]
           },
         ]
@@ -1736,6 +1923,10 @@ export type Database = {
         Returns: boolean
       }
       issue_certificate: { Args: { _enrollment_id: string }; Returns: string }
+      recompute_course_rating: {
+        Args: { _course_id: string }
+        Returns: undefined
+      }
       reject_course: {
         Args: { _course_id: string; _reason: string }
         Returns: undefined
