@@ -4,7 +4,7 @@ import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import {
   GraduationCap, Search, Sparkles, ArrowLeft, PlayCircle, CheckCircle2,
-  Rocket, Layers, Video, Users, BarChart3,
+  Rocket, Layers, Video, Users,
 } from "lucide-react";
 import { getLandingData } from "@/lib/landing.functions";
 import { trackLanding } from "@/lib/landing-track";
