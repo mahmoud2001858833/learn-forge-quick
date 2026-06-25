@@ -228,7 +228,7 @@ function MinimalHero({ slug, tenant, stats }: TenantHeroProps) {
                 تصفّح الدورات <ArrowLeft className="h-4 w-4 me-2" />
               </Button>
             </Link>
-            <Link to="/auth" className="text-sm font-medium hover:underline" style={{ color: primary }}>
+            <Link to="/t/$slug/auth" params={{ slug }} search={{ mode: "signup" }} className="text-sm font-medium hover:underline" style={{ color: primary }}>
               إنشاء حساب جديد ←
             </Link>
           </div>
