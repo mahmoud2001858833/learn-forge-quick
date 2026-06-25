@@ -39,6 +39,7 @@ export const Route = createFileRoute("/")({
 const FeaturesSection = lazy(() => import("@/components/landing/sections").then(m => ({ default: m.FeaturesSection })));
 const StatsStrip = lazy(() => import("@/components/landing/sections").then(m => ({ default: m.StatsStrip })));
 const Tenants = lazy(() => import("@/components/landing/sections").then(m => ({ default: m.Tenants })));
+const FeaturedCourses = lazy(() => import("@/components/landing/sections").then(m => ({ default: m.FeaturedCourses })));
 const HowItWorks = lazy(() => import("@/components/landing/sections").then(m => ({ default: m.HowItWorks })));
 const Pricing = lazy(() => import("@/components/landing/sections").then(m => ({ default: m.Pricing })));
 const Testimonials = lazy(() => import("@/components/landing/sections").then(m => ({ default: m.Testimonials })));
