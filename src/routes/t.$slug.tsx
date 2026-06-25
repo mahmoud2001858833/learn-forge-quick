@@ -128,6 +128,7 @@ function TenantLayout() {
             <div className="flex items-center gap-1 px-3 py-2 min-w-max">
               <NavTab to="/t/$slug" params={{ slug }} icon={Info} label="الرئيسية" exact />
               <NavTab to="/t/$slug/courses" params={{ slug }} icon={BookOpen} label="الدورات" />
+              <NavTab to="/t/$slug/ai" params={{ slug }} icon={Sparkles} label="المساعد" />
               <NavTab to="/t/$slug/about" params={{ slug }} icon={Info} label="من نحن" />
               <NavTab to="/t/$slug/privacy" params={{ slug }} icon={Shield} label="الخصوصية" />
               <NavTab to="/t/$slug/terms" params={{ slug }} icon={FileText} label="الشروط" />
