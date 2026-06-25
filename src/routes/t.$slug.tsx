@@ -155,6 +155,13 @@ function TenantLayout() {
             © {new Date().getFullYear()} {tenant.name} — مدعومة بـ <span className="font-semibold">EduForge</span>
           </div>
         </footer>
+
+        <FloatingChat
+          tenantId={tenant.id}
+          tenantName={tenant.name}
+          primaryColor={primary}
+          secondaryColor={secondary}
+        />
       </div>
     </MaintenanceGate>
   );
