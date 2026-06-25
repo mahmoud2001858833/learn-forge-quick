@@ -181,9 +181,9 @@ function TenantHome() {
           style={{ background: `linear-gradient(135deg, ${primary}, ${secondary})` }}
         >
           <div className="absolute inset-0 bg-grid-pattern opacity-10" />
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 relative">جاهز لبدء رحلتك التعليمية؟</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 relative">{tenant.cta_title || "جاهز لبدء رحلتك التعليمية؟"}</h2>
           <p className="text-white/90 text-lg max-w-xl mx-auto mb-8 relative">
-            انضم إلى آلاف الطلاب وابدأ في تعلّم مهارات جديدة اليوم.
+            {tenant.cta_subtitle || "انضم إلى آلاف الطلاب وابدأ في تعلّم مهارات جديدة اليوم."}
           </p>
           <div className="flex justify-center gap-3 flex-wrap relative">
             <Link to="/auth">
