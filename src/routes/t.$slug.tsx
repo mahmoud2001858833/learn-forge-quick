@@ -2,7 +2,7 @@ import { createFileRoute, Link, Outlet, useParams, useRouterState } from "@tanst
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { GraduationCap, BookOpen, Info, Shield, FileText, Mail, Sparkles, Video } from "lucide-react";
+import { GraduationCap, BookOpen, Info, Shield, FileText, Mail, Sparkles, Video, Trophy } from "lucide-react";
 import { useTenantSettings, MarqueeBar, MaintenanceGate } from "@/components/tenant/platform-bars";
 import { Button } from "@/components/ui/button";
 import { FloatingChat } from "@/components/tenant/floating-chat";
