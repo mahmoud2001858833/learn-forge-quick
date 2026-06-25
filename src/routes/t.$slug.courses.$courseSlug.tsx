@@ -12,8 +12,17 @@ import { CourseReviews } from "@/components/course-reviews";
 import { Star } from "lucide-react";
 
 export const Route = createFileRoute("/t/$slug/courses/$courseSlug")({
+  head: ({ params }) => ({
+    meta: [
+      { title: `${params.courseSlug} — ${params.slug}` },
+      { name: "description", content: `تفاصيل دورة ${params.courseSlug} على منصة ${params.slug}.` },
+      { property: "og:title", content: params.courseSlug },
+      { property: "og:type", content: "article" },
+    ],
+  }),
   component: CourseDetail,
 });
+
 
 function CourseDetail() {
   const { slug, courseSlug } = useParams({ from: "/t/$slug/courses/$courseSlug" });
