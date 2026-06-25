@@ -29,6 +29,7 @@ import { Route as TSlugTermsRouteImport } from './routes/t.$slug.terms'
 import { Route as TSlugPrivacyRouteImport } from './routes/t.$slug.privacy'
 import { Route as TSlugCoursesRouteImport } from './routes/t.$slug.courses'
 import { Route as TSlugContactRouteImport } from './routes/t.$slug.contact'
+import { Route as TSlugAuthRouteImport } from './routes/t.$slug.auth'
 import { Route as TSlugAboutRouteImport } from './routes/t.$slug.about'
 import { Route as AuthenticatedQuizQuizIdRouteImport } from './routes/_authenticated/quiz.$quizId'
 import { Route as AuthenticatedLearnEnrollmentIdRouteImport } from './routes/_authenticated/learn.$enrollmentId'
@@ -150,6 +151,11 @@ const TSlugCoursesRoute = TSlugCoursesRouteImport.update({
 const TSlugContactRoute = TSlugContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => TSlugRoute,
+} as any)
+const TSlugAuthRoute = TSlugAuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => TSlugRoute,
 } as any)
 const TSlugAboutRoute = TSlugAboutRouteImport.update({
@@ -289,6 +295,7 @@ export interface FileRoutesByFullPath {
   '/learn/$enrollmentId': typeof AuthenticatedLearnEnrollmentIdRoute
   '/quiz/$quizId': typeof AuthenticatedQuizQuizIdRoute
   '/t/$slug/about': typeof TSlugAboutRoute
+  '/t/$slug/auth': typeof TSlugAuthRoute
   '/t/$slug/contact': typeof TSlugContactRoute
   '/t/$slug/courses': typeof TSlugCoursesRouteWithChildren
   '/t/$slug/privacy': typeof TSlugPrivacyRoute
@@ -328,6 +335,7 @@ export interface FileRoutesByTo {
   '/learn/$enrollmentId': typeof AuthenticatedLearnEnrollmentIdRoute
   '/quiz/$quizId': typeof AuthenticatedQuizQuizIdRoute
   '/t/$slug/about': typeof TSlugAboutRoute
+  '/t/$slug/auth': typeof TSlugAuthRoute
   '/t/$slug/contact': typeof TSlugContactRoute
   '/t/$slug/courses': typeof TSlugCoursesRouteWithChildren
   '/t/$slug/privacy': typeof TSlugPrivacyRoute
@@ -371,6 +379,7 @@ export interface FileRoutesById {
   '/_authenticated/learn/$enrollmentId': typeof AuthenticatedLearnEnrollmentIdRoute
   '/_authenticated/quiz/$quizId': typeof AuthenticatedQuizQuizIdRoute
   '/t/$slug/about': typeof TSlugAboutRoute
+  '/t/$slug/auth': typeof TSlugAuthRoute
   '/t/$slug/contact': typeof TSlugContactRoute
   '/t/$slug/courses': typeof TSlugCoursesRouteWithChildren
   '/t/$slug/privacy': typeof TSlugPrivacyRoute
@@ -414,6 +423,7 @@ export interface FileRouteTypes {
     | '/learn/$enrollmentId'
     | '/quiz/$quizId'
     | '/t/$slug/about'
+    | '/t/$slug/auth'
     | '/t/$slug/contact'
     | '/t/$slug/courses'
     | '/t/$slug/privacy'
@@ -453,6 +463,7 @@ export interface FileRouteTypes {
     | '/learn/$enrollmentId'
     | '/quiz/$quizId'
     | '/t/$slug/about'
+    | '/t/$slug/auth'
     | '/t/$slug/contact'
     | '/t/$slug/courses'
     | '/t/$slug/privacy'
@@ -495,6 +506,7 @@ export interface FileRouteTypes {
     | '/_authenticated/learn/$enrollmentId'
     | '/_authenticated/quiz/$quizId'
     | '/t/$slug/about'
+    | '/t/$slug/auth'
     | '/t/$slug/contact'
     | '/t/$slug/courses'
     | '/t/$slug/privacy'
@@ -669,6 +681,13 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/t/$slug/contact'
       preLoaderRoute: typeof TSlugContactRouteImport
+      parentRoute: typeof TSlugRoute
+    }
+    '/t/$slug/auth': {
+      id: '/t/$slug/auth'
+      path: '/auth'
+      fullPath: '/t/$slug/auth'
+      preLoaderRoute: typeof TSlugAuthRouteImport
       parentRoute: typeof TSlugRoute
     }
     '/t/$slug/about': {
@@ -939,6 +958,7 @@ const TSlugCoursesRouteWithChildren = TSlugCoursesRoute._addFileChildren(
 
 interface TSlugRouteChildren {
   TSlugAboutRoute: typeof TSlugAboutRoute
+  TSlugAuthRoute: typeof TSlugAuthRoute
   TSlugContactRoute: typeof TSlugContactRoute
   TSlugCoursesRoute: typeof TSlugCoursesRouteWithChildren
   TSlugPrivacyRoute: typeof TSlugPrivacyRoute
@@ -948,6 +968,7 @@ interface TSlugRouteChildren {
 
 const TSlugRouteChildren: TSlugRouteChildren = {
   TSlugAboutRoute: TSlugAboutRoute,
+  TSlugAuthRoute: TSlugAuthRoute,
   TSlugContactRoute: TSlugContactRoute,
   TSlugCoursesRoute: TSlugCoursesRouteWithChildren,
   TSlugPrivacyRoute: TSlugPrivacyRoute,

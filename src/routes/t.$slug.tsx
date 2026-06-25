@@ -1,4 +1,4 @@
-import { createFileRoute, Link, Outlet, useParams } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useParams, useRouterState } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -15,6 +15,8 @@ export const Route = createFileRoute("/t/$slug")({
 function TenantLayout() {
   const { slug } = useParams({ from: "/t/$slug" });
   const search = Route.useSearch();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isAuthRoute = pathname.endsWith("/auth");
 
   useEffect(() => {
     if (search.ref && typeof window !== "undefined") {
@@ -43,6 +45,19 @@ function TenantLayout() {
 
   const primary = tenant.primary_color ?? "#6366f1";
   const secondary = tenant.secondary_color ?? "#D4AF37";
+
+  if (isAuthRoute) {
+    return (
+      <MaintenanceGate settings={settings} ownerId={tenant.owner_id}>
+        <div
+          style={{ "--tenant-primary": primary, "--tenant-secondary": secondary } as React.CSSProperties}
+          dir="rtl"
+        >
+          <Outlet />
+        </div>
+      </MaintenanceGate>
+    );
+  }
 
   return (
     <MaintenanceGate settings={settings} ownerId={tenant.owner_id}>
@@ -94,10 +109,10 @@ function TenantLayout() {
 
             {/* Auth actions */}
             <div className="flex items-center gap-2 shrink-0">
-              <Link to="/auth" className="hidden sm:block">
+              <Link to="/t/$slug/auth" params={{ slug }} search={{ mode: "signin" }} className="hidden sm:block">
                 <Button variant="ghost" size="sm">تسجيل الدخول</Button>
               </Link>
-              <Link to="/auth">
+              <Link to="/t/$slug/auth" params={{ slug }} search={{ mode: "signup" }}>
                 <Button
                   size="sm"
                   className="text-white border-0"
