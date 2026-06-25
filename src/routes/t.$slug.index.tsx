@@ -171,6 +171,9 @@ function TenantHome() {
         </section>
       )}
 
+      <TestimonialsSection items={(tenant.testimonials as any) ?? []} primary={primary} />
+      <FaqSection items={(tenant.faq as any) ?? []} primary={primary} />
+
       {/* CTA */}
       <section className="container mx-auto px-6 py-16">
         <div
