@@ -103,6 +103,7 @@ function TenantLayout() {
               <NavTab to="/t/$slug/courses" params={{ slug }} icon={BookOpen} label="الدورات" />
               <NavTab to="/t/$slug/ai" params={{ slug }} icon={Sparkles} label="المساعد الذكي" />
               <NavTab to="/t/$slug/live" params={{ slug }} icon={Video} label="جلسات حيّة" />
+              <NavTab to="/t/$slug/leaderboard" params={{ slug }} icon={Trophy} label="المتصدرون" />
               <NavTab to="/t/$slug/about" params={{ slug }} icon={Info} label="من نحن" />
               <NavTab to="/t/$slug/contact" params={{ slug }} icon={Mail} label="تواصل" />
             </nav>
