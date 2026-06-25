@@ -2155,12 +2155,16 @@ export type Database = {
           contact_email: string | null
           contact_phone: string | null
           created_at: string
+          cta_subtitle: string | null
+          cta_title: string | null
           currency: string
           custom_domain: string | null
           custom_domain_requested_at: string | null
           custom_domain_verification_token: string | null
           custom_domain_verified: boolean
           description: string | null
+          faq: Json | null
+          features: Json | null
           hero_image_url: string | null
           hero_subtitle: string | null
           hero_title: string | null
@@ -2172,11 +2176,15 @@ export type Database = {
           primary_color: string
           privacy_text: string | null
           secondary_color: string
+          seo_keywords: string | null
+          seo_og_image: string | null
           slug: string
+          stats: Json | null
           status: Database["public"]["Enums"]["tenant_status"]
           suspended_at: string | null
           suspension_reason: string | null
           terms_text: string | null
+          testimonials: Json | null
           theme: string
           updated_at: string
           welcome_message: string | null
@@ -2187,12 +2195,16 @@ export type Database = {
           contact_email?: string | null
           contact_phone?: string | null
           created_at?: string
+          cta_subtitle?: string | null
+          cta_title?: string | null
           currency?: string
           custom_domain?: string | null
           custom_domain_requested_at?: string | null
           custom_domain_verification_token?: string | null
           custom_domain_verified?: boolean
           description?: string | null
+          faq?: Json | null
+          features?: Json | null
           hero_image_url?: string | null
           hero_subtitle?: string | null
           hero_title?: string | null
@@ -2204,11 +2216,15 @@ export type Database = {
           primary_color?: string
           privacy_text?: string | null
           secondary_color?: string
+          seo_keywords?: string | null
+          seo_og_image?: string | null
           slug: string
+          stats?: Json | null
           status?: Database["public"]["Enums"]["tenant_status"]
           suspended_at?: string | null
           suspension_reason?: string | null
           terms_text?: string | null
+          testimonials?: Json | null
           theme?: string
           updated_at?: string
           welcome_message?: string | null
@@ -2219,12 +2235,16 @@ export type Database = {
           contact_email?: string | null
           contact_phone?: string | null
           created_at?: string
+          cta_subtitle?: string | null
+          cta_title?: string | null
           currency?: string
           custom_domain?: string | null
           custom_domain_requested_at?: string | null
           custom_domain_verification_token?: string | null
           custom_domain_verified?: boolean
           description?: string | null
+          faq?: Json | null
+          features?: Json | null
           hero_image_url?: string | null
           hero_subtitle?: string | null
           hero_title?: string | null
@@ -2236,11 +2256,15 @@ export type Database = {
           primary_color?: string
           privacy_text?: string | null
           secondary_color?: string
+          seo_keywords?: string | null
+          seo_og_image?: string | null
           slug?: string
+          stats?: Json | null
           status?: Database["public"]["Enums"]["tenant_status"]
           suspended_at?: string | null
           suspension_reason?: string | null
           terms_text?: string | null
+          testimonials?: Json | null
           theme?: string
           updated_at?: string
           welcome_message?: string | null
