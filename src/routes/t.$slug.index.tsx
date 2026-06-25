@@ -253,7 +253,7 @@ function TenantHome() {
   );
 }
 
-function Stat({ label, value, icon: Icon, color }: { label: string; value: number; icon: React.ComponentType<{ className?: string }>; color: string }) {
+function Stat({ label, value, icon: Icon, color }: { label: string; value: number; icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>; color: string }) {
   return (
     <div>
       <Icon className="h-5 w-5 mb-1" style={{ color }} />
