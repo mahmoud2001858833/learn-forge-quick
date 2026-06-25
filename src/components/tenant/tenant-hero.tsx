@@ -183,7 +183,7 @@ function BoldHero({ slug, tenant, stats }: TenantHeroProps) {
                   استكشف الدورات <ArrowLeft className="h-4 w-4 me-2" />
                 </Button>
               </Link>
-              <Link to="/auth">
+              <Link to="/t/$slug/auth" params={{ slug }} search={{ mode: "signup" }}>
                 <Button size="lg" variant="outline" className="bg-transparent text-background border-background/30 hover:bg-background hover:text-foreground">
                   انضم مجاناً
                 </Button>
