@@ -3,7 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { CourseCard } from "@/components/course-card";
 import { Button } from "@/components/ui/button";
-import { GraduationCap, ArrowLeft, Sparkles, Users, BookOpen, Award, Star } from "lucide-react";
+import { ArrowLeft, Sparkles } from "lucide-react";
+import { TenantHero } from "@/components/tenant/tenant-hero";
 
 export const Route = createFileRoute("/t/$slug/")({
   head: ({ params }) => ({
