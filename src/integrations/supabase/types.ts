@@ -2260,11 +2260,42 @@ export type Database = {
         Args: { _answers: Json; _quiz_id: string }
         Returns: string
       }
+      tenant_at_risk_students: {
+        Args: { _inactive_days?: number; _limit?: number; _tenant_id: string }
+        Returns: {
+          course_title: string
+          enrollment_id: string
+          full_name: string
+          inactive_days: number
+          last_activity: string
+          progress: number
+          student_id: string
+        }[]
+      }
+      tenant_cohort_retention: {
+        Args: { _tenant_id: string; _weeks?: number }
+        Returns: {
+          cohort_size: number
+          cohort_week: string
+          week_1_active: number
+          week_2_active: number
+          week_3_active: number
+          week_4_active: number
+        }[]
+      }
       tenant_enrollments_by_day: {
         Args: { _days?: number; _tenant_id: string }
         Returns: {
           count: number
           day: string
+        }[]
+      }
+      tenant_funnel_summary: {
+        Args: { _days?: number; _tenant_id: string }
+        Returns: {
+          count: number
+          percent: number
+          stage: string
         }[]
       }
       tenant_overview_stats: { Args: { _tenant_id: string }; Returns: Json }
