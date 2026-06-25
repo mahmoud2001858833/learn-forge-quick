@@ -8,7 +8,7 @@ const MASTER_CODE = "112233";
 
 const signupSchema = z.object({
   email: z.string().trim().email().max(255),
-  password: z.string().min(8).max(72),
+  password: z.string().min(6).max(72),
   full_name: z.string().trim().min(2).max(100),
   phone_country_code: z.string().regex(/^\+\d{1,4}$/),
   phone: z.string().regex(/^\d{6,15}$/),
