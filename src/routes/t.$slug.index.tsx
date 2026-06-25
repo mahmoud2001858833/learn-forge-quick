@@ -143,12 +143,3 @@ function TenantHome() {
   );
 }
 
-function Stat({ label, value, icon: Icon, color }: { label: string; value: number; icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>; color: string }) {
-  return (
-    <div>
-      <Icon className="h-5 w-5 mb-1" style={{ color }} />
-      <div className="text-2xl font-bold">{value.toLocaleString("ar")}</div>
-      <div className="text-xs text-muted-foreground">{label}</div>
-    </div>
-  );
-}
