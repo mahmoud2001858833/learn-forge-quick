@@ -43,6 +43,7 @@ import { Route as AuthenticatedAdminTenantSlugStudentsRouteImport } from './rout
 import { Route as AuthenticatedAdminTenantSlugSettingsRouteImport } from './routes/_authenticated/admin.$tenantSlug.settings'
 import { Route as AuthenticatedAdminTenantSlugReportsRouteImport } from './routes/_authenticated/admin.$tenantSlug.reports'
 import { Route as AuthenticatedAdminTenantSlugReferralsRouteImport } from './routes/_authenticated/admin.$tenantSlug.referrals'
+import { Route as AuthenticatedAdminTenantSlugQuestionBankRouteImport } from './routes/_authenticated/admin.$tenantSlug.question-bank'
 import { Route as AuthenticatedAdminTenantSlugPaymentsRouteImport } from './routes/_authenticated/admin.$tenantSlug.payments'
 import { Route as AuthenticatedAdminTenantSlugLiveSessionsRouteImport } from './routes/_authenticated/admin.$tenantSlug.live-sessions'
 import { Route as AuthenticatedAdminTenantSlugCoursesRouteImport } from './routes/_authenticated/admin.$tenantSlug.courses'
@@ -234,6 +235,12 @@ const AuthenticatedAdminTenantSlugReferralsRoute =
     path: '/referrals',
     getParentRoute: () => AuthenticatedAdminTenantSlugRoute,
   } as any)
+const AuthenticatedAdminTenantSlugQuestionBankRoute =
+  AuthenticatedAdminTenantSlugQuestionBankRouteImport.update({
+    id: '/question-bank',
+    path: '/question-bank',
+    getParentRoute: () => AuthenticatedAdminTenantSlugRoute,
+  } as any)
 const AuthenticatedAdminTenantSlugPaymentsRoute =
   AuthenticatedAdminTenantSlugPaymentsRouteImport.update({
     id: '/payments',
@@ -338,6 +345,7 @@ export interface FileRoutesByFullPath {
   '/admin/$tenantSlug/courses': typeof AuthenticatedAdminTenantSlugCoursesRouteWithChildren
   '/admin/$tenantSlug/live-sessions': typeof AuthenticatedAdminTenantSlugLiveSessionsRoute
   '/admin/$tenantSlug/payments': typeof AuthenticatedAdminTenantSlugPaymentsRoute
+  '/admin/$tenantSlug/question-bank': typeof AuthenticatedAdminTenantSlugQuestionBankRoute
   '/admin/$tenantSlug/referrals': typeof AuthenticatedAdminTenantSlugReferralsRoute
   '/admin/$tenantSlug/reports': typeof AuthenticatedAdminTenantSlugReportsRoute
   '/admin/$tenantSlug/settings': typeof AuthenticatedAdminTenantSlugSettingsRoute
@@ -382,6 +390,7 @@ export interface FileRoutesByTo {
   '/admin/$tenantSlug/courses': typeof AuthenticatedAdminTenantSlugCoursesRouteWithChildren
   '/admin/$tenantSlug/live-sessions': typeof AuthenticatedAdminTenantSlugLiveSessionsRoute
   '/admin/$tenantSlug/payments': typeof AuthenticatedAdminTenantSlugPaymentsRoute
+  '/admin/$tenantSlug/question-bank': typeof AuthenticatedAdminTenantSlugQuestionBankRoute
   '/admin/$tenantSlug/referrals': typeof AuthenticatedAdminTenantSlugReferralsRoute
   '/admin/$tenantSlug/reports': typeof AuthenticatedAdminTenantSlugReportsRoute
   '/admin/$tenantSlug/settings': typeof AuthenticatedAdminTenantSlugSettingsRoute
@@ -430,6 +439,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/$tenantSlug/courses': typeof AuthenticatedAdminTenantSlugCoursesRouteWithChildren
   '/_authenticated/admin/$tenantSlug/live-sessions': typeof AuthenticatedAdminTenantSlugLiveSessionsRoute
   '/_authenticated/admin/$tenantSlug/payments': typeof AuthenticatedAdminTenantSlugPaymentsRoute
+  '/_authenticated/admin/$tenantSlug/question-bank': typeof AuthenticatedAdminTenantSlugQuestionBankRoute
   '/_authenticated/admin/$tenantSlug/referrals': typeof AuthenticatedAdminTenantSlugReferralsRoute
   '/_authenticated/admin/$tenantSlug/reports': typeof AuthenticatedAdminTenantSlugReportsRoute
   '/_authenticated/admin/$tenantSlug/settings': typeof AuthenticatedAdminTenantSlugSettingsRoute
@@ -478,6 +488,7 @@ export interface FileRouteTypes {
     | '/admin/$tenantSlug/courses'
     | '/admin/$tenantSlug/live-sessions'
     | '/admin/$tenantSlug/payments'
+    | '/admin/$tenantSlug/question-bank'
     | '/admin/$tenantSlug/referrals'
     | '/admin/$tenantSlug/reports'
     | '/admin/$tenantSlug/settings'
@@ -522,6 +533,7 @@ export interface FileRouteTypes {
     | '/admin/$tenantSlug/courses'
     | '/admin/$tenantSlug/live-sessions'
     | '/admin/$tenantSlug/payments'
+    | '/admin/$tenantSlug/question-bank'
     | '/admin/$tenantSlug/referrals'
     | '/admin/$tenantSlug/reports'
     | '/admin/$tenantSlug/settings'
@@ -569,6 +581,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/$tenantSlug/courses'
     | '/_authenticated/admin/$tenantSlug/live-sessions'
     | '/_authenticated/admin/$tenantSlug/payments'
+    | '/_authenticated/admin/$tenantSlug/question-bank'
     | '/_authenticated/admin/$tenantSlug/referrals'
     | '/_authenticated/admin/$tenantSlug/reports'
     | '/_authenticated/admin/$tenantSlug/settings'
@@ -830,6 +843,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminTenantSlugReferralsRouteImport
       parentRoute: typeof AuthenticatedAdminTenantSlugRoute
     }
+    '/_authenticated/admin/$tenantSlug/question-bank': {
+      id: '/_authenticated/admin/$tenantSlug/question-bank'
+      path: '/question-bank'
+      fullPath: '/admin/$tenantSlug/question-bank'
+      preLoaderRoute: typeof AuthenticatedAdminTenantSlugQuestionBankRouteImport
+      parentRoute: typeof AuthenticatedAdminTenantSlugRoute
+    }
     '/_authenticated/admin/$tenantSlug/payments': {
       id: '/_authenticated/admin/$tenantSlug/payments'
       path: '/payments'
@@ -950,6 +970,7 @@ interface AuthenticatedAdminTenantSlugRouteChildren {
   AuthenticatedAdminTenantSlugCoursesRoute: typeof AuthenticatedAdminTenantSlugCoursesRouteWithChildren
   AuthenticatedAdminTenantSlugLiveSessionsRoute: typeof AuthenticatedAdminTenantSlugLiveSessionsRoute
   AuthenticatedAdminTenantSlugPaymentsRoute: typeof AuthenticatedAdminTenantSlugPaymentsRoute
+  AuthenticatedAdminTenantSlugQuestionBankRoute: typeof AuthenticatedAdminTenantSlugQuestionBankRoute
   AuthenticatedAdminTenantSlugReferralsRoute: typeof AuthenticatedAdminTenantSlugReferralsRoute
   AuthenticatedAdminTenantSlugReportsRoute: typeof AuthenticatedAdminTenantSlugReportsRoute
   AuthenticatedAdminTenantSlugSettingsRoute: typeof AuthenticatedAdminTenantSlugSettingsRoute
@@ -977,6 +998,8 @@ const AuthenticatedAdminTenantSlugRouteChildren: AuthenticatedAdminTenantSlugRou
       AuthenticatedAdminTenantSlugLiveSessionsRoute,
     AuthenticatedAdminTenantSlugPaymentsRoute:
       AuthenticatedAdminTenantSlugPaymentsRoute,
+    AuthenticatedAdminTenantSlugQuestionBankRoute:
+      AuthenticatedAdminTenantSlugQuestionBankRoute,
     AuthenticatedAdminTenantSlugReferralsRoute:
       AuthenticatedAdminTenantSlugReferralsRoute,
     AuthenticatedAdminTenantSlugReportsRoute:
