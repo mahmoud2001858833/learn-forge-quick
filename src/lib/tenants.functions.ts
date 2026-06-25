@@ -18,20 +18,18 @@ export const createTenant = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => createTenantSchema.parse(input))
   .handler(async ({ data, context }) => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-
     // Reject reserved slugs
     const reserved = new Set(["admin", "auth", "dashboard", "api", "learn", "t", "onboard", "super-admin"]);
     if (reserved.has(data.slug)) throw new Error("هذا المعرّف محجوز");
 
-    const { data: existing } = await supabaseAdmin
+    const { data: existing } = await context.supabase
       .from("tenants")
       .select("id")
       .eq("slug", data.slug)
       .maybeSingle();
     if (existing) throw new Error("المعرّف مستخدم، اختر معرّفاً آخر");
 
-    const { data: tenant, error } = await supabaseAdmin
+    const { data: tenant, error } = await context.supabase
       .from("tenants")
       .insert({
         name: data.name,
@@ -61,9 +59,7 @@ export const setTenantStatus = createServerFn({ method: "POST" })
     }).parse(input),
   )
   .handler(async ({ data, context }) => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-
-    const { data: isSuper } = await supabaseAdmin.rpc("has_role", {
+    const { data: isSuper } = await context.supabase.rpc("has_role", {
       _user_id: context.userId,
       _role: "super_admin",
     });
@@ -84,7 +80,7 @@ export const setTenantStatus = createServerFn({ method: "POST" })
               activated_at: new Date().toISOString(),
             }
           : { status: data.status };
-    const { error } = await supabaseAdmin.from("tenants").update(patch).eq("id", data.tenant_id);
+    const { error } = await context.supabase.from("tenants").update(patch).eq("id", data.tenant_id);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
@@ -132,14 +128,13 @@ export const grantSuperAdmin = createServerFn({ method: "POST" })
 export const listAllTenantsAdmin = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: isSuper } = await supabaseAdmin.rpc("has_role", {
+    const { data: isSuper } = await context.supabase.rpc("has_role", {
       _user_id: context.userId,
       _role: "super_admin",
     });
     if (!isSuper) throw new Error("ممنوع");
 
-    const { data, error } = await supabaseAdmin
+    const { data, error } = await context.supabase
       .from("tenants")
       .select("*, platform_settings(maintenance_mode, marquee_enabled)")
       .order("created_at", { ascending: false });
@@ -150,18 +145,17 @@ export const listAllTenantsAdmin = createServerFn({ method: "GET" })
 export const getPlatformStats = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: isSuper } = await supabaseAdmin.rpc("has_role", {
+    const { data: isSuper } = await context.supabase.rpc("has_role", {
       _user_id: context.userId,
       _role: "super_admin",
     });
     if (!isSuper) throw new Error("ممنوع");
 
     const [tenants, users, courses, enrollments] = await Promise.all([
-      supabaseAdmin.from("tenants").select("*", { count: "exact", head: true }),
-      supabaseAdmin.from("profiles").select("*", { count: "exact", head: true }),
-      supabaseAdmin.from("courses").select("*", { count: "exact", head: true }),
-      supabaseAdmin.from("enrollments").select("*", { count: "exact", head: true }),
+      context.supabase.from("tenants").select("id", { count: "exact", head: true }),
+      context.supabase.from("profiles").select("id", { count: "exact", head: true }),
+      context.supabase.from("courses").select("id", { count: "exact", head: true }),
+      context.supabase.from("enrollments").select("id", { count: "exact", head: true }),
     ]);
 
     return {
