@@ -46,6 +46,19 @@ function TenantLayout() {
   const primary = tenant.primary_color ?? "#6366f1";
   const secondary = tenant.secondary_color ?? "#D4AF37";
 
+  if (isAuthRoute) {
+    return (
+      <MaintenanceGate settings={settings} ownerId={tenant.owner_id}>
+        <div
+          style={{ "--tenant-primary": primary, "--tenant-secondary": secondary } as React.CSSProperties}
+          dir="rtl"
+        >
+          <Outlet />
+        </div>
+      </MaintenanceGate>
+    );
+  }
+
   return (
     <MaintenanceGate settings={settings} ownerId={tenant.owner_id}>
       <div
