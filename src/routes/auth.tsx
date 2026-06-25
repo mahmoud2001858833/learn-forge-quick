@@ -12,10 +12,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { GraduationCap } from "lucide-react";
 import {
-  requestSignupOtp,
-  verifyMasterCode,
+  signupDirect,
   claimSession,
 } from "@/lib/auth.functions";
+
 
 export const Route = createFileRoute("/auth")({
   ssr: false,
