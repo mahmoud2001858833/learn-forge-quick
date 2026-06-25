@@ -1,18 +1,12 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
-import { toast } from "sonner";
-import { GraduationCap, Plus, LogOut, BookOpen, Settings, ExternalLink, Shield, Award, Sparkles, Share2, Receipt } from "lucide-react";
-import { createTenant } from "@/lib/tenants.functions";
+import { GraduationCap, LogOut, BookOpen, Settings, ExternalLink, Shield, Award, Sparkles, Share2, Receipt } from "lucide-react";
 import { NotificationsBell } from "@/components/notifications-bell";
+import { CreateTenantWizard } from "@/components/tenant/create-tenant-wizard";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   component: Dashboard,
@@ -103,7 +97,7 @@ function Dashboard() {
               <h2 className="text-2xl font-bold">منصاتي</h2>
               <p className="text-muted-foreground text-sm">المنصات التعليمية التي تملكها</p>
             </div>
-            <CreateTenantDialog />
+            <CreateTenantWizard />
           </div>
           {ownedTenants && ownedTenants.length === 0 && (
             <Card><CardContent className="p-10 text-center text-muted-foreground">لم تنشئ أي منصة بعد. اضغط "منصة جديدة" للبدء.</CardContent></Card>
@@ -180,55 +174,3 @@ function QuickLink({ to, icon: Icon, label, color }: { to: string; icon: React.C
   );
 }
 
-function CreateTenantDialog() {
-  const qc = useQueryClient();
-  const [open, setOpen] = useState(false);
-  const [name, setName] = useState("");
-  const [slug, setSlug] = useState("");
-  const [primary_color, setPrimary] = useState("#6366f1");
-  const [secondary_color, setSecondary] = useState("#D4AF37");
-  const [currency, setCurrency] = useState("SAR");
-  const [description, setDescription] = useState("");
-  const [welcome_message, setWelcome] = useState("");
-
-  useEffect(() => {
-    setSlug(name.toLowerCase().replace(/[^a-z0-9-]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 40));
-  }, [name]);
-
-  const create = useMutation({
-    mutationFn: () =>
-      createTenant({
-        data: { name, slug, primary_color, secondary_color, currency, description, welcome_message },
-      }),
-    onSuccess: () => {
-      toast.success("تم إنشاء المنصة!");
-      qc.invalidateQueries({ queryKey: ["my-tenants"] });
-      setOpen(false);
-      setName(""); setSlug(""); setDescription(""); setWelcome("");
-    },
-    onError: (e: Error) => toast.error(e.message),
-  });
-
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button><Plus className="h-4 w-4 ml-1" /> منصة جديدة</Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader><DialogTitle>إنشاء منصة جديدة</DialogTitle></DialogHeader>
-        <form onSubmit={(e) => { e.preventDefault(); create.mutate(); }} className="space-y-4">
-          <div><Label>اسم المنصة</Label><Input required value={name} onChange={(e) => setName(e.target.value)} placeholder="أكاديمية الإبداع" /></div>
-          <div><Label>المعرّف (slug)</Label><Input required pattern="[a-z0-9-]{3,40}" value={slug} onChange={(e) => setSlug(e.target.value)} /></div>
-          <div className="grid grid-cols-3 gap-2">
-            <div><Label>لون أساسي</Label><Input type="color" value={primary_color} onChange={(e) => setPrimary(e.target.value)} className="h-10" /></div>
-            <div><Label>لون ثانوي</Label><Input type="color" value={secondary_color} onChange={(e) => setSecondary(e.target.value)} className="h-10" /></div>
-            <div><Label>العملة</Label><Input value={currency} onChange={(e) => setCurrency(e.target.value.toUpperCase())} maxLength={5} /></div>
-          </div>
-          <div><Label>وصف قصير</Label><Textarea value={description} onChange={(e) => setDescription(e.target.value)} /></div>
-          <div><Label>رسالة ترحيبية</Label><Textarea value={welcome_message} onChange={(e) => setWelcome(e.target.value)} placeholder="اختياري" /></div>
-          <DialogFooter><Button type="submit" disabled={create.isPending}>{create.isPending ? "جارٍ..." : "إنشاء"}</Button></DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
-  );
-}
