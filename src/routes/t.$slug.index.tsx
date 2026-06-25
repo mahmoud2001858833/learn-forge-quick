@@ -115,6 +115,10 @@ function TenantHome() {
     <div>
       <TenantHero slug={slug} tenant={tenant} stats={stats} />
 
+      <StatsSection items={(tenant.stats as any) ?? []} primary={primary} secondary={secondary} />
+      <FeaturesSection items={(tenant.features as any) ?? []} primary={primary} />
+
+
 
       {/* ABOUT preview section */}
       {(tenant.about_text || tenant.description) && (
