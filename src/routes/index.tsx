@@ -39,6 +39,7 @@ export const Route = createFileRoute("/")({
 const FeaturesSection = lazy(() => import("@/components/landing/sections").then(m => ({ default: m.FeaturesSection })));
 const StatsStrip = lazy(() => import("@/components/landing/sections").then(m => ({ default: m.StatsStrip })));
 const Tenants = lazy(() => import("@/components/landing/sections").then(m => ({ default: m.Tenants })));
+const FeaturedCourses = lazy(() => import("@/components/landing/sections").then(m => ({ default: m.FeaturedCourses })));
 const HowItWorks = lazy(() => import("@/components/landing/sections").then(m => ({ default: m.HowItWorks })));
 const Pricing = lazy(() => import("@/components/landing/sections").then(m => ({ default: m.Pricing })));
 const Testimonials = lazy(() => import("@/components/landing/sections").then(m => ({ default: m.Testimonials })));
@@ -60,6 +61,7 @@ function Landing() {
         {cfg.show_features !== false && <FeaturesSection items={cfg.features ?? []} />}
         {cfg.show_stats !== false && <StatsStrip stats={data.stats} />}
         {cfg.show_tenants !== false && <Tenants tenants={data.tenants} />}
+        {cfg.show_courses !== false && <FeaturedCourses courses={data.courses} />}
         <HowItWorks steps={cfg.steps ?? []} />
         {cfg.show_pricing !== false && <Pricing plans={cfg.pricing ?? []} />}
         {cfg.show_testimonials !== false && <Testimonials items={cfg.testimonials ?? []} />}

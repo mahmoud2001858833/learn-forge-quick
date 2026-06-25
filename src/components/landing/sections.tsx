@@ -80,7 +80,7 @@ export const Tenants = memo(function Tenants({ tenants }: { tenants: any[] }) {
       <SectionHead eyebrow="المنصات" title="منصات تعليمية تنطلق من EduForge" subtitle="انضم لمئات المعلمين الذين بنوا أعمالهم التعليمية معنا." />
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mt-10 sm:mt-14">
         {tenants.map((t) => (
-          <Link key={t.id} to="/t/$slug" params={{ slug: t.slug }} onClick={() => trackLanding("cta_click", "tenant_card", { slug: t.slug })}>
+          <Link key={t.id} to="/t/$slug" params={{ slug: t.slug }} preload="intent" onClick={() => trackLanding("cta_click", "tenant_card", { slug: t.slug })}>
             <div className="group relative h-full bg-card border rounded-2xl p-5 sm:p-6 hover:border-primary/50 hover:shadow-xl hover:-translate-y-1 transition-all overflow-hidden">
               <div className="absolute -top-12 -start-12 w-32 h-32 rounded-full opacity-10 group-hover:opacity-20 transition blur-2xl"
                    style={{ background: t.primary_color ?? "var(--primary)" }} />
@@ -100,6 +100,49 @@ export const Tenants = memo(function Tenants({ tenants }: { tenants: any[] }) {
                 <div className="mt-4 text-xs font-semibold text-primary flex items-center gap-1 opacity-0 group-hover:opacity-100 transition">
                   زيارة المنصة <ArrowLeft className="h-3 w-3" />
                 </div>
+              </div>
+            </div>
+          </Link>
+        ))}
+      </div>
+    </section>
+  );
+});
+
+export const FeaturedCourses = memo(function FeaturedCourses({ courses }: { courses: any[] }) {
+  if (!courses?.length) return null;
+  return (
+    <section id="courses" className="container mx-auto px-4 sm:px-6 py-16 sm:py-24">
+      <SectionHead eyebrow="الدورات" title="أحدث الدورات على EduForge" subtitle="استكشف دورات مختارة من مختلف المنصات وابدأ التعلم الآن." />
+      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mt-10 sm:mt-14">
+        {courses.map((c) => (
+          <Link
+            key={c.id}
+            to="/t/$slug/courses/$courseSlug"
+            params={{ slug: c.tenant_slug, courseSlug: c.slug }}
+            preload="intent"
+            onClick={() => trackLanding("cta_click", "course_card", { course: c.slug, tenant: c.tenant_slug })}
+            className="group block bg-card border rounded-2xl overflow-hidden hover:border-primary/50 hover:shadow-xl hover:-translate-y-1 transition-all"
+          >
+            <div className="aspect-video bg-muted overflow-hidden">
+              {c.cover_url ? (
+                <img src={c.cover_url} alt={c.title} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+              ) : (
+                <div className="w-full h-full grid place-items-center bg-gradient-to-br from-primary/20 to-foreground/10">
+                  <PlayCircle className="h-10 w-10 text-primary/60" />
+                </div>
+              )}
+            </div>
+            <div className="p-4 sm:p-5">
+              <div className="text-[11px] font-bold uppercase tracking-wider text-primary/80 mb-2 truncate">{c.tenant_name}</div>
+              <h3 className="font-bold text-sm sm:text-base mb-3 line-clamp-2 min-h-[2.5rem]">{c.title}</h3>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-black text-primary">
+                  {c.is_free || !c.price || Number(c.price) === 0 ? "مجاني" : `${Number(c.price).toLocaleString("ar")} ر.س`}
+                </span>
+                <span className="text-xs text-muted-foreground inline-flex items-center gap-1 opacity-0 group-hover:opacity-100 transition">
+                  ابدأ الآن <ArrowLeft className="h-3 w-3" />
+                </span>
               </div>
             </div>
           </Link>
