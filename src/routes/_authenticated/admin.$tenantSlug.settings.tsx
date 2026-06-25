@@ -97,6 +97,70 @@ function BrandingCard({ tenant, onSaved }: { tenant: { id: string; name: string;
   );
 }
 
+const THEMES: { key: "classic" | "modern" | "bold" | "minimal"; name: string; description: string }[] = [
+  { key: "classic", name: "كلاسيكي", description: "تصميم متوازن مع رسوم وبطاقات عائمة" },
+  { key: "modern", name: "حديث", description: "تدرّج لوني كامل في الوسط مع تأثير زجاجي" },
+  { key: "bold", name: "جريء", description: "خلفية داكنة وخطوط ضخمة بأسلوب مجلّة" },
+  { key: "minimal", name: "بسيط", description: "تصميم نظيف مع مساحات واسعة" },
+];
+
+function ThemeCard({ tenant, onSaved }: { tenant: { id: string; theme: string | null; hero_title: string | null; hero_subtitle: string | null }; onSaved: () => void }) {
+  const [theme, setTheme] = useState((tenant.theme as "classic" | "modern" | "bold" | "minimal") ?? "classic");
+  const [heroTitle, setHeroTitle] = useState(tenant.hero_title ?? "");
+  const [heroSubtitle, setHeroSubtitle] = useState(tenant.hero_subtitle ?? "");
+
+  const update = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase
+        .from("tenants")
+        .update({ theme, hero_title: heroTitle || null, hero_subtitle: heroSubtitle || null })
+        .eq("id", tenant.id);
+      if (error) throw error;
+    },
+    onSuccess: () => { toast.success("تم تطبيق القالب"); onSaved(); },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>قالب الواجهة الرئيسية</CardTitle>
+        <CardDescription>اختر شكل وتصميم Hero الصفحة الرئيسية لمنصتك</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="grid sm:grid-cols-2 gap-3 mb-4">
+          {THEMES.map((t) => (
+            <button
+              key={t.key}
+              type="button"
+              onClick={() => setTheme(t.key)}
+              className={`text-right p-4 rounded-xl border-2 transition-all hover:bg-muted/50 ${
+                theme === t.key ? "border-primary ring-2 ring-primary/20 bg-primary/5" : "border-border"
+              }`}
+            >
+              <div className="font-bold mb-1">{t.name}</div>
+              <div className="text-xs text-muted-foreground">{t.description}</div>
+            </button>
+          ))}
+        </div>
+        <div className="space-y-3 pt-4 border-t">
+          <div>
+            <Label>عنوان Hero مخصص (اختياري)</Label>
+            <Input value={heroTitle} onChange={(e) => setHeroTitle(e.target.value)} placeholder="افتراضياً: اسم المنصة" />
+          </div>
+          <div>
+            <Label>وصف Hero مخصص (اختياري)</Label>
+            <Textarea rows={2} value={heroSubtitle} onChange={(e) => setHeroSubtitle(e.target.value)} placeholder="افتراضياً: الرسالة الترحيبية" />
+          </div>
+          <Button onClick={() => update.mutate()} disabled={update.isPending}>
+            {update.isPending ? "جارٍ..." : "حفظ القالب"}
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 function ContentPagesCard({ tenant, onSaved }: { tenant: { id: string; about_text: string | null; privacy_text: string | null; terms_text: string | null }; onSaved: () => void }) {
   const [form, setForm] = useState({
     about_text: tenant.about_text ?? "",
