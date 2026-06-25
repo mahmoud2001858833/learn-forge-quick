@@ -23,6 +23,7 @@ import { Route as AuthenticatedMyReferralsRouteImport } from './routes/_authenti
 import { Route as AuthenticatedMyPaymentsRouteImport } from './routes/_authenticated/my-payments'
 import { Route as AuthenticatedMyCertificatesRouteImport } from './routes/_authenticated/my-certificates'
 import { Route as AuthenticatedMyBadgesRouteImport } from './routes/_authenticated/my-badges'
+import { Route as AuthenticatedLandingAnalyticsRouteImport } from './routes/_authenticated/landing-analytics'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as TSlugIndexRouteImport } from './routes/t.$slug.index'
 import { Route as TSlugTermsRouteImport } from './routes/t.$slug.terms'
@@ -34,7 +35,6 @@ import { Route as TSlugContactRouteImport } from './routes/t.$slug.contact'
 import { Route as TSlugAuthRouteImport } from './routes/t.$slug.auth'
 import { Route as TSlugAiRouteImport } from './routes/t.$slug.ai'
 import { Route as TSlugAboutRouteImport } from './routes/t.$slug.about'
-import { Route as AuthenticatedSuperAdminLandingRouteImport } from './routes/_authenticated/super-admin.landing'
 import { Route as AuthenticatedQuizQuizIdRouteImport } from './routes/_authenticated/quiz.$quizId'
 import { Route as AuthenticatedLearnEnrollmentIdRouteImport } from './routes/_authenticated/learn.$enrollmentId'
 import { Route as AuthenticatedAssignmentAssignmentIdRouteImport } from './routes/_authenticated/assignment.$assignmentId'
@@ -131,6 +131,12 @@ const AuthenticatedMyBadgesRoute = AuthenticatedMyBadgesRouteImport.update({
   path: '/my-badges',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedLandingAnalyticsRoute =
+  AuthenticatedLandingAnalyticsRouteImport.update({
+    id: '/landing-analytics',
+    path: '/landing-analytics',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -186,12 +192,6 @@ const TSlugAboutRoute = TSlugAboutRouteImport.update({
   path: '/about',
   getParentRoute: () => TSlugRoute,
 } as any)
-const AuthenticatedSuperAdminLandingRoute =
-  AuthenticatedSuperAdminLandingRouteImport.update({
-    id: '/landing',
-    path: '/landing',
-    getParentRoute: () => AuthenticatedSuperAdminRoute,
-  } as any)
 const AuthenticatedQuizQuizIdRoute = AuthenticatedQuizQuizIdRouteImport.update({
   id: '/quiz/$quizId',
   path: '/quiz/$quizId',
@@ -336,19 +336,19 @@ export interface FileRoutesByFullPath {
   '/search': typeof SearchRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/landing-analytics': typeof AuthenticatedLandingAnalyticsRoute
   '/my-badges': typeof AuthenticatedMyBadgesRoute
   '/my-certificates': typeof AuthenticatedMyCertificatesRoute
   '/my-payments': typeof AuthenticatedMyPaymentsRoute
   '/my-referrals': typeof AuthenticatedMyReferralsRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
-  '/super-admin': typeof AuthenticatedSuperAdminRouteWithChildren
+  '/super-admin': typeof AuthenticatedSuperAdminRoute
   '/t/$slug': typeof TSlugRouteWithChildren
   '/verify/$certNumber': typeof VerifyCertNumberRoute
   '/admin/$tenantSlug': typeof AuthenticatedAdminTenantSlugRouteWithChildren
   '/assignment/$assignmentId': typeof AuthenticatedAssignmentAssignmentIdRoute
   '/learn/$enrollmentId': typeof AuthenticatedLearnEnrollmentIdRoute
   '/quiz/$quizId': typeof AuthenticatedQuizQuizIdRoute
-  '/super-admin/landing': typeof AuthenticatedSuperAdminLandingRoute
   '/t/$slug/about': typeof TSlugAboutRoute
   '/t/$slug/ai': typeof TSlugAiRoute
   '/t/$slug/auth': typeof TSlugAuthRoute
@@ -386,17 +386,17 @@ export interface FileRoutesByTo {
   '/search': typeof SearchRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/landing-analytics': typeof AuthenticatedLandingAnalyticsRoute
   '/my-badges': typeof AuthenticatedMyBadgesRoute
   '/my-certificates': typeof AuthenticatedMyCertificatesRoute
   '/my-payments': typeof AuthenticatedMyPaymentsRoute
   '/my-referrals': typeof AuthenticatedMyReferralsRoute
   '/notifications': typeof AuthenticatedNotificationsRoute
-  '/super-admin': typeof AuthenticatedSuperAdminRouteWithChildren
+  '/super-admin': typeof AuthenticatedSuperAdminRoute
   '/verify/$certNumber': typeof VerifyCertNumberRoute
   '/assignment/$assignmentId': typeof AuthenticatedAssignmentAssignmentIdRoute
   '/learn/$enrollmentId': typeof AuthenticatedLearnEnrollmentIdRoute
   '/quiz/$quizId': typeof AuthenticatedQuizQuizIdRoute
-  '/super-admin/landing': typeof AuthenticatedSuperAdminLandingRoute
   '/t/$slug/about': typeof TSlugAboutRoute
   '/t/$slug/ai': typeof TSlugAiRoute
   '/t/$slug/auth': typeof TSlugAuthRoute
@@ -436,19 +436,19 @@ export interface FileRoutesById {
   '/search': typeof SearchRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/landing-analytics': typeof AuthenticatedLandingAnalyticsRoute
   '/_authenticated/my-badges': typeof AuthenticatedMyBadgesRoute
   '/_authenticated/my-certificates': typeof AuthenticatedMyCertificatesRoute
   '/_authenticated/my-payments': typeof AuthenticatedMyPaymentsRoute
   '/_authenticated/my-referrals': typeof AuthenticatedMyReferralsRoute
   '/_authenticated/notifications': typeof AuthenticatedNotificationsRoute
-  '/_authenticated/super-admin': typeof AuthenticatedSuperAdminRouteWithChildren
+  '/_authenticated/super-admin': typeof AuthenticatedSuperAdminRoute
   '/t/$slug': typeof TSlugRouteWithChildren
   '/verify/$certNumber': typeof VerifyCertNumberRoute
   '/_authenticated/admin/$tenantSlug': typeof AuthenticatedAdminTenantSlugRouteWithChildren
   '/_authenticated/assignment/$assignmentId': typeof AuthenticatedAssignmentAssignmentIdRoute
   '/_authenticated/learn/$enrollmentId': typeof AuthenticatedLearnEnrollmentIdRoute
   '/_authenticated/quiz/$quizId': typeof AuthenticatedQuizQuizIdRoute
-  '/_authenticated/super-admin/landing': typeof AuthenticatedSuperAdminLandingRoute
   '/t/$slug/about': typeof TSlugAboutRoute
   '/t/$slug/ai': typeof TSlugAiRoute
   '/t/$slug/auth': typeof TSlugAuthRoute
@@ -488,6 +488,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/sitemap.xml'
     | '/dashboard'
+    | '/landing-analytics'
     | '/my-badges'
     | '/my-certificates'
     | '/my-payments'
@@ -500,7 +501,6 @@ export interface FileRouteTypes {
     | '/assignment/$assignmentId'
     | '/learn/$enrollmentId'
     | '/quiz/$quizId'
-    | '/super-admin/landing'
     | '/t/$slug/about'
     | '/t/$slug/ai'
     | '/t/$slug/auth'
@@ -538,6 +538,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/sitemap.xml'
     | '/dashboard'
+    | '/landing-analytics'
     | '/my-badges'
     | '/my-certificates'
     | '/my-payments'
@@ -548,7 +549,6 @@ export interface FileRouteTypes {
     | '/assignment/$assignmentId'
     | '/learn/$enrollmentId'
     | '/quiz/$quizId'
-    | '/super-admin/landing'
     | '/t/$slug/about'
     | '/t/$slug/ai'
     | '/t/$slug/auth'
@@ -587,6 +587,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/sitemap.xml'
     | '/_authenticated/dashboard'
+    | '/_authenticated/landing-analytics'
     | '/_authenticated/my-badges'
     | '/_authenticated/my-certificates'
     | '/_authenticated/my-payments'
@@ -599,7 +600,6 @@ export interface FileRouteTypes {
     | '/_authenticated/assignment/$assignmentId'
     | '/_authenticated/learn/$enrollmentId'
     | '/_authenticated/quiz/$quizId'
-    | '/_authenticated/super-admin/landing'
     | '/t/$slug/about'
     | '/t/$slug/ai'
     | '/t/$slug/auth'
@@ -742,6 +742,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMyBadgesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/landing-analytics': {
+      id: '/_authenticated/landing-analytics'
+      path: '/landing-analytics'
+      fullPath: '/landing-analytics'
+      preLoaderRoute: typeof AuthenticatedLandingAnalyticsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -818,13 +825,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/t/$slug/about'
       preLoaderRoute: typeof TSlugAboutRouteImport
       parentRoute: typeof TSlugRoute
-    }
-    '/_authenticated/super-admin/landing': {
-      id: '/_authenticated/super-admin/landing'
-      path: '/landing'
-      fullPath: '/super-admin/landing'
-      preLoaderRoute: typeof AuthenticatedSuperAdminLandingRouteImport
-      parentRoute: typeof AuthenticatedSuperAdminRoute
     }
     '/_authenticated/quiz/$quizId': {
       id: '/_authenticated/quiz/$quizId'
@@ -990,20 +990,6 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface AuthenticatedSuperAdminRouteChildren {
-  AuthenticatedSuperAdminLandingRoute: typeof AuthenticatedSuperAdminLandingRoute
-}
-
-const AuthenticatedSuperAdminRouteChildren: AuthenticatedSuperAdminRouteChildren =
-  {
-    AuthenticatedSuperAdminLandingRoute: AuthenticatedSuperAdminLandingRoute,
-  }
-
-const AuthenticatedSuperAdminRouteWithChildren =
-  AuthenticatedSuperAdminRoute._addFileChildren(
-    AuthenticatedSuperAdminRouteChildren,
-  )
-
 interface AuthenticatedAdminTenantSlugCoursesCourseIdRouteChildren {
   AuthenticatedAdminTenantSlugCoursesCourseIdQuizzesRoute: typeof AuthenticatedAdminTenantSlugCoursesCourseIdQuizzesRoute
 }
@@ -1096,12 +1082,13 @@ const AuthenticatedAdminTenantSlugRouteWithChildren =
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedLandingAnalyticsRoute: typeof AuthenticatedLandingAnalyticsRoute
   AuthenticatedMyBadgesRoute: typeof AuthenticatedMyBadgesRoute
   AuthenticatedMyCertificatesRoute: typeof AuthenticatedMyCertificatesRoute
   AuthenticatedMyPaymentsRoute: typeof AuthenticatedMyPaymentsRoute
   AuthenticatedMyReferralsRoute: typeof AuthenticatedMyReferralsRoute
   AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
-  AuthenticatedSuperAdminRoute: typeof AuthenticatedSuperAdminRouteWithChildren
+  AuthenticatedSuperAdminRoute: typeof AuthenticatedSuperAdminRoute
   AuthenticatedAdminTenantSlugRoute: typeof AuthenticatedAdminTenantSlugRouteWithChildren
   AuthenticatedAssignmentAssignmentIdRoute: typeof AuthenticatedAssignmentAssignmentIdRoute
   AuthenticatedLearnEnrollmentIdRoute: typeof AuthenticatedLearnEnrollmentIdRoute
@@ -1110,12 +1097,13 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedLandingAnalyticsRoute: AuthenticatedLandingAnalyticsRoute,
   AuthenticatedMyBadgesRoute: AuthenticatedMyBadgesRoute,
   AuthenticatedMyCertificatesRoute: AuthenticatedMyCertificatesRoute,
   AuthenticatedMyPaymentsRoute: AuthenticatedMyPaymentsRoute,
   AuthenticatedMyReferralsRoute: AuthenticatedMyReferralsRoute,
   AuthenticatedNotificationsRoute: AuthenticatedNotificationsRoute,
-  AuthenticatedSuperAdminRoute: AuthenticatedSuperAdminRouteWithChildren,
+  AuthenticatedSuperAdminRoute: AuthenticatedSuperAdminRoute,
   AuthenticatedAdminTenantSlugRoute:
     AuthenticatedAdminTenantSlugRouteWithChildren,
   AuthenticatedAssignmentAssignmentIdRoute:

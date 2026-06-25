@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { getLandingAnalytics } from "@/lib/landing.functions";
 import { ArrowRight, Eye, MousePointerClick, UserPlus, TrendingUp } from "lucide-react";
 
-export const Route = createFileRoute("/_authenticated/super-admin/landing")({
+export const Route = createFileRoute("/_authenticated/landing-analytics")({
   component: LandingAnalytics,
 });
 
