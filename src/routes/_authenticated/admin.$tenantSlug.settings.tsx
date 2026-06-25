@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
+import { CustomDomainCard } from "@/components/tenant/custom-domain-card";
 
 export const Route = createFileRoute("/_authenticated/admin/$tenantSlug/settings")({
   component: SettingsPage,
