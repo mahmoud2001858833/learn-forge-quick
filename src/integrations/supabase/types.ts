@@ -1115,6 +1115,114 @@ export type Database = {
           },
         ]
       }
+      landing_config: {
+        Row: {
+          created_at: string
+          cta_primary_label: string | null
+          cta_secondary_label: string | null
+          faq: Json
+          features: Json
+          hero_eyebrow: string | null
+          hero_subtitle: string | null
+          hero_title: string | null
+          id: string
+          is_active: boolean
+          pricing: Json
+          show_faq: boolean
+          show_features: boolean
+          show_pricing: boolean
+          show_stats: boolean
+          show_tenants: boolean
+          show_testimonials: boolean
+          steps: Json
+          testimonials: Json
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          cta_primary_label?: string | null
+          cta_secondary_label?: string | null
+          faq?: Json
+          features?: Json
+          hero_eyebrow?: string | null
+          hero_subtitle?: string | null
+          hero_title?: string | null
+          id?: string
+          is_active?: boolean
+          pricing?: Json
+          show_faq?: boolean
+          show_features?: boolean
+          show_pricing?: boolean
+          show_stats?: boolean
+          show_tenants?: boolean
+          show_testimonials?: boolean
+          steps?: Json
+          testimonials?: Json
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          cta_primary_label?: string | null
+          cta_secondary_label?: string | null
+          faq?: Json
+          features?: Json
+          hero_eyebrow?: string | null
+          hero_subtitle?: string | null
+          hero_title?: string | null
+          id?: string
+          is_active?: boolean
+          pricing?: Json
+          show_faq?: boolean
+          show_features?: boolean
+          show_pricing?: boolean
+          show_stats?: boolean
+          show_tenants?: boolean
+          show_testimonials?: boolean
+          steps?: Json
+          testimonials?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      landing_events: {
+        Row: {
+          created_at: string
+          cta_id: string | null
+          event_type: string
+          id: number
+          metadata: Json
+          path: string | null
+          referrer: string | null
+          session_id: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          cta_id?: string | null
+          event_type: string
+          id?: number
+          metadata?: Json
+          path?: string | null
+          referrer?: string | null
+          session_id?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          cta_id?: string | null
+          event_type?: string
+          id?: number
+          metadata?: Json
+          path?: string | null
+          referrer?: string | null
+          session_id?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       lesson_comments: {
         Row: {
           content: string
@@ -2641,6 +2749,7 @@ export type Database = {
         Returns: boolean
       }
       issue_certificate: { Args: { _enrollment_id: string }; Returns: string }
+      landing_events_summary: { Args: { _days?: number }; Returns: Json }
       log_activity: {
         Args: {
           _action: string
