@@ -163,12 +163,34 @@ function SignUpFlow() {
     e.preventDefault();
     setBusy(true);
     try {
-      await signupDirect({ data: form });
-      const { error } = await supabase.auth.signInWithPassword({
+      const { error: signErr } = await supabase.auth.signUp({
         email: form.email.trim(),
         password: form.password,
+        options: {
+          emailRedirectTo: window.location.origin + "/dashboard",
+          data: {
+            full_name: form.full_name,
+            phone: form.phone,
+            phone_country_code: form.phone_country_code,
+            study_year: form.study_year || null,
+            research_consent: form.research_consent,
+          },
+        },
       });
-      if (error) throw error;
+      if (signErr) throw signErr;
+      // If email confirmation is disabled in Supabase, a session is created.
+      const { data: sess } = await supabase.auth.getSession();
+      if (!sess.session) {
+        // Fallback: try password sign-in (works only if confirmations disabled)
+        const { error: inErr } = await supabase.auth.signInWithPassword({
+          email: form.email.trim(),
+          password: form.password,
+        });
+        if (inErr) {
+          toast.success("تم إنشاء الحساب. تحقّق من بريدك لتأكيد الحساب.");
+          return;
+        }
+      }
       await finalizeLogin();
       toast.success("تم إنشاء الحساب وتسجيل الدخول");
     } catch (err) {
@@ -177,6 +199,7 @@ function SignUpFlow() {
       setBusy(false);
     }
   }
+
 
   return (
     <form onSubmit={onSubmit} className="space-y-3">
