@@ -3,13 +3,9 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { z } from "zod";
 
 // ----------------------------------------------------------------------------
-// Authorization helper: user is tenant member OR enrolled in any tenant course
+// Authorization helper
 // ----------------------------------------------------------------------------
-async function ensureTenantAccess(
-  supabase: ReturnType<typeof requireSupabaseAuth> extends never ? never : any,
-  tenantId: string,
-  userId: string,
-) {
+async function ensureTenantAccess(supabase: any, tenantId: string, userId: string) {
   const { data: member } = await supabase
     .from("tenant_members")
     .select("user_id")
@@ -216,10 +212,10 @@ ${courseCtx}
     }
 
     // ----- Persist conversation + messages -----
-    let conversationId = data.conversation_id ?? null;
+    let conversationId: string;
     const lastUserMsg = [...data.messages].reverse().find((m) => m.role === "user")?.content ?? "محادثة";
 
-    if (!conversationId) {
+    if (!data.conversation_id) {
       const title = lastUserMsg.slice(0, 60);
       const { data: conv, error: convErr } = await supabase
         .from("ai_conversations")
@@ -234,16 +230,15 @@ ${courseCtx}
       if (convErr) throw new Error(convErr.message);
       conversationId = conv.id;
 
-      // First exchange: store all history we got from client + the assistant reply
       const rowsToInsert = [
         ...data.messages.map((m) => ({ conversation_id: conversationId, role: m.role, content: m.content })),
-        { conversation_id: conversationId, role: "assistant" as const, content: replyText },
+        { conversation_id: conversationId, role: "assistant", content: replyText },
       ];
       await supabase.from("ai_messages").insert(rowsToInsert);
     } else {
-      // Existing conversation: store ONLY the latest user msg + reply
+      conversationId = data.conversation_id;
       const lastClientMsg = data.messages[data.messages.length - 1];
-      const rows = [] as { conversation_id: string; role: "user" | "assistant"; content: string }[];
+      const rows: { conversation_id: string; role: string; content: string }[] = [];
       if (lastClientMsg && lastClientMsg.role === "user") {
         rows.push({ conversation_id: conversationId, role: "user", content: lastClientMsg.content });
       }
