@@ -43,6 +43,7 @@ function AdminLayout() {
         <NavItem to="/admin/$tenantSlug/bank-accounts" params={{ tenantSlug }} icon={Landmark} label="الحسابات البنكية" />
         <NavItem to="/admin/$tenantSlug/coupons" params={{ tenantSlug }} icon={Ticket} label="الكوبونات" />
         <NavItem to="/admin/$tenantSlug/referrals" params={{ tenantSlug }} icon={Share2} label="الإحالات" />
+        <NavItem to="/admin/$tenantSlug/chat" params={{ tenantSlug }} icon={MessageCircle} label="المحادثات" />
         <NavItem to="/admin/$tenantSlug/activity" params={{ tenantSlug }} icon={Activity} label="سجل النشاط" />
         <NavItem to="/admin/$tenantSlug/reports" params={{ tenantSlug }} icon={BarChart3} label="التقارير" />
         <NavItem to="/admin/$tenantSlug/settings" params={{ tenantSlug }} icon={Settings} label="الإعدادات" />
