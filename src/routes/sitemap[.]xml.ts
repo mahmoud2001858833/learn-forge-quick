@@ -4,7 +4,7 @@ import type { Database } from "@/integrations/supabase/types";
 
 const BASE_URL = "https://learn-forge-quick.lovable.app";
 
-export const Route = createFileRoute("/sitemap[.]xml")({
+export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
       GET: async () => {
