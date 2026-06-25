@@ -29,21 +29,25 @@ function SettingsPage() {
         <p className="text-muted-foreground">إدارة هوية المنصة وتشغيلها</p>
       </div>
       {tenant && <BrandingCard tenant={tenant} onSaved={() => qc.invalidateQueries({ queryKey: ["tenant"] })} />}
+      {tenant && <ContentPagesCard tenant={tenant} onSaved={() => qc.invalidateQueries({ queryKey: ["tenant"] })} />}
       {tenant && <PlatformSettingsCard tenantId={tenant.id} />}
       {tenant && <SecretsCard tenantId={tenant.id} />}
     </div>
   );
 }
 
-function BrandingCard({ tenant, onSaved }: { tenant: { id: string; name: string; description: string | null; primary_color: string; secondary_color: string; logo_url: string | null; currency: string; welcome_message: string | null }; onSaved: () => void }) {
+function BrandingCard({ tenant, onSaved }: { tenant: { id: string; name: string; description: string | null; primary_color: string; secondary_color: string; logo_url: string | null; hero_image_url: string | null; currency: string; welcome_message: string | null; contact_email: string | null; contact_phone: string | null }; onSaved: () => void }) {
   const [form, setForm] = useState({
     name: tenant.name,
     description: tenant.description ?? "",
     primary_color: tenant.primary_color,
     secondary_color: tenant.secondary_color,
     logo_url: tenant.logo_url ?? "",
+    hero_image_url: tenant.hero_image_url ?? "",
     currency: tenant.currency,
     welcome_message: tenant.welcome_message ?? "",
+    contact_email: tenant.contact_email ?? "",
+    contact_phone: tenant.contact_phone ?? "",
   });
 
   const update = useMutation({
@@ -58,20 +62,67 @@ function BrandingCard({ tenant, onSaved }: { tenant: { id: string; name: string;
   return (
     <Card>
       <CardHeader>
-        <CardTitle>الهوية البصرية</CardTitle>
-        <CardDescription>اسم المنصة، الألوان، واللوغو</CardDescription>
+        <CardTitle>الهوية البصرية والمعلومات الأساسية</CardTitle>
+        <CardDescription>اسم المنصة، الألوان، اللوغو، صورة الـ Hero، ومعلومات التواصل</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={(e) => { e.preventDefault(); update.mutate(); }} className="space-y-4">
           <div><Label>اسم المنصة</Label><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
-          <div><Label>الوصف</Label><Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} /></div>
-          <div><Label>رسالة ترحيبية</Label><Textarea value={form.welcome_message} onChange={(e) => setForm({ ...form, welcome_message: e.target.value })} /></div>
-          <div><Label>رابط اللوغو</Label><Input value={form.logo_url} onChange={(e) => setForm({ ...form, logo_url: e.target.value })} placeholder="https://..." /></div>
+          <div><Label>الوصف القصير</Label><Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={2} /></div>
+          <div><Label>رسالة ترحيبية (تظهر في الـ Hero)</Label><Textarea value={form.welcome_message} onChange={(e) => setForm({ ...form, welcome_message: e.target.value })} rows={2} /></div>
+          <div className="grid sm:grid-cols-2 gap-3">
+            <div><Label>رابط اللوغو</Label><Input value={form.logo_url} onChange={(e) => setForm({ ...form, logo_url: e.target.value })} placeholder="https://..." /></div>
+            <div><Label>رابط صورة الـ Hero (اختياري)</Label><Input value={form.hero_image_url} onChange={(e) => setForm({ ...form, hero_image_url: e.target.value })} placeholder="https://..." /></div>
+          </div>
+          {form.logo_url && (
+            <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/30">
+              <img src={form.logo_url} alt="preview" className="h-16 w-16 rounded-xl object-cover border" />
+              <span className="text-sm text-muted-foreground">معاينة اللوغو</span>
+            </div>
+          )}
           <div className="grid grid-cols-3 gap-3">
             <div><Label>لون أساسي</Label><Input type="color" value={form.primary_color} onChange={(e) => setForm({ ...form, primary_color: e.target.value })} className="h-10" /></div>
             <div><Label>لون ثانوي</Label><Input type="color" value={form.secondary_color} onChange={(e) => setForm({ ...form, secondary_color: e.target.value })} className="h-10" /></div>
             <div><Label>العملة</Label><Input value={form.currency} onChange={(e) => setForm({ ...form, currency: e.target.value.toUpperCase() })} maxLength={5} /></div>
           </div>
+          <div className="grid sm:grid-cols-2 gap-3 pt-2 border-t">
+            <div><Label>بريد التواصل</Label><Input type="email" value={form.contact_email} onChange={(e) => setForm({ ...form, contact_email: e.target.value })} placeholder="info@example.com" /></div>
+            <div><Label>هاتف التواصل</Label><Input value={form.contact_phone} onChange={(e) => setForm({ ...form, contact_phone: e.target.value })} placeholder="+966 ..." /></div>
+          </div>
+          <Button type="submit" disabled={update.isPending}>{update.isPending ? "جارٍ..." : "حفظ"}</Button>
+        </form>
+      </CardContent>
+    </Card>
+  );
+}
+
+function ContentPagesCard({ tenant, onSaved }: { tenant: { id: string; about_text: string | null; privacy_text: string | null; terms_text: string | null }; onSaved: () => void }) {
+  const [form, setForm] = useState({
+    about_text: tenant.about_text ?? "",
+    privacy_text: tenant.privacy_text ?? "",
+    terms_text: tenant.terms_text ?? "",
+  });
+
+  const update = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.from("tenants").update(form).eq("id", tenant.id);
+      if (error) throw error;
+    },
+    onSuccess: () => { toast.success("تم الحفظ"); onSaved(); },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>الصفحات التعريفية</CardTitle>
+        <CardDescription>محتوى صفحات "من نحن"، "سياسة الخصوصية"، و"الشروط"</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={(e) => { e.preventDefault(); update.mutate(); }} className="space-y-4">
+          <div><Label>من نحن</Label><Textarea rows={6} value={form.about_text} onChange={(e) => setForm({ ...form, about_text: e.target.value })} placeholder="عرّف الزوار بمنصتك ورسالتك..." /></div>
+          <div><Label>سياسة الخصوصية</Label><Textarea rows={6} value={form.privacy_text} onChange={(e) => setForm({ ...form, privacy_text: e.target.value })} placeholder="كيف تتعاملون مع بيانات المستخدمين..." /></div>
+          <div><Label>شروط الاستخدام</Label><Textarea rows={6} value={form.terms_text} onChange={(e) => setForm({ ...form, terms_text: e.target.value })} placeholder="الشروط والأحكام لاستخدام المنصة..." /></div>
           <Button type="submit" disabled={update.isPending}>{update.isPending ? "جارٍ..." : "حفظ"}</Button>
         </form>
       </CardContent>

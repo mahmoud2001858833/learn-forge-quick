@@ -1,0 +1,10 @@
+
+ALTER TABLE public.tenants
+  ADD COLUMN IF NOT EXISTS about_text TEXT,
+  ADD COLUMN IF NOT EXISTS privacy_text TEXT,
+  ADD COLUMN IF NOT EXISTS terms_text TEXT,
+  ADD COLUMN IF NOT EXISTS contact_email TEXT,
+  ADD COLUMN IF NOT EXISTS contact_phone TEXT,
+  ADD COLUMN IF NOT EXISTS hero_image_url TEXT,
+  ADD COLUMN IF NOT EXISTS custom_domain TEXT UNIQUE,
+  ADD COLUMN IF NOT EXISTS custom_domain_verified BOOLEAN NOT NULL DEFAULT false;

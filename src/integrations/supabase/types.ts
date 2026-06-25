@@ -1708,59 +1708,83 @@ export type Database = {
       }
       tenants: {
         Row: {
+          about_text: string | null
           activated_at: string | null
+          contact_email: string | null
+          contact_phone: string | null
           created_at: string
           currency: string
+          custom_domain: string | null
+          custom_domain_verified: boolean
           description: string | null
+          hero_image_url: string | null
           id: string
           logo_url: string | null
           name: string
           owner_id: string
           plan: Database["public"]["Enums"]["tenant_plan"]
           primary_color: string
+          privacy_text: string | null
           secondary_color: string
           slug: string
           status: Database["public"]["Enums"]["tenant_status"]
           suspended_at: string | null
           suspension_reason: string | null
+          terms_text: string | null
           updated_at: string
           welcome_message: string | null
         }
         Insert: {
+          about_text?: string | null
           activated_at?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
           created_at?: string
           currency?: string
+          custom_domain?: string | null
+          custom_domain_verified?: boolean
           description?: string | null
+          hero_image_url?: string | null
           id?: string
           logo_url?: string | null
           name: string
           owner_id: string
           plan?: Database["public"]["Enums"]["tenant_plan"]
           primary_color?: string
+          privacy_text?: string | null
           secondary_color?: string
           slug: string
           status?: Database["public"]["Enums"]["tenant_status"]
           suspended_at?: string | null
           suspension_reason?: string | null
+          terms_text?: string | null
           updated_at?: string
           welcome_message?: string | null
         }
         Update: {
+          about_text?: string | null
           activated_at?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
           created_at?: string
           currency?: string
+          custom_domain?: string | null
+          custom_domain_verified?: boolean
           description?: string | null
+          hero_image_url?: string | null
           id?: string
           logo_url?: string | null
           name?: string
           owner_id?: string
           plan?: Database["public"]["Enums"]["tenant_plan"]
           primary_color?: string
+          privacy_text?: string | null
           secondary_color?: string
           slug?: string
           status?: Database["public"]["Enums"]["tenant_status"]
           suspended_at?: string | null
           suspension_reason?: string | null
+          terms_text?: string | null
           updated_at?: string
           welcome_message?: string | null
         }

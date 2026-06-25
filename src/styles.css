@@ -142,3 +142,20 @@
     color: var(--color-foreground);
   }
 }
+
+@layer utilities {
+  .bg-grid-pattern {
+    background-image:
+      linear-gradient(to right, currentColor 1px, transparent 1px),
+      linear-gradient(to bottom, currentColor 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  @keyframes bounce-slow {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+  }
+  .animate-bounce-slow {
+    animation: bounce-slow 4s ease-in-out infinite;
+  }
+}
