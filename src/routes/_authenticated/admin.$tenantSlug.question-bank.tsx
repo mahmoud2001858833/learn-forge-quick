@@ -147,19 +147,20 @@ function QForm({ tenantId, userId, courses, editing, onDone }: {
   const [choices, setChoices] = useState<Choice[]>([]);
   const [busy, setBusy] = useState(false);
 
-  // Load existing choices when editing
-  useState(() => {
+  useEffect(() => {
     if (editing?.id) {
       supabase.from("question_bank_choices").select("*").eq("question_id", editing.id).order("order_index").then(({ data }) => {
         setChoices((data ?? []) as any);
       });
     } else if (type === "true_false") {
       setChoices([{ choice_text: "صح", is_correct: true, order_index: 0 }, { choice_text: "خطأ", is_correct: false, order_index: 1 }]);
-    } else if (type === "mcq") {
+    } else if (type === "mcq" && choices.length === 0) {
       setChoices([{ choice_text: "", is_correct: true, order_index: 0 }, { choice_text: "", is_correct: false, order_index: 1 }]);
+    } else if (type === "short_answer") {
+      setChoices([]);
     }
-    return undefined;
-  });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editing?.id, type]);
 
   function addChoice() { setChoices([...choices, { choice_text: "", is_correct: false, order_index: choices.length }]); }
   function updateChoice(i: number, patch: Partial<Choice>) { setChoices(choices.map((c, idx) => idx === i ? { ...c, ...patch } : c)); }
