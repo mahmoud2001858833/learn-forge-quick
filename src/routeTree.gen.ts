@@ -23,6 +23,7 @@ import { Route as AuthenticatedMyReferralsRouteImport } from './routes/_authenti
 import { Route as AuthenticatedMyPaymentsRouteImport } from './routes/_authenticated/my-payments'
 import { Route as AuthenticatedMyCertificatesRouteImport } from './routes/_authenticated/my-certificates'
 import { Route as AuthenticatedMyBadgesRouteImport } from './routes/_authenticated/my-badges'
+import { Route as AuthenticatedLandingAnalyticsRouteImport } from './routes/_authenticated/landing-analytics'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as TSlugIndexRouteImport } from './routes/t.$slug.index'
 import { Route as TSlugTermsRouteImport } from './routes/t.$slug.terms'
@@ -130,6 +131,12 @@ const AuthenticatedMyBadgesRoute = AuthenticatedMyBadgesRouteImport.update({
   path: '/my-badges',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedLandingAnalyticsRoute =
+  AuthenticatedLandingAnalyticsRouteImport.update({
+    id: '/landing-analytics',
+    path: '/landing-analytics',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -329,6 +336,7 @@ export interface FileRoutesByFullPath {
   '/search': typeof SearchRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/landing-analytics': typeof AuthenticatedLandingAnalyticsRoute
   '/my-badges': typeof AuthenticatedMyBadgesRoute
   '/my-certificates': typeof AuthenticatedMyCertificatesRoute
   '/my-payments': typeof AuthenticatedMyPaymentsRoute
@@ -378,6 +386,7 @@ export interface FileRoutesByTo {
   '/search': typeof SearchRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/landing-analytics': typeof AuthenticatedLandingAnalyticsRoute
   '/my-badges': typeof AuthenticatedMyBadgesRoute
   '/my-certificates': typeof AuthenticatedMyCertificatesRoute
   '/my-payments': typeof AuthenticatedMyPaymentsRoute
@@ -427,6 +436,7 @@ export interface FileRoutesById {
   '/search': typeof SearchRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/landing-analytics': typeof AuthenticatedLandingAnalyticsRoute
   '/_authenticated/my-badges': typeof AuthenticatedMyBadgesRoute
   '/_authenticated/my-certificates': typeof AuthenticatedMyCertificatesRoute
   '/_authenticated/my-payments': typeof AuthenticatedMyPaymentsRoute
@@ -478,6 +488,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/sitemap.xml'
     | '/dashboard'
+    | '/landing-analytics'
     | '/my-badges'
     | '/my-certificates'
     | '/my-payments'
@@ -527,6 +538,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/sitemap.xml'
     | '/dashboard'
+    | '/landing-analytics'
     | '/my-badges'
     | '/my-certificates'
     | '/my-payments'
@@ -575,6 +587,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/sitemap.xml'
     | '/_authenticated/dashboard'
+    | '/_authenticated/landing-analytics'
     | '/_authenticated/my-badges'
     | '/_authenticated/my-certificates'
     | '/_authenticated/my-payments'
@@ -727,6 +740,13 @@ declare module '@tanstack/react-router' {
       path: '/my-badges'
       fullPath: '/my-badges'
       preLoaderRoute: typeof AuthenticatedMyBadgesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/landing-analytics': {
+      id: '/_authenticated/landing-analytics'
+      path: '/landing-analytics'
+      fullPath: '/landing-analytics'
+      preLoaderRoute: typeof AuthenticatedLandingAnalyticsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/dashboard': {
@@ -1062,6 +1082,7 @@ const AuthenticatedAdminTenantSlugRouteWithChildren =
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedLandingAnalyticsRoute: typeof AuthenticatedLandingAnalyticsRoute
   AuthenticatedMyBadgesRoute: typeof AuthenticatedMyBadgesRoute
   AuthenticatedMyCertificatesRoute: typeof AuthenticatedMyCertificatesRoute
   AuthenticatedMyPaymentsRoute: typeof AuthenticatedMyPaymentsRoute
@@ -1076,6 +1097,7 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedLandingAnalyticsRoute: AuthenticatedLandingAnalyticsRoute,
   AuthenticatedMyBadgesRoute: AuthenticatedMyBadgesRoute,
   AuthenticatedMyCertificatesRoute: AuthenticatedMyCertificatesRoute,
   AuthenticatedMyPaymentsRoute: AuthenticatedMyPaymentsRoute,

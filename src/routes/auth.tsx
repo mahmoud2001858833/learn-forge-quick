@@ -186,11 +186,13 @@ function SignUpFlow() {
         });
         if (inErr) {
           toast.success("تم إنشاء الحساب. تحقّق من بريدك لتأكيد الحساب.");
+          import("@/lib/landing-track").then(m => m.trackLanding("signup_completed", "email_confirm_required"));
           return;
         }
       }
       await finalizeLogin();
       toast.success("تم إنشاء الحساب وتسجيل الدخول");
+      import("@/lib/landing-track").then(m => m.trackLanding("signup_completed", "email_password"));
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "تعذّر إنشاء الحساب");
     } finally {
