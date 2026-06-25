@@ -1806,6 +1806,8 @@ export type Database = {
           custom_domain_verified: boolean
           description: string | null
           hero_image_url: string | null
+          hero_subtitle: string | null
+          hero_title: string | null
           id: string
           logo_url: string | null
           name: string
@@ -1819,6 +1821,7 @@ export type Database = {
           suspended_at: string | null
           suspension_reason: string | null
           terms_text: string | null
+          theme: string
           updated_at: string
           welcome_message: string | null
         }
@@ -1833,6 +1836,8 @@ export type Database = {
           custom_domain_verified?: boolean
           description?: string | null
           hero_image_url?: string | null
+          hero_subtitle?: string | null
+          hero_title?: string | null
           id?: string
           logo_url?: string | null
           name: string
@@ -1846,6 +1851,7 @@ export type Database = {
           suspended_at?: string | null
           suspension_reason?: string | null
           terms_text?: string | null
+          theme?: string
           updated_at?: string
           welcome_message?: string | null
         }
@@ -1860,6 +1866,8 @@ export type Database = {
           custom_domain_verified?: boolean
           description?: string | null
           hero_image_url?: string | null
+          hero_subtitle?: string | null
+          hero_title?: string | null
           id?: string
           logo_url?: string | null
           name?: string
@@ -1873,6 +1881,7 @@ export type Database = {
           suspended_at?: string | null
           suspension_reason?: string | null
           terms_text?: string | null
+          theme?: string
           updated_at?: string
           welcome_message?: string | null
         }
