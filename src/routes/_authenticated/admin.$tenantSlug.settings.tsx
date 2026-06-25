@@ -29,6 +29,7 @@ function SettingsPage() {
         <p className="text-muted-foreground">إدارة هوية المنصة وتشغيلها</p>
       </div>
       {tenant && <BrandingCard tenant={tenant} onSaved={() => qc.invalidateQueries({ queryKey: ["tenant"] })} />}
+      {tenant && <ThemeCard tenant={tenant} onSaved={() => qc.invalidateQueries({ queryKey: ["tenant"] })} /> }
       {tenant && <ContentPagesCard tenant={tenant} onSaved={() => qc.invalidateQueries({ queryKey: ["tenant"] })} />}
       {tenant && <PlatformSettingsCard tenantId={tenant.id} />}
       {tenant && <SecretsCard tenantId={tenant.id} />}
