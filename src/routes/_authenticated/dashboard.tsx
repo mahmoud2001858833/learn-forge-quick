@@ -97,7 +97,7 @@ function Dashboard() {
               <h2 className="text-2xl font-bold">منصاتي</h2>
               <p className="text-muted-foreground text-sm">المنصات التعليمية التي تملكها</p>
             </div>
-            <CreateTenantDialog />
+            <CreateTenantWizard />
           </div>
           {ownedTenants && ownedTenants.length === 0 && (
             <Card><CardContent className="p-10 text-center text-muted-foreground">لم تنشئ أي منصة بعد. اضغط "منصة جديدة" للبدء.</CardContent></Card>
