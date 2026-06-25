@@ -1803,6 +1803,8 @@ export type Database = {
           created_at: string
           currency: string
           custom_domain: string | null
+          custom_domain_requested_at: string | null
+          custom_domain_verification_token: string | null
           custom_domain_verified: boolean
           description: string | null
           hero_image_url: string | null
@@ -1833,6 +1835,8 @@ export type Database = {
           created_at?: string
           currency?: string
           custom_domain?: string | null
+          custom_domain_requested_at?: string | null
+          custom_domain_verification_token?: string | null
           custom_domain_verified?: boolean
           description?: string | null
           hero_image_url?: string | null
@@ -1863,6 +1867,8 @@ export type Database = {
           created_at?: string
           currency?: string
           custom_domain?: string | null
+          custom_domain_requested_at?: string | null
+          custom_domain_verification_token?: string | null
           custom_domain_verified?: boolean
           description?: string | null
           hero_image_url?: string | null
