@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { GraduationCap, BookOpen, Info, Shield, FileText, Mail } from "lucide-react";
 import { useTenantSettings, MarqueeBar, MaintenanceGate } from "@/components/tenant/platform-bars";
 import { Button } from "@/components/ui/button";
+import { FloatingChat } from "@/components/tenant/floating-chat";
 
 export const Route = createFileRoute("/t/$slug")({
   component: TenantLayout,
