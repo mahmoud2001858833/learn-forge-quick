@@ -2125,6 +2125,47 @@ export type Database = {
           },
         ]
       }
+      user_gamification: {
+        Row: {
+          created_at: string
+          current_streak: number
+          last_active_date: string | null
+          longest_streak: number
+          tenant_id: string
+          total_xp: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_streak?: number
+          last_active_date?: string | null
+          longest_streak?: number
+          tenant_id: string
+          total_xp?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_streak?: number
+          last_active_date?: string | null
+          longest_streak?: number
+          tenant_id?: string
+          total_xp?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_gamification_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -2211,6 +2252,44 @@ export type Database = {
           },
         ]
       }
+      xp_events: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          meta: Json | null
+          reason: string
+          tenant_id: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          meta?: Json | null
+          reason: string
+          tenant_id: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          meta?: Json | null
+          reason?: string
+          tenant_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "xp_events_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       quiz_choices_public: {
@@ -2257,7 +2336,33 @@ export type Database = {
         Args: { _code: string; _tenant_id?: string; _user_id: string }
         Returns: string
       }
+      award_xp: {
+        Args: {
+          _amount: number
+          _meta?: Json
+          _reason: string
+          _tenant_id: string
+          _user_id: string
+        }
+        Returns: {
+          created_at: string
+          current_streak: number
+          last_active_date: string | null
+          longest_streak: number
+          tenant_id: string
+          total_xp: number
+          updated_at: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "user_gamification"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       bump_global_logout: { Args: { _user_id: string }; Returns: undefined }
+      compute_level: { Args: { _xp: number }; Returns: number }
       course_tenant: { Args: { _course_id: string }; Returns: string }
       create_notification: {
         Args: {
@@ -2364,6 +2469,18 @@ export type Database = {
           stage: string
         }[]
       }
+      tenant_leaderboard: {
+        Args: { _limit?: number; _period?: string; _tenant_id: string }
+        Returns: {
+          avatar_url: string
+          current_streak: number
+          full_name: string
+          level: number
+          rank: number
+          total_xp: number
+          user_id: string
+        }[]
+      }
       tenant_overview_stats: { Args: { _tenant_id: string }; Returns: Json }
       tenant_revenue_by_day: {
         Args: { _days?: number; _tenant_id: string }
@@ -2392,6 +2509,18 @@ export type Database = {
           title: string
         }[]
       }
+      user_gamification_summary: {
+        Args: { _tenant_id: string; _user_id: string }
+        Returns: {
+          current_streak: number
+          level: number
+          longest_streak: number
+          rank: number
+          total_xp: number
+          xp_for_next: number
+          xp_into_level: number
+        }[]
+      }
       validate_coupon: {
         Args: {
           _amount: number
@@ -2407,6 +2536,7 @@ export type Database = {
           message: string
         }[]
       }
+      xp_for_level: { Args: { _level: number }; Returns: number }
     }
     Enums: {
       app_role: "super_admin"

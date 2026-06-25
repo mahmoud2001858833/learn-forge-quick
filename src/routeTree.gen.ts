@@ -28,6 +28,7 @@ import { Route as TSlugIndexRouteImport } from './routes/t.$slug.index'
 import { Route as TSlugTermsRouteImport } from './routes/t.$slug.terms'
 import { Route as TSlugPrivacyRouteImport } from './routes/t.$slug.privacy'
 import { Route as TSlugLiveRouteImport } from './routes/t.$slug.live'
+import { Route as TSlugLeaderboardRouteImport } from './routes/t.$slug.leaderboard'
 import { Route as TSlugCoursesRouteImport } from './routes/t.$slug.courses'
 import { Route as TSlugContactRouteImport } from './routes/t.$slug.contact'
 import { Route as TSlugAuthRouteImport } from './routes/t.$slug.auth'
@@ -149,6 +150,11 @@ const TSlugPrivacyRoute = TSlugPrivacyRouteImport.update({
 const TSlugLiveRoute = TSlugLiveRouteImport.update({
   id: '/live',
   path: '/live',
+  getParentRoute: () => TSlugRoute,
+} as any)
+const TSlugLeaderboardRoute = TSlugLeaderboardRouteImport.update({
+  id: '/leaderboard',
+  path: '/leaderboard',
   getParentRoute: () => TSlugRoute,
 } as any)
 const TSlugCoursesRoute = TSlugCoursesRouteImport.update({
@@ -318,6 +324,7 @@ export interface FileRoutesByFullPath {
   '/t/$slug/auth': typeof TSlugAuthRoute
   '/t/$slug/contact': typeof TSlugContactRoute
   '/t/$slug/courses': typeof TSlugCoursesRouteWithChildren
+  '/t/$slug/leaderboard': typeof TSlugLeaderboardRoute
   '/t/$slug/live': typeof TSlugLiveRoute
   '/t/$slug/privacy': typeof TSlugPrivacyRoute
   '/t/$slug/terms': typeof TSlugTermsRoute
@@ -361,6 +368,7 @@ export interface FileRoutesByTo {
   '/t/$slug/auth': typeof TSlugAuthRoute
   '/t/$slug/contact': typeof TSlugContactRoute
   '/t/$slug/courses': typeof TSlugCoursesRouteWithChildren
+  '/t/$slug/leaderboard': typeof TSlugLeaderboardRoute
   '/t/$slug/live': typeof TSlugLiveRoute
   '/t/$slug/privacy': typeof TSlugPrivacyRoute
   '/t/$slug/terms': typeof TSlugTermsRoute
@@ -408,6 +416,7 @@ export interface FileRoutesById {
   '/t/$slug/auth': typeof TSlugAuthRoute
   '/t/$slug/contact': typeof TSlugContactRoute
   '/t/$slug/courses': typeof TSlugCoursesRouteWithChildren
+  '/t/$slug/leaderboard': typeof TSlugLeaderboardRoute
   '/t/$slug/live': typeof TSlugLiveRoute
   '/t/$slug/privacy': typeof TSlugPrivacyRoute
   '/t/$slug/terms': typeof TSlugTermsRoute
@@ -455,6 +464,7 @@ export interface FileRouteTypes {
     | '/t/$slug/auth'
     | '/t/$slug/contact'
     | '/t/$slug/courses'
+    | '/t/$slug/leaderboard'
     | '/t/$slug/live'
     | '/t/$slug/privacy'
     | '/t/$slug/terms'
@@ -498,6 +508,7 @@ export interface FileRouteTypes {
     | '/t/$slug/auth'
     | '/t/$slug/contact'
     | '/t/$slug/courses'
+    | '/t/$slug/leaderboard'
     | '/t/$slug/live'
     | '/t/$slug/privacy'
     | '/t/$slug/terms'
@@ -544,6 +555,7 @@ export interface FileRouteTypes {
     | '/t/$slug/auth'
     | '/t/$slug/contact'
     | '/t/$slug/courses'
+    | '/t/$slug/leaderboard'
     | '/t/$slug/live'
     | '/t/$slug/privacy'
     | '/t/$slug/terms'
@@ -711,6 +723,13 @@ declare module '@tanstack/react-router' {
       path: '/live'
       fullPath: '/t/$slug/live'
       preLoaderRoute: typeof TSlugLiveRouteImport
+      parentRoute: typeof TSlugRoute
+    }
+    '/t/$slug/leaderboard': {
+      id: '/t/$slug/leaderboard'
+      path: '/leaderboard'
+      fullPath: '/t/$slug/leaderboard'
+      preLoaderRoute: typeof TSlugLeaderboardRouteImport
       parentRoute: typeof TSlugRoute
     }
     '/t/$slug/courses': {
@@ -1023,6 +1042,7 @@ interface TSlugRouteChildren {
   TSlugAuthRoute: typeof TSlugAuthRoute
   TSlugContactRoute: typeof TSlugContactRoute
   TSlugCoursesRoute: typeof TSlugCoursesRouteWithChildren
+  TSlugLeaderboardRoute: typeof TSlugLeaderboardRoute
   TSlugLiveRoute: typeof TSlugLiveRoute
   TSlugPrivacyRoute: typeof TSlugPrivacyRoute
   TSlugTermsRoute: typeof TSlugTermsRoute
@@ -1035,6 +1055,7 @@ const TSlugRouteChildren: TSlugRouteChildren = {
   TSlugAuthRoute: TSlugAuthRoute,
   TSlugContactRoute: TSlugContactRoute,
   TSlugCoursesRoute: TSlugCoursesRouteWithChildren,
+  TSlugLeaderboardRoute: TSlugLeaderboardRoute,
   TSlugLiveRoute: TSlugLiveRoute,
   TSlugPrivacyRoute: TSlugPrivacyRoute,
   TSlugTermsRoute: TSlugTermsRoute,
