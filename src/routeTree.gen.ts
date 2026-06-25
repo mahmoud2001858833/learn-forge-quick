@@ -30,6 +30,7 @@ import { Route as TSlugPrivacyRouteImport } from './routes/t.$slug.privacy'
 import { Route as TSlugCoursesRouteImport } from './routes/t.$slug.courses'
 import { Route as TSlugContactRouteImport } from './routes/t.$slug.contact'
 import { Route as TSlugAuthRouteImport } from './routes/t.$slug.auth'
+import { Route as TSlugAiRouteImport } from './routes/t.$slug.ai'
 import { Route as TSlugAboutRouteImport } from './routes/t.$slug.about'
 import { Route as AuthenticatedQuizQuizIdRouteImport } from './routes/_authenticated/quiz.$quizId'
 import { Route as AuthenticatedLearnEnrollmentIdRouteImport } from './routes/_authenticated/learn.$enrollmentId'
@@ -156,6 +157,11 @@ const TSlugContactRoute = TSlugContactRouteImport.update({
 const TSlugAuthRoute = TSlugAuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => TSlugRoute,
+} as any)
+const TSlugAiRoute = TSlugAiRouteImport.update({
+  id: '/ai',
+  path: '/ai',
   getParentRoute: () => TSlugRoute,
 } as any)
 const TSlugAboutRoute = TSlugAboutRouteImport.update({
@@ -295,6 +301,7 @@ export interface FileRoutesByFullPath {
   '/learn/$enrollmentId': typeof AuthenticatedLearnEnrollmentIdRoute
   '/quiz/$quizId': typeof AuthenticatedQuizQuizIdRoute
   '/t/$slug/about': typeof TSlugAboutRoute
+  '/t/$slug/ai': typeof TSlugAiRoute
   '/t/$slug/auth': typeof TSlugAuthRoute
   '/t/$slug/contact': typeof TSlugContactRoute
   '/t/$slug/courses': typeof TSlugCoursesRouteWithChildren
@@ -335,6 +342,7 @@ export interface FileRoutesByTo {
   '/learn/$enrollmentId': typeof AuthenticatedLearnEnrollmentIdRoute
   '/quiz/$quizId': typeof AuthenticatedQuizQuizIdRoute
   '/t/$slug/about': typeof TSlugAboutRoute
+  '/t/$slug/ai': typeof TSlugAiRoute
   '/t/$slug/auth': typeof TSlugAuthRoute
   '/t/$slug/contact': typeof TSlugContactRoute
   '/t/$slug/courses': typeof TSlugCoursesRouteWithChildren
@@ -379,6 +387,7 @@ export interface FileRoutesById {
   '/_authenticated/learn/$enrollmentId': typeof AuthenticatedLearnEnrollmentIdRoute
   '/_authenticated/quiz/$quizId': typeof AuthenticatedQuizQuizIdRoute
   '/t/$slug/about': typeof TSlugAboutRoute
+  '/t/$slug/ai': typeof TSlugAiRoute
   '/t/$slug/auth': typeof TSlugAuthRoute
   '/t/$slug/contact': typeof TSlugContactRoute
   '/t/$slug/courses': typeof TSlugCoursesRouteWithChildren
@@ -423,6 +432,7 @@ export interface FileRouteTypes {
     | '/learn/$enrollmentId'
     | '/quiz/$quizId'
     | '/t/$slug/about'
+    | '/t/$slug/ai'
     | '/t/$slug/auth'
     | '/t/$slug/contact'
     | '/t/$slug/courses'
@@ -463,6 +473,7 @@ export interface FileRouteTypes {
     | '/learn/$enrollmentId'
     | '/quiz/$quizId'
     | '/t/$slug/about'
+    | '/t/$slug/ai'
     | '/t/$slug/auth'
     | '/t/$slug/contact'
     | '/t/$slug/courses'
@@ -506,6 +517,7 @@ export interface FileRouteTypes {
     | '/_authenticated/learn/$enrollmentId'
     | '/_authenticated/quiz/$quizId'
     | '/t/$slug/about'
+    | '/t/$slug/ai'
     | '/t/$slug/auth'
     | '/t/$slug/contact'
     | '/t/$slug/courses'
@@ -688,6 +700,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/t/$slug/auth'
       preLoaderRoute: typeof TSlugAuthRouteImport
+      parentRoute: typeof TSlugRoute
+    }
+    '/t/$slug/ai': {
+      id: '/t/$slug/ai'
+      path: '/ai'
+      fullPath: '/t/$slug/ai'
+      preLoaderRoute: typeof TSlugAiRouteImport
       parentRoute: typeof TSlugRoute
     }
     '/t/$slug/about': {
@@ -958,6 +977,7 @@ const TSlugCoursesRouteWithChildren = TSlugCoursesRoute._addFileChildren(
 
 interface TSlugRouteChildren {
   TSlugAboutRoute: typeof TSlugAboutRoute
+  TSlugAiRoute: typeof TSlugAiRoute
   TSlugAuthRoute: typeof TSlugAuthRoute
   TSlugContactRoute: typeof TSlugContactRoute
   TSlugCoursesRoute: typeof TSlugCoursesRouteWithChildren
@@ -968,6 +988,7 @@ interface TSlugRouteChildren {
 
 const TSlugRouteChildren: TSlugRouteChildren = {
   TSlugAboutRoute: TSlugAboutRoute,
+  TSlugAiRoute: TSlugAiRoute,
   TSlugAuthRoute: TSlugAuthRoute,
   TSlugContactRoute: TSlugContactRoute,
   TSlugCoursesRoute: TSlugCoursesRouteWithChildren,
