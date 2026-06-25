@@ -109,10 +109,10 @@ function TenantLayout() {
 
             {/* Auth actions */}
             <div className="flex items-center gap-2 shrink-0">
-              <Link to="/auth" className="hidden sm:block">
+              <Link to="/t/$slug/auth" params={{ slug }} search={{ mode: "signin" }} className="hidden sm:block">
                 <Button variant="ghost" size="sm">تسجيل الدخول</Button>
               </Link>
-              <Link to="/auth">
+              <Link to="/t/$slug/auth" params={{ slug }} search={{ mode: "signup" }}>
                 <Button
                   size="sm"
                   className="text-white border-0"
