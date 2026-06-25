@@ -1,7 +1,7 @@
 import { createFileRoute, Link, Outlet, useParams } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { LayoutDashboard, BookOpen, Users, Settings, ArrowRight, GraduationCap, Package, Landmark, Receipt, Ticket, Share2, Activity, BarChart3, MessageCircle, Video } from "lucide-react";
+import { LayoutDashboard, BookOpen, Users, Settings, ArrowRight, GraduationCap, Package, Landmark, Receipt, Ticket, Share2, Activity, BarChart3, MessageCircle, Video, Library, ClipboardCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { NotificationsBell } from "@/components/notifications-bell";
 
@@ -37,6 +37,8 @@ function AdminLayout() {
         <NavItem to="/admin/$tenantSlug" params={{ tenantSlug }} icon={LayoutDashboard} label="نظرة عامة" exact />
         <NavItem to="/admin/$tenantSlug/courses" params={{ tenantSlug }} icon={BookOpen} label="الدورات" />
         <NavItem to="/admin/$tenantSlug/bundles" params={{ tenantSlug }} icon={Package} label="الحزم" />
+        <NavItem to="/admin/$tenantSlug/question-bank" params={{ tenantSlug }} icon={Library} label="بنك الأسئلة" />
+        <NavItem to="/admin/$tenantSlug/assignments" params={{ tenantSlug }} icon={ClipboardCheck} label="الواجبات" />
         <NavItem to="/admin/$tenantSlug/academic" params={{ tenantSlug }} icon={GraduationCap} label="الهيكل الأكاديمي" />
         <NavItem to="/admin/$tenantSlug/students" params={{ tenantSlug }} icon={Users} label="الطلاب" />
         <NavItem to="/admin/$tenantSlug/payments" params={{ tenantSlug }} icon={Receipt} label="طلبات الدفع" />
