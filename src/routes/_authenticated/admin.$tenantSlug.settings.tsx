@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
+import { CustomDomainCard } from "@/components/tenant/custom-domain-card";
 
 export const Route = createFileRoute("/_authenticated/admin/$tenantSlug/settings")({
   component: SettingsPage,
@@ -30,6 +31,7 @@ function SettingsPage() {
       </div>
       {tenant && <BrandingCard tenant={tenant} onSaved={() => qc.invalidateQueries({ queryKey: ["tenant"] })} />}
       {tenant && <ThemeCard tenant={tenant} onSaved={() => qc.invalidateQueries({ queryKey: ["tenant"] })} /> }
+      {tenant && <CustomDomainCard tenant={tenant} />}
       {tenant && <ContentPagesCard tenant={tenant} onSaved={() => qc.invalidateQueries({ queryKey: ["tenant"] })} />}
       {tenant && <PlatformSettingsCard tenantId={tenant.id} />}
       {tenant && <SecretsCard tenantId={tenant.id} />}
