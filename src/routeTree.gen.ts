@@ -36,6 +36,7 @@ import { Route as TSlugAiRouteImport } from './routes/t.$slug.ai'
 import { Route as TSlugAboutRouteImport } from './routes/t.$slug.about'
 import { Route as AuthenticatedQuizQuizIdRouteImport } from './routes/_authenticated/quiz.$quizId'
 import { Route as AuthenticatedLearnEnrollmentIdRouteImport } from './routes/_authenticated/learn.$enrollmentId'
+import { Route as AuthenticatedAssignmentAssignmentIdRouteImport } from './routes/_authenticated/assignment.$assignmentId'
 import { Route as AuthenticatedAdminTenantSlugRouteImport } from './routes/_authenticated/admin.$tenantSlug'
 import { Route as AuthenticatedAdminTenantSlugIndexRouteImport } from './routes/_authenticated/admin.$tenantSlug.index'
 import { Route as TSlugCoursesCourseSlugRouteImport } from './routes/t.$slug.courses.$courseSlug'
@@ -195,6 +196,12 @@ const AuthenticatedLearnEnrollmentIdRoute =
     path: '/learn/$enrollmentId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAssignmentAssignmentIdRoute =
+  AuthenticatedAssignmentAssignmentIdRouteImport.update({
+    id: '/assignment/$assignmentId',
+    path: '/assignment/$assignmentId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminTenantSlugRoute =
   AuthenticatedAdminTenantSlugRouteImport.update({
     id: '/admin/$tenantSlug',
@@ -331,6 +338,7 @@ export interface FileRoutesByFullPath {
   '/t/$slug': typeof TSlugRouteWithChildren
   '/verify/$certNumber': typeof VerifyCertNumberRoute
   '/admin/$tenantSlug': typeof AuthenticatedAdminTenantSlugRouteWithChildren
+  '/assignment/$assignmentId': typeof AuthenticatedAssignmentAssignmentIdRoute
   '/learn/$enrollmentId': typeof AuthenticatedLearnEnrollmentIdRoute
   '/quiz/$quizId': typeof AuthenticatedQuizQuizIdRoute
   '/t/$slug/about': typeof TSlugAboutRoute
@@ -377,6 +385,7 @@ export interface FileRoutesByTo {
   '/notifications': typeof AuthenticatedNotificationsRoute
   '/super-admin': typeof AuthenticatedSuperAdminRoute
   '/verify/$certNumber': typeof VerifyCertNumberRoute
+  '/assignment/$assignmentId': typeof AuthenticatedAssignmentAssignmentIdRoute
   '/learn/$enrollmentId': typeof AuthenticatedLearnEnrollmentIdRoute
   '/quiz/$quizId': typeof AuthenticatedQuizQuizIdRoute
   '/t/$slug/about': typeof TSlugAboutRoute
@@ -427,6 +436,7 @@ export interface FileRoutesById {
   '/t/$slug': typeof TSlugRouteWithChildren
   '/verify/$certNumber': typeof VerifyCertNumberRoute
   '/_authenticated/admin/$tenantSlug': typeof AuthenticatedAdminTenantSlugRouteWithChildren
+  '/_authenticated/assignment/$assignmentId': typeof AuthenticatedAssignmentAssignmentIdRoute
   '/_authenticated/learn/$enrollmentId': typeof AuthenticatedLearnEnrollmentIdRoute
   '/_authenticated/quiz/$quizId': typeof AuthenticatedQuizQuizIdRoute
   '/t/$slug/about': typeof TSlugAboutRoute
@@ -477,6 +487,7 @@ export interface FileRouteTypes {
     | '/t/$slug'
     | '/verify/$certNumber'
     | '/admin/$tenantSlug'
+    | '/assignment/$assignmentId'
     | '/learn/$enrollmentId'
     | '/quiz/$quizId'
     | '/t/$slug/about'
@@ -523,6 +534,7 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/super-admin'
     | '/verify/$certNumber'
+    | '/assignment/$assignmentId'
     | '/learn/$enrollmentId'
     | '/quiz/$quizId'
     | '/t/$slug/about'
@@ -572,6 +584,7 @@ export interface FileRouteTypes {
     | '/t/$slug'
     | '/verify/$certNumber'
     | '/_authenticated/admin/$tenantSlug'
+    | '/_authenticated/assignment/$assignmentId'
     | '/_authenticated/learn/$enrollmentId'
     | '/_authenticated/quiz/$quizId'
     | '/t/$slug/about'
@@ -805,6 +818,13 @@ declare module '@tanstack/react-router' {
       path: '/learn/$enrollmentId'
       fullPath: '/learn/$enrollmentId'
       preLoaderRoute: typeof AuthenticatedLearnEnrollmentIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/assignment/$assignmentId': {
+      id: '/_authenticated/assignment/$assignmentId'
+      path: '/assignment/$assignmentId'
+      fullPath: '/assignment/$assignmentId'
+      preLoaderRoute: typeof AuthenticatedAssignmentAssignmentIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/admin/$tenantSlug': {
@@ -1049,6 +1069,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedNotificationsRoute: typeof AuthenticatedNotificationsRoute
   AuthenticatedSuperAdminRoute: typeof AuthenticatedSuperAdminRoute
   AuthenticatedAdminTenantSlugRoute: typeof AuthenticatedAdminTenantSlugRouteWithChildren
+  AuthenticatedAssignmentAssignmentIdRoute: typeof AuthenticatedAssignmentAssignmentIdRoute
   AuthenticatedLearnEnrollmentIdRoute: typeof AuthenticatedLearnEnrollmentIdRoute
   AuthenticatedQuizQuizIdRoute: typeof AuthenticatedQuizQuizIdRoute
 }
@@ -1063,6 +1084,8 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedSuperAdminRoute: AuthenticatedSuperAdminRoute,
   AuthenticatedAdminTenantSlugRoute:
     AuthenticatedAdminTenantSlugRouteWithChildren,
+  AuthenticatedAssignmentAssignmentIdRoute:
+    AuthenticatedAssignmentAssignmentIdRoute,
   AuthenticatedLearnEnrollmentIdRoute: AuthenticatedLearnEnrollmentIdRoute,
   AuthenticatedQuizQuizIdRoute: AuthenticatedQuizQuizIdRoute,
 }
