@@ -12,10 +12,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { GraduationCap } from "lucide-react";
 import {
-  requestSignupOtp,
-  verifyMasterCode,
+  signupDirect,
   claimSession,
 } from "@/lib/auth.functions";
+
 
 export const Route = createFileRoute("/auth")({
   ssr: false,
@@ -146,9 +146,8 @@ function SignInForm() {
   );
 }
 
-// =========== SIGNUP MULTI-STEP ===========
+// =========== SIGNUP (no OTP) ===========
 function SignUpFlow() {
-  const [step, setStep] = useState<1 | 2>(1);
   const [form, setForm] = useState({
     full_name: "",
     email: "",
@@ -159,146 +158,94 @@ function SignUpFlow() {
     research_consent: false,
   });
   const [busy, setBusy] = useState(false);
-  const [otp, setOtp] = useState("");
 
-  async function submitStep1(e: React.FormEvent) {
+  async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true);
     try {
-      await requestSignupOtp({ data: form });
-      toast.success("تم إرسال رمز التحقق إلى بريدك");
-      setStep(2);
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "تعذّر إرسال الرمز");
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function submitStep2(e: React.FormEvent) {
-    e.preventDefault();
-    if (!otp) return;
-    setBusy(true);
-    try {
-      // Master code path — server validates
-      if (otp.trim() === "112233") {
-        const res = await verifyMasterCode({ data: { email: form.email, code: otp.trim() } });
-        const { error } = await supabase.auth.verifyOtp({
-          token_hash: res.token_hash,
-          type: res.type,
-        });
-        if (error) throw error;
-      } else {
-        const { error } = await supabase.auth.verifyOtp({
-          email: form.email,
-          token: otp.trim(),
-          type: "email",
-        });
-        if (error) throw error;
-      }
+      await signupDirect({ data: form });
+      const { error } = await supabase.auth.signInWithPassword({
+        email: form.email.trim(),
+        password: form.password,
+      });
+      if (error) throw error;
       await finalizeLogin();
-      toast.success("تم إنشاء الحساب");
+      toast.success("تم إنشاء الحساب وتسجيل الدخول");
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "رمز غير صحيح");
+      toast.error(err instanceof Error ? err.message : "تعذّر إنشاء الحساب");
     } finally {
       setBusy(false);
     }
-  }
-
-  if (step === 1) {
-    return (
-      <form onSubmit={submitStep1} className="space-y-3">
-        <div>
-          <Label>الاسم الكامل</Label>
-          <Input required value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} />
-        </div>
-        <div>
-          <Label>البريد الإلكتروني</Label>
-          <Input type="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
-        </div>
-        <div className="grid grid-cols-[120px_1fr] gap-2">
-          <div>
-            <Label>الدولة</Label>
-            <Select
-              value={form.phone_country_code}
-              onValueChange={(v) => setForm({ ...form, phone_country_code: v })}
-            >
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                {COUNTRY_CODES.map((c) => (
-                  <SelectItem key={c.code} value={c.code}>{c.code} {c.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <Label>رقم الهاتف</Label>
-            <Input
-              required
-              inputMode="numeric"
-              pattern="\d{6,15}"
-              value={form.phone}
-              onChange={(e) => setForm({ ...form, phone: e.target.value.replace(/\D/g, "") })}
-            />
-          </div>
-        </div>
-        <div>
-          <Label>السنة الدراسية (اختياري)</Label>
-          <Input
-            value={form.study_year}
-            onChange={(e) => setForm({ ...form, study_year: e.target.value })}
-            placeholder="مثال: السنة الثالثة"
-          />
-        </div>
-        <div>
-          <Label>كلمة المرور</Label>
-          <Input
-            type="password"
-            required
-            minLength={8}
-            value={form.password}
-            onChange={(e) => setForm({ ...form, password: e.target.value })}
-          />
-        </div>
-        <label className="flex items-start gap-2 text-sm">
-          <Checkbox
-            checked={form.research_consent}
-            onCheckedChange={(v) => setForm({ ...form, research_consent: v === true })}
-          />
-          <span>أوافق على استخدام بياناتي لأغراض البحث والتحسين</span>
-        </label>
-        <Button type="submit" className="w-full" disabled={busy}>
-          {busy ? "جارٍ..." : "إرسال رمز التحقق"}
-        </Button>
-      </form>
-    );
   }
 
   return (
-    <form onSubmit={submitStep2} className="space-y-4">
-      <p className="text-sm text-muted-foreground">
-        تم إرسال رمز مكوّن من 6 أرقام إلى <strong>{form.email}</strong>
-      </p>
+    <form onSubmit={onSubmit} className="space-y-3">
       <div>
-        <Label>رمز التحقق</Label>
+        <Label>الاسم الكامل</Label>
+        <Input required value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} />
+      </div>
+      <div>
+        <Label>البريد الإلكتروني</Label>
+        <Input type="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+      </div>
+      <div className="grid grid-cols-[120px_1fr] gap-2">
+        <div>
+          <Label>الدولة</Label>
+          <Select
+            value={form.phone_country_code}
+            onValueChange={(v) => setForm({ ...form, phone_country_code: v })}
+          >
+            <SelectTrigger><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {COUNTRY_CODES.map((c) => (
+                <SelectItem key={c.code} value={c.code}>{c.code} {c.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div>
+          <Label>رقم الهاتف</Label>
+          <Input
+            required
+            inputMode="numeric"
+            pattern="\d{6,15}"
+            value={form.phone}
+            onChange={(e) => setForm({ ...form, phone: e.target.value.replace(/\D/g, "") })}
+          />
+        </div>
+      </div>
+      <div>
+        <Label>السنة الدراسية (اختياري)</Label>
         <Input
-          inputMode="numeric"
-          maxLength={6}
-          required
-          value={otp}
-          onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
-          className="text-center text-2xl tracking-widest"
+          value={form.study_year}
+          onChange={(e) => setForm({ ...form, study_year: e.target.value })}
+          placeholder="مثال: السنة الثالثة"
         />
       </div>
+      <div>
+        <Label>كلمة المرور</Label>
+        <Input
+          type="password"
+          required
+          minLength={8}
+          value={form.password}
+          onChange={(e) => setForm({ ...form, password: e.target.value })}
+        />
+      </div>
+      <label className="flex items-start gap-2 text-sm">
+        <Checkbox
+          checked={form.research_consent}
+          onCheckedChange={(v) => setForm({ ...form, research_consent: v === true })}
+        />
+        <span>أوافق على استخدام بياناتي لأغراض البحث والتحسين</span>
+      </label>
       <Button type="submit" className="w-full" disabled={busy}>
-        {busy ? "جارٍ..." : "تأكيد وإنشاء الحساب"}
-      </Button>
-      <Button type="button" variant="ghost" className="w-full" onClick={() => setStep(1)}>
-        تعديل البيانات
+        {busy ? "جارٍ..." : "إنشاء الحساب"}
       </Button>
     </form>
   );
 }
+
 
 // =========== PASSWORD RESET 3-STEP ===========
 function ForgotPasswordFlow() {

@@ -17,32 +17,26 @@ const signupSchema = z.object({
 });
 
 /**
- * Step 1 of signup: validates input, creates the user (unconfirmed) via admin API,
- * and triggers Supabase's email OTP. Returns ok=true; the actual OTP is sent by Supabase
- * (the email template must use {{ .Token }}).
+ * Direct signup (no OTP). Creates a confirmed user; client then signs in with password.
  */
-export const requestSignupOtp = createServerFn({ method: "POST" })
+export const signupDirect = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => signupSchema.parse(input))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-    // Check if user already exists & confirmed
-    const { data: existing } = await supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 1 });
+    const { data: existing } = await supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 1000 });
     const found = existing?.users.find((u) => u.email?.toLowerCase() === data.email.toLowerCase());
     if (found?.email_confirmed_at) {
       throw new Error("هذا البريد مسجّل مسبقاً، يرجى تسجيل الدخول");
     }
-
-    // Delete any unconfirmed leftover so we can recreate cleanly
     if (found && !found.email_confirmed_at) {
       await supabaseAdmin.auth.admin.deleteUser(found.id);
     }
 
-    // Create user (unconfirmed) with metadata
     const { error: createErr } = await supabaseAdmin.auth.admin.createUser({
       email: data.email,
       password: data.password,
-      email_confirm: false,
+      email_confirm: true,
       user_metadata: {
         full_name: data.full_name,
         phone: data.phone,
@@ -52,16 +46,9 @@ export const requestSignupOtp = createServerFn({ method: "POST" })
       },
     });
     if (createErr) throw new Error(createErr.message);
-
-    // Send OTP email (signup type → 6-digit code if template uses {{ .Token }})
-    const { error: otpErr } = await supabaseAdmin.auth.signInWithOtp({
-      email: data.email,
-      options: { shouldCreateUser: false },
-    });
-    if (otpErr) throw new Error(otpErr.message);
-
     return { ok: true };
   });
+
 
 /**
  * Step 2 of signup: client calls supabase.auth.verifyOtp directly to sign in.
