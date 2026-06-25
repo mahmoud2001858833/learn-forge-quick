@@ -36,6 +36,7 @@ import { Route as TSlugAuthRouteImport } from './routes/t.$slug.auth'
 import { Route as TSlugAiRouteImport } from './routes/t.$slug.ai'
 import { Route as TSlugAboutRouteImport } from './routes/t.$slug.about'
 import { Route as AuthenticatedQuizQuizIdRouteImport } from './routes/_authenticated/quiz.$quizId'
+import { Route as AuthenticatedOnboardNewTenantRouteImport } from './routes/_authenticated/onboard.new-tenant'
 import { Route as AuthenticatedLearnEnrollmentIdRouteImport } from './routes/_authenticated/learn.$enrollmentId'
 import { Route as AuthenticatedAssignmentAssignmentIdRouteImport } from './routes/_authenticated/assignment.$assignmentId'
 import { Route as AuthenticatedAdminTenantSlugRouteImport } from './routes/_authenticated/admin.$tenantSlug'
@@ -197,6 +198,12 @@ const AuthenticatedQuizQuizIdRoute = AuthenticatedQuizQuizIdRouteImport.update({
   path: '/quiz/$quizId',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedOnboardNewTenantRoute =
+  AuthenticatedOnboardNewTenantRouteImport.update({
+    id: '/onboard/new-tenant',
+    path: '/onboard/new-tenant',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedLearnEnrollmentIdRoute =
   AuthenticatedLearnEnrollmentIdRouteImport.update({
     id: '/learn/$enrollmentId',
@@ -348,6 +355,7 @@ export interface FileRoutesByFullPath {
   '/admin/$tenantSlug': typeof AuthenticatedAdminTenantSlugRouteWithChildren
   '/assignment/$assignmentId': typeof AuthenticatedAssignmentAssignmentIdRoute
   '/learn/$enrollmentId': typeof AuthenticatedLearnEnrollmentIdRoute
+  '/onboard/new-tenant': typeof AuthenticatedOnboardNewTenantRoute
   '/quiz/$quizId': typeof AuthenticatedQuizQuizIdRoute
   '/t/$slug/about': typeof TSlugAboutRoute
   '/t/$slug/ai': typeof TSlugAiRoute
@@ -396,6 +404,7 @@ export interface FileRoutesByTo {
   '/verify/$certNumber': typeof VerifyCertNumberRoute
   '/assignment/$assignmentId': typeof AuthenticatedAssignmentAssignmentIdRoute
   '/learn/$enrollmentId': typeof AuthenticatedLearnEnrollmentIdRoute
+  '/onboard/new-tenant': typeof AuthenticatedOnboardNewTenantRoute
   '/quiz/$quizId': typeof AuthenticatedQuizQuizIdRoute
   '/t/$slug/about': typeof TSlugAboutRoute
   '/t/$slug/ai': typeof TSlugAiRoute
@@ -448,6 +457,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/$tenantSlug': typeof AuthenticatedAdminTenantSlugRouteWithChildren
   '/_authenticated/assignment/$assignmentId': typeof AuthenticatedAssignmentAssignmentIdRoute
   '/_authenticated/learn/$enrollmentId': typeof AuthenticatedLearnEnrollmentIdRoute
+  '/_authenticated/onboard/new-tenant': typeof AuthenticatedOnboardNewTenantRoute
   '/_authenticated/quiz/$quizId': typeof AuthenticatedQuizQuizIdRoute
   '/t/$slug/about': typeof TSlugAboutRoute
   '/t/$slug/ai': typeof TSlugAiRoute
@@ -500,6 +510,7 @@ export interface FileRouteTypes {
     | '/admin/$tenantSlug'
     | '/assignment/$assignmentId'
     | '/learn/$enrollmentId'
+    | '/onboard/new-tenant'
     | '/quiz/$quizId'
     | '/t/$slug/about'
     | '/t/$slug/ai'
@@ -548,6 +559,7 @@ export interface FileRouteTypes {
     | '/verify/$certNumber'
     | '/assignment/$assignmentId'
     | '/learn/$enrollmentId'
+    | '/onboard/new-tenant'
     | '/quiz/$quizId'
     | '/t/$slug/about'
     | '/t/$slug/ai'
@@ -599,6 +611,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/$tenantSlug'
     | '/_authenticated/assignment/$assignmentId'
     | '/_authenticated/learn/$enrollmentId'
+    | '/_authenticated/onboard/new-tenant'
     | '/_authenticated/quiz/$quizId'
     | '/t/$slug/about'
     | '/t/$slug/ai'
@@ -831,6 +844,13 @@ declare module '@tanstack/react-router' {
       path: '/quiz/$quizId'
       fullPath: '/quiz/$quizId'
       preLoaderRoute: typeof AuthenticatedQuizQuizIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/onboard/new-tenant': {
+      id: '/_authenticated/onboard/new-tenant'
+      path: '/onboard/new-tenant'
+      fullPath: '/onboard/new-tenant'
+      preLoaderRoute: typeof AuthenticatedOnboardNewTenantRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/learn/$enrollmentId': {
@@ -1092,6 +1112,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminTenantSlugRoute: typeof AuthenticatedAdminTenantSlugRouteWithChildren
   AuthenticatedAssignmentAssignmentIdRoute: typeof AuthenticatedAssignmentAssignmentIdRoute
   AuthenticatedLearnEnrollmentIdRoute: typeof AuthenticatedLearnEnrollmentIdRoute
+  AuthenticatedOnboardNewTenantRoute: typeof AuthenticatedOnboardNewTenantRoute
   AuthenticatedQuizQuizIdRoute: typeof AuthenticatedQuizQuizIdRoute
 }
 
@@ -1109,6 +1130,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAssignmentAssignmentIdRoute:
     AuthenticatedAssignmentAssignmentIdRoute,
   AuthenticatedLearnEnrollmentIdRoute: AuthenticatedLearnEnrollmentIdRoute,
+  AuthenticatedOnboardNewTenantRoute: AuthenticatedOnboardNewTenantRoute,
   AuthenticatedQuizQuizIdRoute: AuthenticatedQuizQuizIdRoute,
 }
 
