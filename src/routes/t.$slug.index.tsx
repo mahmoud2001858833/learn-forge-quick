@@ -5,16 +5,50 @@ import { CourseCard } from "@/components/course-card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Sparkles } from "lucide-react";
 import { TenantHero } from "@/components/tenant/tenant-hero";
+import { getTenantSeo } from "@/lib/seo.functions";
+
+const BASE = "https://learn-forge-quick.lovable.app";
 
 export const Route = createFileRoute("/t/$slug/")({
-  head: ({ params }) => ({
-    meta: [
-      { title: `${params.slug} — منصة تعليمية` },
-      { name: "description", content: `تصفّح الدورات المنشورة على منصة ${params.slug}.` },
-      { property: "og:title", content: `${params.slug}` },
-      { property: "og:type", content: "website" },
-    ],
-  }),
+  loader: ({ params }) => getTenantSeo({ data: { slug: params.slug } }),
+  head: ({ params, loaderData }) => {
+    const t = loaderData?.tenant;
+    const title = t?.name ? `${t.name} — منصة تعليمية` : `${params.slug} — منصة تعليمية`;
+    const desc =
+      t?.welcome_message?.slice(0, 160) ??
+      t?.description?.slice(0, 160) ??
+      `تصفّح الدورات المنشورة على منصة ${t?.name ?? params.slug}.`;
+    const url = `${BASE}/t/${params.slug}`;
+    const image = t?.hero_image_url ?? t?.logo_url ?? undefined;
+    return {
+      meta: [
+        { title },
+        { name: "description", content: desc },
+        { property: "og:title", content: t?.name ?? params.slug },
+        { property: "og:description", content: desc },
+        { property: "og:type", content: "website" },
+        { property: "og:url", content: url },
+        ...(image ? [{ property: "og:image", content: image }, { name: "twitter:image", content: image }] : []),
+        { name: "twitter:card", content: image ? "summary_large_image" : "summary" },
+        { name: "twitter:title", content: t?.name ?? params.slug },
+        { name: "twitter:description", content: desc },
+      ],
+      links: [{ rel: "canonical", href: url }],
+      scripts: t
+        ? [{
+            type: "application/ld+json",
+            children: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "EducationalOrganization",
+              name: t.name,
+              url,
+              description: desc,
+              ...(image ? { logo: image, image } : {}),
+            }),
+          }]
+        : [],
+    };
+  },
   component: TenantHome,
 });
 
