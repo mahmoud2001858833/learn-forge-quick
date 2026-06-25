@@ -1156,6 +1156,72 @@ export type Database = {
           },
         ]
       }
+      live_sessions: {
+        Row: {
+          course_id: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          duration_minutes: number
+          id: string
+          meeting_url: string
+          provider: Database["public"]["Enums"]["live_session_provider"]
+          recording_url: string | null
+          scheduled_at: string
+          status: Database["public"]["Enums"]["live_session_status"]
+          tenant_id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          course_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          duration_minutes?: number
+          id?: string
+          meeting_url: string
+          provider?: Database["public"]["Enums"]["live_session_provider"]
+          recording_url?: string | null
+          scheduled_at: string
+          status?: Database["public"]["Enums"]["live_session_status"]
+          tenant_id: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          course_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          duration_minutes?: number
+          id?: string
+          meeting_url?: string
+          provider?: Database["public"]["Enums"]["live_session_provider"]
+          recording_url?: string | null
+          scheduled_at?: string
+          status?: Database["public"]["Enums"]["live_session_status"]
+          tenant_id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "live_sessions_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "live_sessions_tenant_id_fkey"
+            columns: ["tenant_id"]
+            isOneToOne: false
+            referencedRelation: "tenants"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       majors: {
         Row: {
           college_id: string
@@ -2348,6 +2414,13 @@ export type Database = {
       coupon_type: "percent" | "fixed"
       course_status: "draft" | "published" | "archived" | "pending_approval"
       lesson_type: "video" | "text" | "pdf"
+      live_session_provider:
+        | "zoom"
+        | "google_meet"
+        | "jitsi"
+        | "teams"
+        | "other"
+      live_session_status: "scheduled" | "live" | "ended" | "cancelled"
       payment_request_status: "pending" | "approved" | "rejected" | "cancelled"
       quiz_question_type: "mcq" | "true_false"
       tenant_plan: "free" | "starter" | "pro" | "enterprise"
@@ -2486,6 +2559,8 @@ export const Constants = {
       coupon_type: ["percent", "fixed"],
       course_status: ["draft", "published", "archived", "pending_approval"],
       lesson_type: ["video", "text", "pdf"],
+      live_session_provider: ["zoom", "google_meet", "jitsi", "teams", "other"],
+      live_session_status: ["scheduled", "live", "ended", "cancelled"],
       payment_request_status: ["pending", "approved", "rejected", "cancelled"],
       quiz_question_type: ["mcq", "true_false"],
       tenant_plan: ["free", "starter", "pro", "enterprise"],
