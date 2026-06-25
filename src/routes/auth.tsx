@@ -227,7 +227,7 @@ function SignUpFlow() {
         <Input
           type="password"
           required
-          minLength={8}
+          minLength={6}
           value={form.password}
           onChange={(e) => setForm({ ...form, password: e.target.value })}
         />
@@ -343,11 +343,11 @@ function ForgotPasswordFlow() {
     <form onSubmit={s3} className="space-y-4">
       <div>
         <Label>كلمة المرور الجديدة</Label>
-        <Input type="password" required minLength={8} value={pw} onChange={(e) => setPw(e.target.value)} />
+        <Input type="password" required minLength={6} value={pw} onChange={(e) => setPw(e.target.value)} />
       </div>
       <div>
         <Label>تأكيد كلمة المرور</Label>
-        <Input type="password" required minLength={8} value={pw2} onChange={(e) => setPw2(e.target.value)} />
+        <Input type="password" required minLength={6} value={pw2} onChange={(e) => setPw2(e.target.value)} />
       </div>
       <Button type="submit" className="w-full" disabled={busy}>
         {busy ? "جارٍ..." : "تغيير وتسجيل الدخول"}
