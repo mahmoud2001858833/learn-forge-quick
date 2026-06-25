@@ -71,7 +71,10 @@ function SuperAdminPage() {
             <Shield className="h-6 w-6 text-primary" />
             لوحة السوبر-أدمن
           </div>
-          <Link to="/dashboard" className="text-sm hover:underline">العودة للوحة التحكم</Link>
+          <div className="flex items-center gap-4 text-sm">
+            <Link to="/landing-analytics" className="hover:underline text-primary">تحليلات الصفحة الرئيسية</Link>
+            <Link to="/dashboard" className="hover:underline">العودة للوحة التحكم</Link>
+          </div>
         </div>
       </header>
 
