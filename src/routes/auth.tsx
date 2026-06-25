@@ -11,10 +11,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { GraduationCap } from "lucide-react";
-import {
-  signupDirect,
-  claimSession,
-} from "@/lib/auth.functions";
+import { claimSession } from "@/lib/auth.functions";
+
 
 
 export const Route = createFileRoute("/auth")({
