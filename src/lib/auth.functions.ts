@@ -146,8 +146,7 @@ export const claimSession = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => claimSchema.parse(input))
   .handler(async ({ data, context }) => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { error } = await supabaseAdmin
+    const { error } = await context.supabase
       .from("active_sessions")
       .upsert(
         {
@@ -166,7 +165,6 @@ export const claimSession = createServerFn({ method: "POST" })
 export const releaseSession = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    await supabaseAdmin.from("active_sessions").delete().eq("user_id", context.userId);
+    await context.supabase.from("active_sessions").delete().eq("user_id", context.userId);
     return { ok: true };
   });
