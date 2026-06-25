@@ -80,7 +80,7 @@ export const Tenants = memo(function Tenants({ tenants }: { tenants: any[] }) {
       <SectionHead eyebrow="المنصات" title="منصات تعليمية تنطلق من EduForge" subtitle="انضم لمئات المعلمين الذين بنوا أعمالهم التعليمية معنا." />
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mt-10 sm:mt-14">
         {tenants.map((t) => (
-          <Link key={t.id} to="/t/$slug" params={{ slug: t.slug }} onClick={() => trackLanding("cta_click", "tenant_card", { slug: t.slug })}>
+          <Link key={t.id} to="/t/$slug" params={{ slug: t.slug }} preload="intent" onClick={() => trackLanding("cta_click", "tenant_card", { slug: t.slug })}>
             <div className="group relative h-full bg-card border rounded-2xl p-5 sm:p-6 hover:border-primary/50 hover:shadow-xl hover:-translate-y-1 transition-all overflow-hidden">
               <div className="absolute -top-12 -start-12 w-32 h-32 rounded-full opacity-10 group-hover:opacity-20 transition blur-2xl"
                    style={{ background: t.primary_color ?? "var(--primary)" }} />
