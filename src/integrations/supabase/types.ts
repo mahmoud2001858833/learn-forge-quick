@@ -1668,6 +1668,8 @@ export type Database = {
       platform_settings: {
         Row: {
           allow_signups: boolean
+          chat_enabled: boolean
+          coupons_enabled: boolean
           created_at: string
           custom_settings: Json
           default_commission_pct: number
@@ -1678,6 +1680,8 @@ export type Database = {
           marquee_color: string | null
           marquee_enabled: boolean
           marquee_text: string | null
+          payment_bank_transfer_enabled: boolean
+          payment_cash_enabled: boolean
           playback_token_secret: string
           r2_public_worker_url: string | null
           referral_commission_percent: number
@@ -1686,6 +1690,8 @@ export type Database = {
         }
         Insert: {
           allow_signups?: boolean
+          chat_enabled?: boolean
+          coupons_enabled?: boolean
           created_at?: string
           custom_settings?: Json
           default_commission_pct?: number
@@ -1696,6 +1702,8 @@ export type Database = {
           marquee_color?: string | null
           marquee_enabled?: boolean
           marquee_text?: string | null
+          payment_bank_transfer_enabled?: boolean
+          payment_cash_enabled?: boolean
           playback_token_secret?: string
           r2_public_worker_url?: string | null
           referral_commission_percent?: number
@@ -1704,6 +1712,8 @@ export type Database = {
         }
         Update: {
           allow_signups?: boolean
+          chat_enabled?: boolean
+          coupons_enabled?: boolean
           created_at?: string
           custom_settings?: Json
           default_commission_pct?: number
@@ -1714,6 +1724,8 @@ export type Database = {
           marquee_color?: string | null
           marquee_enabled?: boolean
           marquee_text?: string | null
+          payment_bank_transfer_enabled?: boolean
+          payment_cash_enabled?: boolean
           playback_token_secret?: string
           r2_public_worker_url?: string | null
           referral_commission_percent?: number
