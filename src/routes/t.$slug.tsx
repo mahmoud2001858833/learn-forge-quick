@@ -15,6 +15,8 @@ export const Route = createFileRoute("/t/$slug")({
 function TenantLayout() {
   const { slug } = useParams({ from: "/t/$slug" });
   const search = Route.useSearch();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isAuthRoute = pathname.endsWith("/auth");
 
   useEffect(() => {
     if (search.ref && typeof window !== "undefined") {
