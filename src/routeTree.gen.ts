@@ -40,6 +40,7 @@ import { Route as AuthenticatedAdminTenantSlugReferralsRouteImport } from './rou
 import { Route as AuthenticatedAdminTenantSlugPaymentsRouteImport } from './routes/_authenticated/admin.$tenantSlug.payments'
 import { Route as AuthenticatedAdminTenantSlugCoursesRouteImport } from './routes/_authenticated/admin.$tenantSlug.courses'
 import { Route as AuthenticatedAdminTenantSlugCouponsRouteImport } from './routes/_authenticated/admin.$tenantSlug.coupons'
+import { Route as AuthenticatedAdminTenantSlugChatRouteImport } from './routes/_authenticated/admin.$tenantSlug.chat'
 import { Route as AuthenticatedAdminTenantSlugBundlesRouteImport } from './routes/_authenticated/admin.$tenantSlug.bundles'
 import { Route as AuthenticatedAdminTenantSlugBankAccountsRouteImport } from './routes/_authenticated/admin.$tenantSlug.bank-accounts'
 import { Route as AuthenticatedAdminTenantSlugActivityRouteImport } from './routes/_authenticated/admin.$tenantSlug.activity'
@@ -214,6 +215,12 @@ const AuthenticatedAdminTenantSlugCouponsRoute =
     path: '/coupons',
     getParentRoute: () => AuthenticatedAdminTenantSlugRoute,
   } as any)
+const AuthenticatedAdminTenantSlugChatRoute =
+  AuthenticatedAdminTenantSlugChatRouteImport.update({
+    id: '/chat',
+    path: '/chat',
+    getParentRoute: () => AuthenticatedAdminTenantSlugRoute,
+  } as any)
 const AuthenticatedAdminTenantSlugBundlesRoute =
   AuthenticatedAdminTenantSlugBundlesRouteImport.update({
     id: '/bundles',
@@ -277,6 +284,7 @@ export interface FileRoutesByFullPath {
   '/admin/$tenantSlug/activity': typeof AuthenticatedAdminTenantSlugActivityRoute
   '/admin/$tenantSlug/bank-accounts': typeof AuthenticatedAdminTenantSlugBankAccountsRoute
   '/admin/$tenantSlug/bundles': typeof AuthenticatedAdminTenantSlugBundlesRoute
+  '/admin/$tenantSlug/chat': typeof AuthenticatedAdminTenantSlugChatRoute
   '/admin/$tenantSlug/coupons': typeof AuthenticatedAdminTenantSlugCouponsRoute
   '/admin/$tenantSlug/courses': typeof AuthenticatedAdminTenantSlugCoursesRouteWithChildren
   '/admin/$tenantSlug/payments': typeof AuthenticatedAdminTenantSlugPaymentsRoute
@@ -313,6 +321,7 @@ export interface FileRoutesByTo {
   '/admin/$tenantSlug/activity': typeof AuthenticatedAdminTenantSlugActivityRoute
   '/admin/$tenantSlug/bank-accounts': typeof AuthenticatedAdminTenantSlugBankAccountsRoute
   '/admin/$tenantSlug/bundles': typeof AuthenticatedAdminTenantSlugBundlesRoute
+  '/admin/$tenantSlug/chat': typeof AuthenticatedAdminTenantSlugChatRoute
   '/admin/$tenantSlug/coupons': typeof AuthenticatedAdminTenantSlugCouponsRoute
   '/admin/$tenantSlug/courses': typeof AuthenticatedAdminTenantSlugCoursesRouteWithChildren
   '/admin/$tenantSlug/payments': typeof AuthenticatedAdminTenantSlugPaymentsRoute
@@ -353,6 +362,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/$tenantSlug/activity': typeof AuthenticatedAdminTenantSlugActivityRoute
   '/_authenticated/admin/$tenantSlug/bank-accounts': typeof AuthenticatedAdminTenantSlugBankAccountsRoute
   '/_authenticated/admin/$tenantSlug/bundles': typeof AuthenticatedAdminTenantSlugBundlesRoute
+  '/_authenticated/admin/$tenantSlug/chat': typeof AuthenticatedAdminTenantSlugChatRoute
   '/_authenticated/admin/$tenantSlug/coupons': typeof AuthenticatedAdminTenantSlugCouponsRoute
   '/_authenticated/admin/$tenantSlug/courses': typeof AuthenticatedAdminTenantSlugCoursesRouteWithChildren
   '/_authenticated/admin/$tenantSlug/payments': typeof AuthenticatedAdminTenantSlugPaymentsRoute
@@ -393,6 +403,7 @@ export interface FileRouteTypes {
     | '/admin/$tenantSlug/activity'
     | '/admin/$tenantSlug/bank-accounts'
     | '/admin/$tenantSlug/bundles'
+    | '/admin/$tenantSlug/chat'
     | '/admin/$tenantSlug/coupons'
     | '/admin/$tenantSlug/courses'
     | '/admin/$tenantSlug/payments'
@@ -429,6 +440,7 @@ export interface FileRouteTypes {
     | '/admin/$tenantSlug/activity'
     | '/admin/$tenantSlug/bank-accounts'
     | '/admin/$tenantSlug/bundles'
+    | '/admin/$tenantSlug/chat'
     | '/admin/$tenantSlug/coupons'
     | '/admin/$tenantSlug/courses'
     | '/admin/$tenantSlug/payments'
@@ -468,6 +480,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/$tenantSlug/activity'
     | '/_authenticated/admin/$tenantSlug/bank-accounts'
     | '/_authenticated/admin/$tenantSlug/bundles'
+    | '/_authenticated/admin/$tenantSlug/chat'
     | '/_authenticated/admin/$tenantSlug/coupons'
     | '/_authenticated/admin/$tenantSlug/courses'
     | '/_authenticated/admin/$tenantSlug/payments'
@@ -709,6 +722,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminTenantSlugCouponsRouteImport
       parentRoute: typeof AuthenticatedAdminTenantSlugRoute
     }
+    '/_authenticated/admin/$tenantSlug/chat': {
+      id: '/_authenticated/admin/$tenantSlug/chat'
+      path: '/chat'
+      fullPath: '/admin/$tenantSlug/chat'
+      preLoaderRoute: typeof AuthenticatedAdminTenantSlugChatRouteImport
+      parentRoute: typeof AuthenticatedAdminTenantSlugRoute
+    }
     '/_authenticated/admin/$tenantSlug/bundles': {
       id: '/_authenticated/admin/$tenantSlug/bundles'
       path: '/bundles'
@@ -789,6 +809,7 @@ interface AuthenticatedAdminTenantSlugRouteChildren {
   AuthenticatedAdminTenantSlugActivityRoute: typeof AuthenticatedAdminTenantSlugActivityRoute
   AuthenticatedAdminTenantSlugBankAccountsRoute: typeof AuthenticatedAdminTenantSlugBankAccountsRoute
   AuthenticatedAdminTenantSlugBundlesRoute: typeof AuthenticatedAdminTenantSlugBundlesRoute
+  AuthenticatedAdminTenantSlugChatRoute: typeof AuthenticatedAdminTenantSlugChatRoute
   AuthenticatedAdminTenantSlugCouponsRoute: typeof AuthenticatedAdminTenantSlugCouponsRoute
   AuthenticatedAdminTenantSlugCoursesRoute: typeof AuthenticatedAdminTenantSlugCoursesRouteWithChildren
   AuthenticatedAdminTenantSlugPaymentsRoute: typeof AuthenticatedAdminTenantSlugPaymentsRoute
@@ -809,6 +830,8 @@ const AuthenticatedAdminTenantSlugRouteChildren: AuthenticatedAdminTenantSlugRou
       AuthenticatedAdminTenantSlugBankAccountsRoute,
     AuthenticatedAdminTenantSlugBundlesRoute:
       AuthenticatedAdminTenantSlugBundlesRoute,
+    AuthenticatedAdminTenantSlugChatRoute:
+      AuthenticatedAdminTenantSlugChatRoute,
     AuthenticatedAdminTenantSlugCouponsRoute:
       AuthenticatedAdminTenantSlugCouponsRoute,
     AuthenticatedAdminTenantSlugCoursesRoute:
