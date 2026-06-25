@@ -33,6 +33,7 @@ function SettingsPage() {
       {tenant && <ThemeCard tenant={tenant} onSaved={() => qc.invalidateQueries({ queryKey: ["tenant"] })} /> }
       {tenant && <CustomDomainCard tenant={tenant} />}
       {tenant && <ContentPagesCard tenant={tenant} onSaved={() => qc.invalidateQueries({ queryKey: ["tenant"] })} />}
+      {tenant && <MarketingCard tenant={tenant} onSaved={() => qc.invalidateQueries({ queryKey: ["tenant"] })} />}
       {tenant && <PlatformSettingsCard tenantId={tenant.id} />}
       {tenant && <SecretsCard tenantId={tenant.id} />}
     </div>
@@ -354,6 +355,84 @@ function SecretsCard({ tenantId }: { tenantId: string }) {
             </div>
           ))}
         </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function MarketingCard({ tenant, onSaved }: { tenant: any; onSaved: () => void }) {
+  const [features, setFeatures] = useState<string>(JSON.stringify(tenant.features ?? [], null, 2));
+  const [testimonials, setTestimonials] = useState<string>(JSON.stringify(tenant.testimonials ?? [], null, 2));
+  const [faq, setFaq] = useState<string>(JSON.stringify(tenant.faq ?? [], null, 2));
+  const [stats, setStats] = useState<string>(JSON.stringify(tenant.stats ?? [], null, 2));
+  const [seoKeywords, setSeoKeywords] = useState<string>(tenant.seo_keywords ?? "");
+  const [seoOgImage, setSeoOgImage] = useState<string>(tenant.seo_og_image ?? "");
+  const [ctaTitle, setCtaTitle] = useState<string>(tenant.cta_title ?? "");
+  const [ctaSubtitle, setCtaSubtitle] = useState<string>(tenant.cta_subtitle ?? "");
+
+  async function save() {
+    let f, t, q, s;
+    try {
+      f = JSON.parse(features || "[]");
+      t = JSON.parse(testimonials || "[]");
+      q = JSON.parse(faq || "[]");
+      s = JSON.parse(stats || "[]");
+    } catch (e) {
+      toast.error("صيغة JSON غير صحيحة");
+      return;
+    }
+    const { error } = await supabase.from("tenants").update({
+      features: f, testimonials: t, faq: q, stats: s,
+      seo_keywords: seoKeywords || null, seo_og_image: seoOgImage || null,
+      cta_title: ctaTitle || null, cta_subtitle: ctaSubtitle || null,
+    }).eq("id", tenant.id);
+    if (error) return toast.error(error.message);
+    toast.success("تم الحفظ");
+    onSaved();
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>تخصيص الصفحة الرئيسية و SEO</CardTitle>
+        <CardDescription>أقسام المميزات والإحصائيات وآراء الطلاب والأسئلة الشائعة + الكلمات المفتاحية</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="grid sm:grid-cols-2 gap-3">
+          <div><Label>عنوان CTA (يظهر أسفل الصفحة)</Label><Input value={ctaTitle} onChange={(e) => setCtaTitle(e.target.value)} placeholder="جاهز لبدء رحلتك؟" /></div>
+          <div><Label>نص CTA الفرعي</Label><Input value={ctaSubtitle} onChange={(e) => setCtaSubtitle(e.target.value)} /></div>
+        </div>
+        <div className="grid sm:grid-cols-2 gap-3">
+          <div><Label>كلمات مفتاحية SEO (مفصولة بفواصل)</Label><Input value={seoKeywords} onChange={(e) => setSeoKeywords(e.target.value)} placeholder="تعلم, دورات, برمجة" /></div>
+          <div><Label>صورة المعاينة الاجتماعية (OG)</Label><Input value={seoOgImage} onChange={(e) => setSeoOgImage(e.target.value)} placeholder="https://..." /></div>
+        </div>
+
+        <div>
+          <Label>المميزات (Features) — مصفوفة JSON</Label>
+          <Textarea value={features} onChange={(e) => setFeatures(e.target.value)} rows={5} className="font-mono text-xs" />
+          <p className="text-xs text-muted-foreground mt-1">{'مثال: [{"icon":"book","title":"محتوى عالي الجودة","text":"دروس مصممة بعناية"}]'}</p>
+          <p className="text-xs text-muted-foreground">أيقونات متاحة: sparkles, book, award, users, check, zap, shield, trophy, heart, target, rocket, star</p>
+        </div>
+
+        <div>
+          <Label>الإحصائيات</Label>
+          <Textarea value={stats} onChange={(e) => setStats(e.target.value)} rows={4} className="font-mono text-xs" />
+          <p className="text-xs text-muted-foreground mt-1">{'مثال: [{"value":"5000+","label":"طالب"},{"value":"120","label":"دورة"}]'}</p>
+        </div>
+
+        <div>
+          <Label>آراء الطلاب (Testimonials)</Label>
+          <Textarea value={testimonials} onChange={(e) => setTestimonials(e.target.value)} rows={5} className="font-mono text-xs" />
+          <p className="text-xs text-muted-foreground mt-1">{'مثال: [{"name":"أحمد","role":"طالب","avatar":"https://...","quote":"تجربة رائعة","rating":5}]'}</p>
+        </div>
+
+        <div>
+          <Label>الأسئلة الشائعة (FAQ)</Label>
+          <Textarea value={faq} onChange={(e) => setFaq(e.target.value)} rows={5} className="font-mono text-xs" />
+          <p className="text-xs text-muted-foreground mt-1">{'مثال: [{"q":"كيف أبدأ؟","a":"سجّل حساب ثم اختر دورة"}]'}</p>
+        </div>
+
+        <Button onClick={save}>حفظ التخصيص</Button>
       </CardContent>
     </Card>
   );

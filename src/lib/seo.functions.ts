@@ -17,7 +17,7 @@ export const getTenantSeo = createServerFn({ method: "GET" })
     const supabase = publicClient();
     const { data: tenant } = await supabase
       .from("tenants")
-      .select("name, description, welcome_message, logo_url, hero_image_url, primary_color, status")
+      .select("name, description, welcome_message, logo_url, hero_image_url, primary_color, status, seo_keywords, seo_og_image, faq")
       .eq("slug", data.slug)
       .maybeSingle();
     return { tenant };

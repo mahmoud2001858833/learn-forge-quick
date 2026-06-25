@@ -5,6 +5,7 @@ import { CourseCard } from "@/components/course-card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Sparkles } from "lucide-react";
 import { TenantHero } from "@/components/tenant/tenant-hero";
+import { FeaturesSection, StatsSection, TestimonialsSection, FaqSection } from "@/components/tenant/marketing-sections";
 import { getTenantSeo } from "@/lib/seo.functions";
 
 const BASE = "https://learn-forge-quick.lovable.app";
@@ -12,18 +13,46 @@ const BASE = "https://learn-forge-quick.lovable.app";
 export const Route = createFileRoute("/t/$slug/")({
   loader: ({ params }) => getTenantSeo({ data: { slug: params.slug } }),
   head: ({ params, loaderData }) => {
-    const t = loaderData?.tenant;
+    const t = loaderData?.tenant as any;
     const title = t?.name ? `${t.name} — منصة تعليمية` : `${params.slug} — منصة تعليمية`;
     const desc =
       t?.welcome_message?.slice(0, 160) ??
       t?.description?.slice(0, 160) ??
       `تصفّح الدورات المنشورة على منصة ${t?.name ?? params.slug}.`;
     const url = `${BASE}/t/${params.slug}`;
-    const image = t?.hero_image_url ?? t?.logo_url ?? undefined;
+    const image = t?.seo_og_image ?? t?.hero_image_url ?? t?.logo_url ?? undefined;
+    const faqList = Array.isArray(t?.faq) ? t.faq : [];
+    const scripts: any[] = [];
+    if (t) {
+      scripts.push({
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "EducationalOrganization",
+          name: t.name, url, description: desc,
+          ...(image ? { logo: image, image } : {}),
+        }),
+      });
+      if (faqList.length) {
+        scripts.push({
+          type: "application/ld+json",
+          children: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: faqList.map((f: any) => ({
+              "@type": "Question",
+              name: f.q,
+              acceptedAnswer: { "@type": "Answer", text: f.a },
+            })),
+          }),
+        });
+      }
+    }
     return {
       meta: [
         { title },
         { name: "description", content: desc },
+        ...(t?.seo_keywords ? [{ name: "keywords", content: t.seo_keywords }] : []),
         { property: "og:title", content: t?.name ?? params.slug },
         { property: "og:description", content: desc },
         { property: "og:type", content: "website" },
@@ -34,19 +63,7 @@ export const Route = createFileRoute("/t/$slug/")({
         { name: "twitter:description", content: desc },
       ],
       links: [{ rel: "canonical", href: url }],
-      scripts: t
-        ? [{
-            type: "application/ld+json",
-            children: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "EducationalOrganization",
-              name: t.name,
-              url,
-              description: desc,
-              ...(image ? { logo: image, image } : {}),
-            }),
-          }]
-        : [],
+      scripts,
     };
   },
   component: TenantHome,
@@ -97,6 +114,10 @@ function TenantHome() {
   return (
     <div>
       <TenantHero slug={slug} tenant={tenant} stats={stats} />
+
+      <StatsSection items={(tenant.stats as any) ?? []} primary={primary} secondary={secondary} />
+      <FeaturesSection items={(tenant.features as any) ?? []} primary={primary} />
+
 
 
       {/* ABOUT preview section */}
@@ -150,6 +171,9 @@ function TenantHome() {
         </section>
       )}
 
+      <TestimonialsSection items={(tenant.testimonials as any) ?? []} primary={primary} />
+      <FaqSection items={(tenant.faq as any) ?? []} primary={primary} />
+
       {/* CTA */}
       <section className="container mx-auto px-6 py-16">
         <div
@@ -157,9 +181,9 @@ function TenantHome() {
           style={{ background: `linear-gradient(135deg, ${primary}, ${secondary})` }}
         >
           <div className="absolute inset-0 bg-grid-pattern opacity-10" />
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 relative">جاهز لبدء رحلتك التعليمية؟</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 relative">{tenant.cta_title || "جاهز لبدء رحلتك التعليمية؟"}</h2>
           <p className="text-white/90 text-lg max-w-xl mx-auto mb-8 relative">
-            انضم إلى آلاف الطلاب وابدأ في تعلّم مهارات جديدة اليوم.
+            {tenant.cta_subtitle || "انضم إلى آلاف الطلاب وابدأ في تعلّم مهارات جديدة اليوم."}
           </p>
           <div className="flex justify-center gap-3 flex-wrap relative">
             <Link to="/auth">
