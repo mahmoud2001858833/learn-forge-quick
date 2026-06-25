@@ -263,7 +263,7 @@ function HeroCTAs({ slug, primary, secondary }: { slug: string; primary: string;
           <BookOpen className="h-4 w-4 ms-2" /> تصفّح الدورات
         </Button>
       </Link>
-      <Link to="/auth">
+      <Link to="/t/$slug/auth" params={{ slug }} search={{ mode: "signup" }}>
         <Button size="lg" variant="outline">إنشاء حساب جديد</Button>
       </Link>
     </div>
