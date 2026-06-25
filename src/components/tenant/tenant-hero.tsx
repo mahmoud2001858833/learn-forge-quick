@@ -135,7 +135,7 @@ function ModernHero({ slug, tenant, stats }: TenantHeroProps) {
               <BookOpen className="h-4 w-4 ms-2" /> ابدأ التعلم الآن
             </Button>
           </Link>
-          <Link to="/auth">
+          <Link to="/t/$slug/auth" params={{ slug }} search={{ mode: "signup" }}>
             <Button size="lg" variant="outline" className="bg-transparent text-white border-white hover:bg-white hover:text-foreground">
               إنشاء حساب
             </Button>
