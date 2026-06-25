@@ -31,6 +31,7 @@ function SettingsPage() {
       </div>
       {tenant && <BrandingCard tenant={tenant} onSaved={() => qc.invalidateQueries({ queryKey: ["tenant"] })} />}
       {tenant && <ThemeCard tenant={tenant} onSaved={() => qc.invalidateQueries({ queryKey: ["tenant"] })} /> }
+      {tenant && <CustomDomainCard tenant={tenant} />}
       {tenant && <ContentPagesCard tenant={tenant} onSaved={() => qc.invalidateQueries({ queryKey: ["tenant"] })} />}
       {tenant && <PlatformSettingsCard tenantId={tenant.id} />}
       {tenant && <SecretsCard tenantId={tenant.id} />}
