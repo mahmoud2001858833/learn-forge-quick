@@ -1974,6 +1974,10 @@ export type Database = {
       }
     }
     Functions: {
+      _is_tenant_admin: {
+        Args: { _tenant_id: string; _user_id: string }
+        Returns: boolean
+      }
       approve_course: { Args: { _course_id: string }; Returns: undefined }
       approve_payment_request: {
         Args: { _notes?: string; _req_id: string }
@@ -2051,6 +2055,41 @@ export type Database = {
       submit_quiz_attempt: {
         Args: { _answers: Json; _quiz_id: string }
         Returns: string
+      }
+      tenant_enrollments_by_day: {
+        Args: { _days?: number; _tenant_id: string }
+        Returns: {
+          count: number
+          day: string
+        }[]
+      }
+      tenant_overview_stats: { Args: { _tenant_id: string }; Returns: Json }
+      tenant_revenue_by_day: {
+        Args: { _days?: number; _tenant_id: string }
+        Returns: {
+          day: string
+          revenue: number
+        }[]
+      }
+      tenant_student_progress: {
+        Args: { _limit?: number; _tenant_id: string }
+        Returns: {
+          avg_progress: number
+          completed_count: number
+          enrollments_count: number
+          full_name: string
+          student_id: string
+        }[]
+      }
+      tenant_top_courses: {
+        Args: { _limit?: number; _tenant_id: string }
+        Returns: {
+          average_rating: number
+          course_id: string
+          enrollments_count: number
+          revenue: number
+          title: string
+        }[]
       }
       validate_coupon: {
         Args: {
