@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SearchRouteImport } from './routes/search'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
@@ -41,6 +42,11 @@ import { Route as AuthenticatedAdminTenantSlugAcademicRouteImport } from './rout
 import { Route as AuthenticatedAdminTenantSlugCoursesCourseIdRouteImport } from './routes/_authenticated/admin.$tenantSlug.courses.$courseId'
 import { Route as AuthenticatedAdminTenantSlugCoursesCourseIdQuizzesRouteImport } from './routes/_authenticated/admin.$tenantSlug.courses.$courseId.quizzes'
 
+const SearchRoute = SearchRouteImport.update({
+  id: '/search',
+  path: '/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -218,6 +224,7 @@ const AuthenticatedAdminTenantSlugCoursesCourseIdQuizzesRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/search': typeof SearchRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/my-badges': typeof AuthenticatedMyBadgesRoute
   '/my-certificates': typeof AuthenticatedMyCertificatesRoute
@@ -250,6 +257,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/search': typeof SearchRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/my-badges': typeof AuthenticatedMyBadgesRoute
   '/my-certificates': typeof AuthenticatedMyCertificatesRoute
@@ -282,6 +290,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/search': typeof SearchRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/my-badges': typeof AuthenticatedMyBadgesRoute
   '/_authenticated/my-certificates': typeof AuthenticatedMyCertificatesRoute
@@ -316,6 +325,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/search'
     | '/dashboard'
     | '/my-badges'
     | '/my-certificates'
@@ -348,6 +358,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/search'
     | '/dashboard'
     | '/my-badges'
     | '/my-certificates'
@@ -379,6 +390,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/search'
     | '/_authenticated/dashboard'
     | '/_authenticated/my-badges'
     | '/_authenticated/my-certificates'
@@ -413,12 +425,20 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  SearchRoute: typeof SearchRoute
   TSlugRoute: typeof TSlugRouteWithChildren
   VerifyCertNumberRoute: typeof VerifyCertNumberRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -763,6 +783,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  SearchRoute: SearchRoute,
   TSlugRoute: TSlugRouteWithChildren,
   VerifyCertNumberRoute: VerifyCertNumberRoute,
 }
