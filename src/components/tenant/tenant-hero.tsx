@@ -82,24 +82,24 @@ function ClassicHero({ slug, tenant, stats }: TenantHeroProps) {
               </div>
             )}
           </div>
-          <div className="order-1 lg:order-2 relative flex items-center justify-center min-h-[320px] lg:min-h-[440px]">
+          <div className="order-1 lg:order-2 relative flex items-center justify-center min-h-[340px] lg:min-h-[460px]">
             <div className="absolute top-6 right-10 w-32 h-32 rounded-full blur-3xl opacity-40" style={{ background: primary }} />
             <div className="absolute bottom-6 left-10 w-40 h-40 rounded-full blur-3xl opacity-30" style={{ background: secondary }} />
-            <div className="absolute top-4 left-2 sm:left-8 animate-bounce-slow">
-              <div className="bg-card border shadow-xl rounded-2xl p-3 flex items-center gap-2">
-                <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
-                <span className="text-sm font-semibold">جودة عالية</span>
+            <div className="absolute top-6 left-4 sm:left-10 animate-bounce-slow z-10">
+              <div className="bg-card border shadow-xl rounded-2xl px-3 py-2 flex items-center gap-2">
+                <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                <span className="text-xs sm:text-sm font-semibold">جودة عالية</span>
               </div>
             </div>
-            <div className="absolute bottom-8 right-4 sm:right-8 animate-bounce-slow [animation-delay:1s]">
-              <div className="bg-card border shadow-xl rounded-2xl p-3 flex items-center gap-2">
-                <Award className="h-5 w-5" style={{ color: secondary }} />
-                <span className="text-sm font-semibold">شهادات معتمدة</span>
+            <div className="absolute bottom-10 right-4 sm:right-10 animate-bounce-slow [animation-delay:1s] z-10">
+              <div className="bg-card border shadow-xl rounded-2xl px-3 py-2 flex items-center gap-2">
+                <Award className="h-4 w-4" style={{ color: secondary }} />
+                <span className="text-xs sm:text-sm font-semibold">شهادات معتمدة</span>
               </div>
             </div>
             <div className="relative">
               <div className="absolute -inset-4 rounded-[2rem] blur-2xl opacity-50" style={{ background: `linear-gradient(135deg, ${primary}, ${secondary})` }} />
-              <div className="relative bg-card border-2 rounded-[2rem] p-8 shadow-2xl">
+              <div className="relative bg-card border-2 rounded-[2rem] p-6 sm:p-8 shadow-2xl">
                 <LogoOrImage tenant={tenant} primary={primary} secondary={secondary} size="lg" />
               </div>
             </div>
