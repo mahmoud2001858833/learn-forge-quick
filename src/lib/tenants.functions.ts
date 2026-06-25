@@ -47,6 +47,9 @@ export const createTenant = createServerFn({ method: "POST" })
         secondary_color: data.secondary_color,
         currency: data.currency,
         welcome_message: data.welcome_message ?? null,
+        logo_url: data.logo_url ?? null,
+        contact_email: data.contact_email ?? null,
+        contact_phone: data.contact_phone ?? null,
         owner_id: context.userId,
         status: "active",
         activated_at: new Date().toISOString(),
@@ -54,6 +57,19 @@ export const createTenant = createServerFn({ method: "POST" })
       .select()
       .single();
     if (error) throw new Error(error.message);
+
+    // Apply platform_settings preferences (row auto-created by trigger)
+    await context.supabase
+      .from("platform_settings")
+      .update({
+        payment_cash_enabled: data.payment_cash_enabled,
+        payment_bank_transfer_enabled: data.payment_bank_transfer_enabled,
+        chat_enabled: data.chat_enabled,
+        coupons_enabled: data.coupons_enabled,
+        allow_signups: data.allow_signups,
+      })
+      .eq("tenant_id", tenant.id);
+
     return { tenant };
   });
 
