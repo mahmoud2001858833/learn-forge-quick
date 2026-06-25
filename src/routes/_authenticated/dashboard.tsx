@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { GraduationCap, LogOut, BookOpen, Settings, ExternalLink, Shield, Award, Sparkles, Share2, Receipt } from "lucide-react";
 import { NotificationsBell } from "@/components/notifications-bell";
-import { CreateTenantWizard } from "@/components/tenant/create-tenant-wizard";
+import { Plus } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   component: Dashboard,
@@ -97,7 +97,7 @@ function Dashboard() {
               <h2 className="text-2xl font-bold">منصاتي</h2>
               <p className="text-muted-foreground text-sm">المنصات التعليمية التي تملكها</p>
             </div>
-            <CreateTenantWizard />
+            <Button asChild><Link to="/onboard/new-tenant"><Plus className="h-4 w-4 ml-1" /> منصة جديدة</Link></Button>
           </div>
           {ownedTenants && ownedTenants.length === 0 && (
             <Card><CardContent className="p-10 text-center text-muted-foreground">لم تنشئ أي منصة بعد. اضغط "منصة جديدة" للبدء.</CardContent></Card>
