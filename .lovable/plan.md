@@ -1,116 +1,77 @@
-# خطة التحسين الشاملة (متعددة المراحل)
+# خطة ربط رفع وتشغيل الفيديو عبر Cloudflare Worker فقط
 
-تحسين كامل للتصميم، صفحة هبوط للمنصات الفرعية، لوحات تحكم متمايزة (طالب/معلم/أدمن)، شات مباشر مع الأدمن، وخيار دومين منفصل لكل منصة.
+سنحوّل تدفّق الفيديو ليعتمد كلياً على Worker (`https://raspy-math-67fd.jawarnehm145.workers.dev`)، بدون أي مفاتيح R2 على جهة التطبيق. الـ Worker وحده يتكلّم مع R2.
 
----
+## 1) إعادة كتابة الـ Worker (`cloudflare-worker/src/index.ts`)
 
-## المرحلة 1 — نظام التصميم (Design System) للمنصة الرئيسية EduForge
+Endpoints جديدة (كلها تتعامل مع `R2_BUCKET` binding):
 
-- إعادة بناء `src/styles.css` بـ tokens غنية: ألوان OKLCH، gradients، shadows ناعمة، radii، typography scale.
-- اختيار اتجاه بصري: Midnight Indigo + Cairo/Tajawal للعربية + Inter للإنجليزية.
-- Hero جديد، بطاقات مزايا، شريط أرقام، قسم "كيف تعمل"، شهادات، CTA، footer غني.
-- مكونات مشتركة: `GradientButton`, `FeatureCard`, `SectionHeader`, `StatBlock`.
+- `POST /upload` — رفع ملف صغير (≤ 100MB) كملف واحد. Body = الملف الخام. Query: `key`, `contentType`. يرجع `{ ok, key }`.
+- `POST /upload/start` — بدء Multipart. Query: `key`, `contentType`. ينشئ multipart upload عبر `R2_BUCKET.createMultipartUpload(key)` ويرجع `{ uploadId, key }`.
+- `PUT /upload/part?uploadId=...&key=...&partNumber=N` — رفع جزء (10MB). Body = البايتات. يستخدم `mpu.uploadPart(N, body)` ويرجع `{ partNumber, etag }`.
+- `POST /upload/complete` — Body JSON `{ key, uploadId, parts: [{partNumber, etag}] }`. يستدعي `mpu.complete(parts)` ويرجع `{ ok, key }`.
+- `POST /upload/abort` — إلغاء multipart.
+- `GET /video/{key}` و `GET /?key=...` — بثّ من R2 مع دعم Range، CORS، caching.
+- `OPTIONS *` — CORS preflight.
 
-## المرحلة 2 — صفحة هبوط للمنصة الفرعية (`/t/$slug`)
+ملاحظات أمان: نُبقي قيد المفتاح بصيغة `tenants/<tenantId>/videos/<uuid>.<ext>` (يُولَّد على الخادم لدينا، ليس من العميل). للتشغيل: نُبقي توقيع HMAC الحالي اختيارياً (`u`, `e`, `s`) للوصول إلى الفيديوهات المدفوعة، ونرجع 403 إذا فشل، مع إمكانية تعطيل الفحص لاحقاً لكل tenant عبر `platform_settings.r2_public_worker_url`.
 
-تحويل storefront الحالي إلى صفحة هبوط حقيقية:
-- **Header**: اللوقو في الزاوية + تبويبات (الرئيسية، الدورات، من نحن، السياسة والخصوصية، الشروط، تواصل، دخول/تسجيل).
-- **Hero**: لوقو + اسم المنصة + وصف قصير على اليمين، عناصر زخرفية حوله على اليسار.
-- **قسم تعريفي** بالمنصة (about block) قابل للتحرير من الأدمن.
-- **قسم مزايا/أرقام**، ثم **الدورات المميزة**، ثم **CTA تسجيل**.
-- إضافة جدول `tenant_pages` (about, privacy, terms, contact) مع محرر في لوحة الأدمن.
-- صفحات routes جديدة: `/t/$slug/about`، `/privacy`، `/terms`، `/contact`.
+سيتم نشر هذا الـ Worker من قِبل المستخدم (`wrangler deploy`) — لا يلزم سواه.
 
-## المرحلة 3 — رفع اللوقو والهوية البصرية للمنصة الفرعية
+## 2) إعدادات على التطبيق
 
-- Bucket تخزين `tenant-assets` (عام) + سياسات RLS لكل مالك منصة.
-- في إعدادات المنصة: رفع لوقو + favicon + صورة Hero + ألوان أساسية/ثانوية + خط مخصص.
-- تطبيق ديناميكي عبر CSS variables من `tenant.primary_color/secondary_color/font`.
-- وضع اللوقو تلقائياً في زاوية Header + استخدامه كـ favicon ديناميكي.
+- إزالة الاعتماد على `R2_ACCOUNT_ID/R2_ACCESS_KEY_ID/R2_SECRET_ACCESS_KEY/R2_BUCKET` في الكود (نُبقي ملف `r2-sigv4.server.ts` لكن لا نستدعيه).
+- استخدام `R2_WORKER_URL` فقط (مع fallback إلى `platform_settings.r2_public_worker_url` لكل منصّة).
+- إضافة سرّ `R2_WORKER_URL = https://raspy-math-67fd.jawarnehm145.workers.dev` عبر `add_secret`.
 
-## المرحلة 4 — صفحة الدورات في المنصة الفرعية (`/t/$slug/courses`)
+## 3) Server functions الجديدة (`src/lib/video.functions.ts`)
 
-- شريط بحث + فلاتر: تصنيف، كلية، تخصص، سعر، تقييم، مدة.
-- ترتيب: الأحدث/الأعلى تقييماً/الأرخص/الأكثر مبيعاً.
-- شبكة بطاقات محسّنة + Pagination + حالة فارغة جميلة.
+نُبسّط الدوال — لا توقيع S3 بعد الآن:
 
-## المرحلة 5 — لوحة تحكم الطالب (Student Dashboard)
+- `initVideoUpload({ tenantId, filename, mimeType, sizeBytes, ... })` → يتحقق من صلاحية الـ admin، ينشئ صفّاً في `video_assets` بـ `status='uploading'`، يولّد `r2_key` ويرجع `{ assetId, key, workerUrl, mode: size<=100MB ? 'single' : 'multipart' }`.
+- `completeVideoUpload({ assetId })` → يضع `status='ready'` بعد أن يبلّغ العميل بنجاح الرفع.
+- `abortVideoUpload({ assetId })` → `status='failed'`.
+- `getPlaybackUrl({ assetId })` → يبني `{ workerUrl }/video/{key}?u=&e=&s=` بنفس آلية HMAC الحالية (تبقى كما هي).
 
-`/dashboard` يصبح متفرّعاً بحسب الدور. للطلاب:
-- نظرة عامة: دوراتي، تقدمي، شهاداتي، شاراتي، رصيد الإحالة.
-- تبويبات: دوراتي، المدفوعات، الشهادات، الشارات، الإحالات، الإشعارات، الملف الشخصي.
+يُحذف `signVideoPart` لأن التوقيع لم يعد ضرورياً (الـ Worker يستقبل الأجزاء مباشرة).
 
-## المرحلة 6 — لوحة تحكم المعلم (Instructor Dashboard) — جديد
+## 4) واجهة الرفع (`src/components/video-uploader.tsx`)
 
-- جدول `tenant_members.role = 'instructor'` موجود؛ بناء واجهة منفصلة.
-- مسار `/instructor/$tenantSlug`: دوراتي فقط (مرتبطة بـ `courses.instructor_id` — حقل جديد إن لزم).
-- إدارة محتوى دوراته، الواجبات، الأسئلة والأجوبة، تقييمات الطلاب، إحصائيات دوراته.
-- صلاحيات RLS صارمة: لا يرى بيانات غير دوراته.
+تدفّق ذكي حسب الحجم:
 
-## المرحلة 7 — لوحة تحكم الأدمن للمنصة (تحسين شامل)
+```text
+file.size ≤ 100MB ──► POST {worker}/upload?key=…&contentType=…   (body = الملف)
+file.size  > 100MB ──► POST {worker}/upload/start
+                      └► PUT  {worker}/upload/part  × N parts (10MB، توازٍ 3)
+                      └► POST {worker}/upload/complete
+```
 
-تحسين `/admin/$tenantSlug` الحالي بإضافة:
-- **شجرة مالية**: إيرادات/مصروفات/عمولات/تسويات + رسوم بيانية متقدمة.
-- **إدارة المستخدمين**: قائمة كل المستخدمين، تغيير الأدوار، حظر/تفعيل، عرض النشاط.
-- **إدارة الصلاحيات**: واجهة لمنح owner/admin/instructor/student.
-- **لوحة البيانات (Analytics)**: KPIs، funnel التسجيل→الشراء، Cohorts، أعلى الدورات.
-- **كشف المحادثات**: عرض كل محادثات الطلاب مع الأدمن (انظر مرحلة 9).
-- **رفع الكورسات السريع** + قوالب جاهزة.
+- حجم الجزء ثابت 10MB.
+- شريط تقدّم + نسبة مئوية.
+- عرض: حجم الملف، البايتات المرفوعة، السرعة (MB/s محسوبة من نافذة زمنية متحرّكة)، الوقت المتبقّي (ETA).
+- زر إلغاء (يستدعي `/upload/abort` للملفات الكبيرة + `abortVideoUpload`).
+- إعادة المحاولة التلقائية لكل جزء حتى 3 مرات مع backoff؛ إن فشل بعدها يُعرض زرّ "إعادة المحاولة" لذلك الجزء فقط بدون إعادة رفع ما اكتمل.
 
-## المرحلة 8 — لوحة Super Admin للمنصة الرئيسية
+## 5) المشغّل (`src/components/video-player.tsx`)
 
-تحسين `/super-admin`:
-- إحصائيات شاملة، إدارة كل المنصات (تعليق/تفعيل/حذف)، الإيرادات الكلية، logs، إعدادات عامة، إدارة admin_emails.
+يبقى كما هو — يستهلك `getPlaybackUrl` ويشغّل من رابط الـ Worker مباشرة (الـ Worker يدعم Range أصلاً).
 
-## المرحلة 9 — الشات المباشر مع الأدمن (دائرة عائمة)
+## 6) قاعدة البيانات
 
-- جدول `chat_conversations` + `chat_messages` + Realtime عبر Supabase.
-- مكون `<FloatingChatButton />` دائرة في زاوية كل صفحة منصة فرعية.
-- نافذة شات: الطالب يحادث أدمن المنصة؛ الأدمن يرى كل المحادثات في لوحته.
-- إشعارات صوتية + badge عدد الرسائل غير المقروءة.
-- RLS: كل محادثة مرئية للطالب صاحبها + admins المنصة فقط.
+لا حاجة لتغيير المخطط؛ جدول `video_assets` لديه `r2_key`, `upload_id`, `status` — كافٍ. حقل `upload_id` يُستخدم فقط داخل الواجهة أثناء الجلسة (لن نُخزّنه إلا لو احتجنا استكمال لاحقاً — اختياري).
 
-## المرحلة 10 — معالج إنشاء المنصة (Tenant Wizard) المطوّر
+## 7) خطوات النشر للمستخدم
 
-استبدال نموذج الإنشاء الحالي بمعالج متعدد الخطوات:
-1. المعلومات الأساسية (اسم، slug، وصف).
-2. الهوية البصرية (لوقو، ألوان، خط، صورة hero).
-3. المحتوى التعريفي (about, privacy, terms, contact).
-4. الإعدادات المالية (عملة، حسابات بنكية، عمولة إحالة).
-5. اختيار قالب الواجهة الأمامية (3-4 تصاميم جاهزة).
-6. الدومين (فرعي افتراضي أو مخصص).
-7. مراجعة وإطلاق.
+1. ينسخ كود الـ Worker الجديد إلى مشروعه ويشغّل `wrangler deploy`.
+2. التطبيق يستخدم تلقائياً `R2_WORKER_URL` الذي سنضيفه كسرّ.
+3. لا حاجة لأي مفاتيح R2 إضافية.
 
-## المرحلة 11 — قوالب الواجهة الأمامية (Storefront Themes)
+## الملفات التي ستتغيّر
 
-- حقل `tenants.theme` (`classic` | `modern` | `minimal` | `bold`).
-- 3-4 تخطيطات مختلفة للـ landing + الدورات.
-- معاينة مباشرة في الـ Wizard وفي الإعدادات.
+- `cloudflare-worker/src/index.ts` — إعادة كتابة كاملة.
+- `cloudflare-worker/README.md` — تحديث التعليمات (إزالة ذكر مفاتيح S3).
+- `src/lib/video.functions.ts` — تبسيط (حذف توقيع S3).
+- `src/components/video-uploader.tsx` — تدفّق ذكي + قياس السرعة/ETA + إعادة المحاولة.
+- إضافة سرّ `R2_WORKER_URL`.
 
-## المرحلة 12 — الدومين المخصص لكل منصة
-
-- حقول `tenants.custom_domain`, `custom_domain_verified`, `dns_token`.
-- صفحة إعدادات: إدخال الدومين + عرض A/CNAME/TXT المطلوبة.
-- Server route `/api/public/verify-domain` يتحقق من DNS.
-- في `src/server.ts` middleware يقرأ `Host` ويحوّل إلى المنصة المطابقة (يعرض `/t/$slug` تلقائياً).
-- توثيق للمستخدم بكيفية الإعداد على Cloudflare/Lovable.
-
-## المرحلة 13 — الإشعارات + SEO + التلميع النهائي
-
-- صفحات SEO متكاملة لكل منصة (OG dynamic، sitemap لكل tenant، robots).
-- تحسينات Accessibility، Loading skeletons، Empty states، Error boundaries.
-- اختبار شامل، QA، توثيق.
-
----
-
-## ملاحظات تقنية
-
-- كل المراحل تحترم RLS و GRANTs على الجداول الجديدة.
-- استخدام `createServerFn` + `requireSupabaseAuth` للعمليات الحساسة.
-- التحقق من DNS عبر `dns.promises` داخل server function (Worker متوافق).
-- الشات Realtime عبر `supabase.channel()` من جهة العميل.
-- التصميم بـ tokens فقط — لا hardcoded colors.
-
-## ترتيب التنفيذ المقترح
-
-سأبدأ بـ **المرحلة 1 (نظام التصميم)** + **المرحلة 2 (صفحة الهبوط)** + **المرحلة 3 (الهوية)** معاً لأنها مترابطة بصرياً، ثم نتدرج. هل تريد البدء بهذا الترتيب أم تفضّل تقديم مرحلة معينة (مثل الشات أو الدومين)؟
+هل أبدأ التنفيذ بهذه الخطة؟
