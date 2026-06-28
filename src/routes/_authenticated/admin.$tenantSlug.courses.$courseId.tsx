@@ -16,7 +16,7 @@ import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Plus, Trash2, ArrowRight, Sparkles, Send, QrCode, Eye, EyeOff } from "lucide-react";
+import { Plus, Trash2, ArrowRight, Sparkles, Send, QrCode, Eye, EyeOff, Video } from "lucide-react";
 import { CourseCard } from "@/components/course-card";
 import { VideoUploader } from "@/components/video-uploader";
 import { getThumbnailUrl } from "@/lib/video.functions";
