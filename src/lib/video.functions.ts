@@ -144,12 +144,14 @@ export const completeVideoUpload = createServerFn({ method: "POST" })
       .from("video_assets").select("tenant_id").eq("id", data.assetId).maybeSingle();
     if (!asset) throw new Error("asset_not_found");
     await ensureTenantAdmin(context.supabase, context.userId, asset.tenant_id);
-    const patch: Record<string, unknown> = { status: "ready", upload_id: null };
-    if (data.thumbnailKey) patch.thumbnail_key = data.thumbnailKey;
-    if (data.durationSeconds != null) patch.duration_seconds = data.durationSeconds;
-    if (data.width) patch.width = data.width;
-    if (data.height) patch.height = data.height;
-    await context.supabase.from("video_assets").update(patch).eq("id", data.assetId);
+    await context.supabase.from("video_assets").update({
+      status: "ready",
+      upload_id: null,
+      ...(data.thumbnailKey ? { thumbnail_key: data.thumbnailKey } : {}),
+      ...(data.durationSeconds != null ? { duration_seconds: data.durationSeconds } : {}),
+      ...(data.width ? { width: data.width } : {}),
+      ...(data.height ? { height: data.height } : {}),
+    }).eq("id", data.assetId);
     return { ok: true };
   });
 
