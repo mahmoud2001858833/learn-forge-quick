@@ -33,6 +33,7 @@ function LessonThumb({ assetId }: { assetId: string }) {
 }
 
 export const Route = createFileRoute("/_authenticated/admin/$tenantSlug/courses/$courseId")({
+  validateSearch: z.object({ upload: z.string().optional() }),
   component: CourseEditor,
 });
 
