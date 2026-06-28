@@ -39,8 +39,14 @@ export const Route = createFileRoute("/_authenticated/admin/$tenantSlug/courses/
 
 function CourseEditor() {
   const { tenantSlug, courseId } = useParams({ from: "/_authenticated/admin/$tenantSlug/courses/$courseId" });
+  const search = useSearch({ from: "/_authenticated/admin/$tenantSlug/courses/$courseId" });
   const qc = useQueryClient();
   const genImg = useServerFn(generateCourseImage);
+  const [quickUploadOpen, setQuickUploadOpen] = useState(false);
+
+  useEffect(() => {
+    if (search.upload === "1") setQuickUploadOpen(true);
+  }, [search.upload]);
 
   const { data: course } = useQuery({
     queryKey: ["course", courseId],
