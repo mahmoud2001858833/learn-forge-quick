@@ -13,7 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Plus, Edit, CheckCircle, XCircle, Clock, Video } from "lucide-react";
 
-export const Route = createFileRoute("/_authenticated/admin/$tenantSlug/courses")({
+export const Route = createFileRoute("/_authenticated/admin/$tenantSlug/courses/")({
   component: CoursesPage,
 });
 
