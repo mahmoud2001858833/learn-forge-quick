@@ -141,6 +141,32 @@ function CourseEditor() {
         sections={sections ?? []}
       />
 
+      {/* Sections & Lessons — الأولوية القصوى */}
+      <Card className="border-primary/30">
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle className="text-lg">الفصول والدروس</CardTitle>
+            <p className="text-xs text-muted-foreground mt-1">
+              ابدأ بإنشاء فصل، ثم أضف دروسًا داخله، ولكل درس فيديو يمكنك رفعه مباشرة.
+            </p>
+          </div>
+          <NewSectionDialog courseId={courseId} />
+        </CardHeader>
+        <CardContent>
+          {(!sections || sections.length === 0) ? (
+            <div className="text-center py-10 border-2 border-dashed rounded-lg">
+              <p className="text-sm text-muted-foreground mb-3">لا توجد فصول بعد</p>
+              <p className="text-xs text-muted-foreground mb-4">الخطوة 1: أنشئ فصلاً • الخطوة 2: أضف دروسًا • الخطوة 3: ارفع الفيديو</p>
+              <NewSectionDialog courseId={courseId} />
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {sections.map((s) => <SectionCard key={s.id} section={s} tenantId={course.tenant_id} />)}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
       {/* Settings */}
       <Card>
         <CardHeader><CardTitle className="text-base">إعدادات الدورة</CardTitle></CardHeader>
@@ -219,15 +245,6 @@ function CourseEditor() {
         </CardContent>
       </Card>
 
-      {/* Sections */}
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold">الفصول والدروس</h2>
-        <NewSectionDialog courseId={courseId} />
-      </div>
-
-      <div className="space-y-4">
-        {sections?.map((s) => <SectionCard key={s.id} section={s} tenantId={course.tenant_id} />)}
-      </div>
     </div>
   );
 }
