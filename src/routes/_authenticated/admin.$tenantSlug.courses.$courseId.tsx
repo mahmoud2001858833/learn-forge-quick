@@ -120,7 +120,10 @@ function CourseEditor() {
           <Badge variant={course.status === "published" ? "default" : "secondary"} className="mt-2">{course.status}</Badge>
           {course.rejection_reason && <p className="text-sm text-destructive mt-2">سبب الرفض: {course.rejection_reason}</p>}
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
+          <Button variant="secondary" onClick={() => setQuickUploadOpen(true)}>
+            <Video className="h-4 w-4 ml-1" /> رفع فيديو
+          </Button>
           {course.status === "draft" && (
             <Button onClick={() => submitForApproval.mutate()}><Send className="h-4 w-4 ml-1" /> إرسال للموافقة</Button>
           )}
@@ -129,6 +132,14 @@ function CourseEditor() {
           )}
         </div>
       </div>
+
+      <QuickVideoUploadDialog
+        open={quickUploadOpen}
+        onOpenChange={setQuickUploadOpen}
+        courseId={courseId}
+        tenantId={course.tenant_id}
+        sections={sections ?? []}
+      />
 
       {/* Settings */}
       <Card>
