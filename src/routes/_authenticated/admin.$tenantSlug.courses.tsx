@@ -31,6 +31,7 @@ type CourseRow = {
 
 function CoursesPage() {
   const { tenantSlug } = useParams({ from: "/_authenticated/admin/$tenantSlug/courses" });
+  const navigate = useNavigate();
   const { user } = useAuth();
   const qc = useQueryClient();
 
