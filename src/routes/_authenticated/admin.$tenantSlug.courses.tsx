@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useParams } from "@tanstack/react-router";
+import { createFileRoute, useParams, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Plus, Edit, CheckCircle, XCircle, Clock } from "lucide-react";
+import { Plus, Edit, CheckCircle, XCircle, Clock, Video } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin/$tenantSlug/courses")({
   component: CoursesPage,
@@ -31,6 +31,7 @@ type CourseRow = {
 
 function CoursesPage() {
   const { tenantSlug } = useParams({ from: "/_authenticated/admin/$tenantSlug/courses" });
+  const navigate = useNavigate();
   const { user } = useAuth();
   const qc = useQueryClient();
 
@@ -109,9 +110,23 @@ function CoursesPage() {
             <CardContent className="space-y-2">
               <div className="flex justify-between items-center">
                 <span className="text-sm font-medium">{c.is_free || c.price === 0 ? "مجاني" : `${c.price} ر.س`}</span>
-                <Link to="/admin/$tenantSlug/courses/$courseId" params={{ tenantSlug, courseId: c.id }}>
-                  <Button variant="outline" size="sm"><Edit className="h-3 w-3 ml-1" /> تحرير</Button>
-                </Link>
+                <div className="flex gap-1">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => navigate({ to: "/admin/$tenantSlug/courses/$courseId", params: { tenantSlug, courseId: c.id }, search: { upload: "1" } as never })}
+                    title="رفع فيديو سريع"
+                  >
+                    <Video className="h-3 w-3 ml-1" /> فيديو
+                  </Button>
+                  <Button
+                    variant="default"
+                    size="sm"
+                    onClick={() => navigate({ to: "/admin/$tenantSlug/courses/$courseId", params: { tenantSlug, courseId: c.id } })}
+                  >
+                    <Edit className="h-3 w-3 ml-1" /> تحرير
+                  </Button>
+                </div>
               </div>
               {isOwner && c.status === "pending_approval" && (
                 <div className="flex gap-2 pt-2 border-t">

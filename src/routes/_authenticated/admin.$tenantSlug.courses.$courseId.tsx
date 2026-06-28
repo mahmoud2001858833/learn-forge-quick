@@ -1,5 +1,6 @@
-import { createFileRoute, Link, useParams } from "@tanstack/react-router";
-import { useState } from "react";
+import { createFileRoute, Link, useParams, useSearch } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { z } from "zod";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
@@ -15,7 +16,7 @@ import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Plus, Trash2, ArrowRight, Sparkles, Send, QrCode, Eye, EyeOff } from "lucide-react";
+import { Plus, Trash2, ArrowRight, Sparkles, Send, QrCode, Eye, EyeOff, Video } from "lucide-react";
 import { CourseCard } from "@/components/course-card";
 import { VideoUploader } from "@/components/video-uploader";
 import { getThumbnailUrl } from "@/lib/video.functions";
@@ -32,13 +33,20 @@ function LessonThumb({ assetId }: { assetId: string }) {
 }
 
 export const Route = createFileRoute("/_authenticated/admin/$tenantSlug/courses/$courseId")({
+  validateSearch: z.object({ upload: z.string().optional() }),
   component: CourseEditor,
 });
 
 function CourseEditor() {
   const { tenantSlug, courseId } = useParams({ from: "/_authenticated/admin/$tenantSlug/courses/$courseId" });
+  const search = useSearch({ from: "/_authenticated/admin/$tenantSlug/courses/$courseId" });
   const qc = useQueryClient();
   const genImg = useServerFn(generateCourseImage);
+  const [quickUploadOpen, setQuickUploadOpen] = useState(false);
+
+  useEffect(() => {
+    if (search.upload === "1") setQuickUploadOpen(true);
+  }, [search.upload]);
 
   const { data: course } = useQuery({
     queryKey: ["course", courseId],
@@ -112,7 +120,10 @@ function CourseEditor() {
           <Badge variant={course.status === "published" ? "default" : "secondary"} className="mt-2">{course.status}</Badge>
           {course.rejection_reason && <p className="text-sm text-destructive mt-2">سبب الرفض: {course.rejection_reason}</p>}
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
+          <Button variant="secondary" onClick={() => setQuickUploadOpen(true)}>
+            <Video className="h-4 w-4 ml-1" /> رفع فيديو
+          </Button>
           {course.status === "draft" && (
             <Button onClick={() => submitForApproval.mutate()}><Send className="h-4 w-4 ml-1" /> إرسال للموافقة</Button>
           )}
@@ -121,6 +132,14 @@ function CourseEditor() {
           )}
         </div>
       </div>
+
+      <QuickVideoUploadDialog
+        open={quickUploadOpen}
+        onOpenChange={setQuickUploadOpen}
+        courseId={courseId}
+        tenantId={course.tenant_id}
+        sections={sections ?? []}
+      />
 
       {/* Settings */}
       <Card>
@@ -367,6 +386,103 @@ function NewLessonDialog({ sectionId, tenantId }: { sectionId: string; tenantId:
             متاح كمعاينة مجانية
           </label>
           <DialogFooter><Button type="submit" disabled={create.isPending}>إضافة</Button></DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function QuickVideoUploadDialog({
+  open, onOpenChange, courseId, tenantId, sections,
+}: {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+  courseId: string;
+  tenantId: string;
+  sections: Array<{ id: string; title: string }>;
+}) {
+  const qc = useQueryClient();
+  const [title, setTitle] = useState("");
+  const [sectionId, setSectionId] = useState<string>("");
+  const [newSectionTitle, setNewSectionTitle] = useState("");
+  const [videoAssetId, setVideoAssetId] = useState<string | null>(null);
+  const [isPreview, setIsPreview] = useState(false);
+
+  useEffect(() => {
+    if (open && !sectionId && sections.length > 0) setSectionId(sections[0].id);
+  }, [open, sections, sectionId]);
+
+  const save = useMutation({
+    mutationFn: async () => {
+      if (!videoAssetId) throw new Error("الرجاء رفع الفيديو أولاً");
+      if (!title.trim()) throw new Error("أدخل عنواناً للدرس");
+      let targetSectionId = sectionId;
+      if (!targetSectionId) {
+        const sectionTitle = newSectionTitle.trim() || "الفصل الأول";
+        const { data, error } = await supabase
+          .from("sections")
+          .insert({ course_id: courseId, title: sectionTitle })
+          .select("id").single();
+        if (error) throw error;
+        targetSectionId = data.id;
+      }
+      const { error } = await supabase.from("lessons").insert({
+        section_id: targetSectionId,
+        title,
+        type: "video",
+        video_asset_id: videoAssetId,
+        is_preview: isPreview,
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["course-sections"] });
+      toast.success("تمت إضافة الدرس");
+      setTitle(""); setVideoAssetId(null); setIsPreview(false); setNewSectionTitle("");
+      onOpenChange(false);
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent dir="rtl" className="max-w-2xl">
+        <DialogHeader><DialogTitle>رفع فيديو جديد إلى الدورة</DialogTitle></DialogHeader>
+        <form onSubmit={(e) => { e.preventDefault(); save.mutate(); }} className="space-y-4">
+          <div>
+            <Label>عنوان الدرس</Label>
+            <Input required value={title} onChange={(e) => setTitle(e.target.value)} placeholder="مثلاً: مقدمة عن الدورة" />
+          </div>
+          {sections.length > 0 ? (
+            <div>
+              <Label>الفصل</Label>
+              <Select value={sectionId} onValueChange={setSectionId}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {sections.map((s) => <SelectItem key={s.id} value={s.id}>{s.title}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+          ) : (
+            <div>
+              <Label>عنوان الفصل الأول</Label>
+              <Input value={newSectionTitle} onChange={(e) => setNewSectionTitle(e.target.value)} placeholder="الفصل الأول" />
+            </div>
+          )}
+          <div>
+            <Label>الفيديو</Label>
+            <VideoUploader tenantId={tenantId} onUploaded={(id) => { setVideoAssetId(id); toast.success("الفيديو جاهز"); }} />
+            {videoAssetId && <p className="text-xs text-green-600 mt-1">✓ تم رفع الفيديو</p>}
+          </div>
+          <label className="flex items-center gap-2 text-sm">
+            <input type="checkbox" checked={isPreview} onChange={(e) => setIsPreview(e.target.checked)} />
+            إتاحة كمعاينة مجانية
+          </label>
+          <DialogFooter>
+            <Button type="submit" disabled={save.isPending || !videoAssetId}>
+              {save.isPending ? "جارٍ الحفظ..." : "حفظ الدرس"}
+            </Button>
+          </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>
