@@ -256,6 +256,7 @@ function SectionCard({ section, tenantId }: { section: SectionWithLessons; tenan
         <ul className="space-y-2">
           {section.lessons.map((l) => (
             <li key={l.id} className="flex items-center justify-between p-2 bg-muted/40 rounded text-sm gap-2">
+              {l.video_asset_id && <LessonThumb assetId={l.video_asset_id} />}
               <span className="flex-1 truncate">{l.title} {l.is_preview && <span className="text-xs text-primary">(معاينة مجانية)</span>}</span>
               <Button variant="ghost" size="sm" title={l.is_preview ? "إلغاء المعاينة" : "تفعيل المعاينة"} onClick={() => togglePreview.mutate({ id: l.id, is_preview: l.is_preview })}>
                 {l.is_preview ? <Eye className="h-3 w-3" /> : <EyeOff className="h-3 w-3" />}
