@@ -10,15 +10,15 @@ type Props = {
 
 export function VideoPlayer({ assetId, poster, className }: Props) {
   const [url, setUrl] = useState<string | null>(null);
+  const [autoPoster, setAutoPoster] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const getUrl = useServerFn(getPlaybackUrl);
 
   useEffect(() => {
     let alive = true;
-    setUrl(null);
-    setErr(null);
+    setUrl(null); setAutoPoster(null); setErr(null);
     getUrl({ data: { assetId } })
-      .then((r) => { if (alive) setUrl(r.url); })
+      .then((r) => { if (alive) { setUrl(r.url); setAutoPoster(r.thumbnailUrl ?? null); } })
       .catch((e: Error) => { if (alive) setErr(e.message); });
     return () => { alive = false; };
   }, [assetId, getUrl]);
@@ -29,7 +29,7 @@ export function VideoPlayer({ assetId, poster, className }: Props) {
   return (
     <video
       src={url}
-      poster={poster}
+      poster={poster ?? autoPoster ?? undefined}
       controls
       controlsList="nodownload"
       className={className ?? "w-full rounded"}
@@ -37,3 +37,4 @@ export function VideoPlayer({ assetId, poster, className }: Props) {
     />
   );
 }
+
