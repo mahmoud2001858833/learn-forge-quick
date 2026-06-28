@@ -18,6 +18,18 @@ import { toast } from "sonner";
 import { Plus, Trash2, ArrowRight, Sparkles, Send, QrCode, Eye, EyeOff } from "lucide-react";
 import { CourseCard } from "@/components/course-card";
 import { VideoUploader } from "@/components/video-uploader";
+import { getThumbnailUrl } from "@/lib/video.functions";
+
+function LessonThumb({ assetId }: { assetId: string }) {
+  const getThumb = useServerFn(getThumbnailUrl);
+  const { data } = useQuery({
+    queryKey: ["video-thumb", assetId],
+    queryFn: () => getThumb({ data: { assetId } }),
+    staleTime: 10 * 60 * 1000,
+  });
+  if (!data?.url) return <div className="h-10 w-16 rounded bg-muted shrink-0" />;
+  return <img src={data.url} alt="" className="h-10 w-16 rounded object-cover shrink-0" loading="lazy" />;
+}
 
 export const Route = createFileRoute("/_authenticated/admin/$tenantSlug/courses/$courseId")({
   component: CourseEditor,
