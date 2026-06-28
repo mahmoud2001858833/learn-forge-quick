@@ -391,3 +391,100 @@ function NewLessonDialog({ sectionId, tenantId }: { sectionId: string; tenantId:
     </Dialog>
   );
 }
+
+function QuickVideoUploadDialog({
+  open, onOpenChange, courseId, tenantId, sections,
+}: {
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+  courseId: string;
+  tenantId: string;
+  sections: Array<{ id: string; title: string }>;
+}) {
+  const qc = useQueryClient();
+  const [title, setTitle] = useState("");
+  const [sectionId, setSectionId] = useState<string>("");
+  const [newSectionTitle, setNewSectionTitle] = useState("");
+  const [videoAssetId, setVideoAssetId] = useState<string | null>(null);
+  const [isPreview, setIsPreview] = useState(false);
+
+  useEffect(() => {
+    if (open && !sectionId && sections.length > 0) setSectionId(sections[0].id);
+  }, [open, sections, sectionId]);
+
+  const save = useMutation({
+    mutationFn: async () => {
+      if (!videoAssetId) throw new Error("الرجاء رفع الفيديو أولاً");
+      if (!title.trim()) throw new Error("أدخل عنواناً للدرس");
+      let targetSectionId = sectionId;
+      if (!targetSectionId) {
+        const sectionTitle = newSectionTitle.trim() || "الفصل الأول";
+        const { data, error } = await supabase
+          .from("sections")
+          .insert({ course_id: courseId, title: sectionTitle })
+          .select("id").single();
+        if (error) throw error;
+        targetSectionId = data.id;
+      }
+      const { error } = await supabase.from("lessons").insert({
+        section_id: targetSectionId,
+        title,
+        type: "video",
+        video_asset_id: videoAssetId,
+        is_preview: isPreview,
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["course-sections"] });
+      toast.success("تمت إضافة الدرس");
+      setTitle(""); setVideoAssetId(null); setIsPreview(false); setNewSectionTitle("");
+      onOpenChange(false);
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent dir="rtl" className="max-w-2xl">
+        <DialogHeader><DialogTitle>رفع فيديو جديد إلى الدورة</DialogTitle></DialogHeader>
+        <form onSubmit={(e) => { e.preventDefault(); save.mutate(); }} className="space-y-4">
+          <div>
+            <Label>عنوان الدرس</Label>
+            <Input required value={title} onChange={(e) => setTitle(e.target.value)} placeholder="مثلاً: مقدمة عن الدورة" />
+          </div>
+          {sections.length > 0 ? (
+            <div>
+              <Label>الفصل</Label>
+              <Select value={sectionId} onValueChange={setSectionId}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {sections.map((s) => <SelectItem key={s.id} value={s.id}>{s.title}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+          ) : (
+            <div>
+              <Label>عنوان الفصل الأول</Label>
+              <Input value={newSectionTitle} onChange={(e) => setNewSectionTitle(e.target.value)} placeholder="الفصل الأول" />
+            </div>
+          )}
+          <div>
+            <Label>الفيديو</Label>
+            <VideoUploader tenantId={tenantId} onUploaded={(id) => { setVideoAssetId(id); toast.success("الفيديو جاهز"); }} />
+            {videoAssetId && <p className="text-xs text-green-600 mt-1">✓ تم رفع الفيديو</p>}
+          </div>
+          <label className="flex items-center gap-2 text-sm">
+            <input type="checkbox" checked={isPreview} onChange={(e) => setIsPreview(e.target.checked)} />
+            إتاحة كمعاينة مجانية
+          </label>
+          <DialogFooter>
+            <Button type="submit" disabled={save.isPending || !videoAssetId}>
+              {save.isPending ? "جارٍ الحفظ..." : "حفظ الدرس"}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
