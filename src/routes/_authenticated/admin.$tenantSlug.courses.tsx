@@ -110,9 +110,23 @@ function CoursesPage() {
             <CardContent className="space-y-2">
               <div className="flex justify-between items-center">
                 <span className="text-sm font-medium">{c.is_free || c.price === 0 ? "مجاني" : `${c.price} ر.س`}</span>
-                <Link to="/admin/$tenantSlug/courses/$courseId" params={{ tenantSlug, courseId: c.id }}>
-                  <Button variant="outline" size="sm"><Edit className="h-3 w-3 ml-1" /> تحرير</Button>
-                </Link>
+                <div className="flex gap-1">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => navigate({ to: "/admin/$tenantSlug/courses/$courseId", params: { tenantSlug, courseId: c.id }, search: { upload: "1" } as never })}
+                    title="رفع فيديو سريع"
+                  >
+                    <Video className="h-3 w-3 ml-1" /> فيديو
+                  </Button>
+                  <Button
+                    variant="default"
+                    size="sm"
+                    onClick={() => navigate({ to: "/admin/$tenantSlug/courses/$courseId", params: { tenantSlug, courseId: c.id } })}
+                  >
+                    <Edit className="h-3 w-3 ml-1" /> تحرير
+                  </Button>
+                </div>
               </div>
               {isOwner && c.status === "pending_approval" && (
                 <div className="flex gap-2 pt-2 border-t">
