@@ -6,6 +6,7 @@ import { ArrowLeft, Sparkles } from "lucide-react";
 import { TenantHero } from "@/components/tenant/tenant-hero";
 import { FeaturesSection, StatsSection, TestimonialsSection, FaqSection } from "@/components/tenant/marketing-sections";
 import { getTenantHomeBundle } from "@/lib/tenant.functions";
+import { optimizedImage } from "@/lib/image";
 
 const BASE = "https://learn-forge-quick.lovable.app";
 
@@ -71,7 +72,12 @@ export const Route = createFileRoute("/t/$slug/")({
         { name: "twitter:title", content: t?.name ?? params.slug },
         { name: "twitter:description", content: desc },
       ],
-      links: [{ rel: "canonical", href: url }],
+      links: [
+        { rel: "canonical", href: url },
+        ...(t?.hero_image_url
+          ? [{ rel: "preload", as: "image", href: optimizedImage(t.hero_image_url, { width: 800, format: "webp" }), fetchpriority: "high" } as any]
+          : []),
+      ],
       scripts,
     };
   },

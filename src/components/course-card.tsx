@@ -3,6 +3,8 @@ import { Link } from "@tanstack/react-router";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Clock, Users, Sparkles, Flame, Star, Award } from "lucide-react";
+import { optimizedImage, srcSet } from "@/lib/image";
+
 
 
 export type CourseCardData = {
@@ -45,7 +47,7 @@ function CourseCardImpl({ course, tenantSlug, primaryColor = "#10B981", secondar
     return (
       <Link to={to} params={params}>
         <Card className="hover:shadow-lg transition-shadow overflow-hidden h-full">
-          {course.cover_url && <img src={course.cover_url} alt={course.title} loading="lazy" decoding="async" className="w-full h-44 object-cover" />}
+          {course.cover_url && <img src={optimizedImage(course.cover_url, { width: 600, format: "webp" })} srcSet={srcSet(course.cover_url, [400, 600, 800], { format: "webp" })} sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw" alt={course.title} loading="lazy" decoding="async" className="w-full h-44 object-cover" />}
           <CardContent className="p-4 space-y-2">
             <h3 className="font-bold text-lg line-clamp-2">{course.title}</h3>
             <p className="text-sm text-muted-foreground line-clamp-2">{subtitle}</p>
@@ -70,7 +72,7 @@ function CourseCardImpl({ course, tenantSlug, primaryColor = "#10B981", secondar
                style={{ background: secondaryColor, color: "#000" }}>
             <Star className="h-3 w-3" /> مميّز
           </div>
-          {course.cover_url && <img src={course.cover_url} alt={course.title} loading="lazy" decoding="async" className="w-full h-44 object-cover" />}
+          {course.cover_url && <img src={optimizedImage(course.cover_url, { width: 600, format: "webp" })} srcSet={srcSet(course.cover_url, [400, 600, 800], { format: "webp" })} sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw" alt={course.title} loading="lazy" decoding="async" className="w-full h-44 object-cover" />}
           <CardContent className="p-4">
             <h3 className="font-bold text-lg">{course.title}</h3>
             <p className="text-sm text-muted-foreground line-clamp-2 mt-1">{subtitle}</p>
@@ -86,7 +88,7 @@ function CourseCardImpl({ course, tenantSlug, primaryColor = "#10B981", secondar
     return (
       <Link to={to} params={params}>
         <Card className="hover:shadow-lg flex h-full overflow-hidden">
-          {course.cover_url && <img src={course.cover_url} alt={course.title} loading="lazy" decoding="async" className="w-32 h-auto object-cover" />}
+          {course.cover_url && <img src={optimizedImage(course.cover_url, { width: 200, format: "webp" })} alt={course.title} loading="lazy" decoding="async" className="w-32 h-auto object-cover" />}
           <CardContent className="flex-1 p-4 space-y-2">
             <Badge variant="outline">دورة</Badge>
             <h3 className="font-bold">{course.title}</h3>
@@ -147,7 +149,7 @@ function CourseCardImpl({ course, tenantSlug, primaryColor = "#10B981", secondar
   return (
     <Link to={to} params={params}>
       <Card className="bg-gradient-to-br from-zinc-900 to-zinc-800 text-white h-full overflow-hidden">
-        {course.cover_url && <img src={course.cover_url} alt={course.title} loading="lazy" decoding="async" className="w-full h-36 object-cover opacity-90" />}
+        {course.cover_url && <img src={optimizedImage(course.cover_url, { width: 600, format: "webp" })} srcSet={srcSet(course.cover_url, [400, 600, 800], { format: "webp" })} sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw" alt={course.title} loading="lazy" decoding="async" className="w-full h-36 object-cover opacity-90" />}
         <CardContent className="p-4 space-y-2">
           <div className="flex items-center gap-2">
             <Award className="h-4 w-4" style={{ color: secondaryColor }} />

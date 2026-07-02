@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 import { GraduationCap, Sparkles, BookOpen, Users, Award, Star, ArrowLeft, Zap } from "lucide-react";
+import { optimizedImage, srcSet } from "@/lib/image";
 
 export type TenantHeroProps = {
   slug: string;
@@ -272,8 +273,8 @@ function HeroCTAs({ slug, primary, secondary }: { slug: string; primary: string;
 
 function LogoOrImage({ tenant, primary, secondary, size }: { tenant: TenantHeroProps["tenant"]; primary: string; secondary: string; size: "lg" | "xl" }) {
   const dim = size === "xl" ? "w-64 h-64 sm:w-80 sm:h-80" : "w-56 h-56 sm:w-64 sm:h-64";
-  if (tenant.hero_image_url) return <img src={tenant.hero_image_url} alt={tenant.name} className={`${dim} object-cover rounded-2xl`} />;
-  if (tenant.logo_url) return <img src={tenant.logo_url} alt={tenant.name} className={`${dim} object-contain rounded-2xl`} />;
+  if (tenant.hero_image_url) return <img src={optimizedImage(tenant.hero_image_url, { width: 800, format: "webp" })} srcSet={srcSet(tenant.hero_image_url, [400, 800, 1200], { format: "webp" })} sizes="(min-width: 1024px) 500px, 80vw" alt={tenant.name} fetchPriority="high" loading="eager" decoding="async" className={`${dim} object-cover rounded-2xl`} />;
+  if (tenant.logo_url) return <img src={optimizedImage(tenant.logo_url, { width: 400, format: "webp" })} alt={tenant.name} fetchPriority="high" loading="eager" decoding="async" className={`${dim} object-contain rounded-2xl`} />;
   return (
     <div
       className={`${dim} rounded-2xl grid place-items-center text-white`}

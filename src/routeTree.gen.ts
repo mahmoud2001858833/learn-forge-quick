@@ -42,6 +42,7 @@ import { Route as AuthenticatedAdminTenantSlugRouteImport } from './routes/_auth
 import { Route as TSlugCoursesIndexRouteImport } from './routes/t.$slug.courses.index'
 import { Route as AuthenticatedAdminTenantSlugIndexRouteImport } from './routes/_authenticated/admin.$tenantSlug.index'
 import { Route as TSlugCoursesCourseSlugRouteImport } from './routes/t.$slug.courses.$courseSlug'
+import { Route as ApiPublicHooksRumRouteImport } from './routes/api/public/hooks/rum'
 import { Route as AuthenticatedAdminTenantSlugStudentsRouteImport } from './routes/_authenticated/admin.$tenantSlug.students'
 import { Route as AuthenticatedAdminTenantSlugSettingsRouteImport } from './routes/_authenticated/admin.$tenantSlug.settings'
 import { Route as AuthenticatedAdminTenantSlugReportsRouteImport } from './routes/_authenticated/admin.$tenantSlug.reports'
@@ -233,6 +234,11 @@ const TSlugCoursesCourseSlugRoute = TSlugCoursesCourseSlugRouteImport.update({
   path: '/courses/$courseSlug',
   getParentRoute: () => TSlugRoute,
 } as any)
+const ApiPublicHooksRumRoute = ApiPublicHooksRumRouteImport.update({
+  id: '/api/public/hooks/rum',
+  path: '/api/public/hooks/rum',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedAdminTenantSlugStudentsRoute =
   AuthenticatedAdminTenantSlugStudentsRouteImport.update({
     id: '/students',
@@ -380,6 +386,7 @@ export interface FileRoutesByFullPath {
   '/admin/$tenantSlug/reports': typeof AuthenticatedAdminTenantSlugReportsRoute
   '/admin/$tenantSlug/settings': typeof AuthenticatedAdminTenantSlugSettingsRoute
   '/admin/$tenantSlug/students': typeof AuthenticatedAdminTenantSlugStudentsRoute
+  '/api/public/hooks/rum': typeof ApiPublicHooksRumRoute
   '/t/$slug/courses/$courseSlug': typeof TSlugCoursesCourseSlugRoute
   '/admin/$tenantSlug/': typeof AuthenticatedAdminTenantSlugIndexRoute
   '/t/$slug/courses/': typeof TSlugCoursesIndexRoute
@@ -429,6 +436,7 @@ export interface FileRoutesByTo {
   '/admin/$tenantSlug/reports': typeof AuthenticatedAdminTenantSlugReportsRoute
   '/admin/$tenantSlug/settings': typeof AuthenticatedAdminTenantSlugSettingsRoute
   '/admin/$tenantSlug/students': typeof AuthenticatedAdminTenantSlugStudentsRoute
+  '/api/public/hooks/rum': typeof ApiPublicHooksRumRoute
   '/t/$slug/courses/$courseSlug': typeof TSlugCoursesCourseSlugRoute
   '/admin/$tenantSlug': typeof AuthenticatedAdminTenantSlugIndexRoute
   '/t/$slug/courses': typeof TSlugCoursesIndexRoute
@@ -482,6 +490,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/$tenantSlug/reports': typeof AuthenticatedAdminTenantSlugReportsRoute
   '/_authenticated/admin/$tenantSlug/settings': typeof AuthenticatedAdminTenantSlugSettingsRoute
   '/_authenticated/admin/$tenantSlug/students': typeof AuthenticatedAdminTenantSlugStudentsRoute
+  '/api/public/hooks/rum': typeof ApiPublicHooksRumRoute
   '/t/$slug/courses/$courseSlug': typeof TSlugCoursesCourseSlugRoute
   '/_authenticated/admin/$tenantSlug/': typeof AuthenticatedAdminTenantSlugIndexRoute
   '/t/$slug/courses/': typeof TSlugCoursesIndexRoute
@@ -535,6 +544,7 @@ export interface FileRouteTypes {
     | '/admin/$tenantSlug/reports'
     | '/admin/$tenantSlug/settings'
     | '/admin/$tenantSlug/students'
+    | '/api/public/hooks/rum'
     | '/t/$slug/courses/$courseSlug'
     | '/admin/$tenantSlug/'
     | '/t/$slug/courses/'
@@ -584,6 +594,7 @@ export interface FileRouteTypes {
     | '/admin/$tenantSlug/reports'
     | '/admin/$tenantSlug/settings'
     | '/admin/$tenantSlug/students'
+    | '/api/public/hooks/rum'
     | '/t/$slug/courses/$courseSlug'
     | '/admin/$tenantSlug'
     | '/t/$slug/courses'
@@ -636,6 +647,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/$tenantSlug/reports'
     | '/_authenticated/admin/$tenantSlug/settings'
     | '/_authenticated/admin/$tenantSlug/students'
+    | '/api/public/hooks/rum'
     | '/t/$slug/courses/$courseSlug'
     | '/_authenticated/admin/$tenantSlug/'
     | '/t/$slug/courses/'
@@ -653,6 +665,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TSlugRoute: typeof TSlugRouteWithChildren
   VerifyCertNumberRoute: typeof VerifyCertNumberRoute
+  ApiPublicHooksRumRoute: typeof ApiPublicHooksRumRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -887,6 +900,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/t/$slug/courses/$courseSlug'
       preLoaderRoute: typeof TSlugCoursesCourseSlugRouteImport
       parentRoute: typeof TSlugRoute
+    }
+    '/api/public/hooks/rum': {
+      id: '/api/public/hooks/rum'
+      path: '/api/public/hooks/rum'
+      fullPath: '/api/public/hooks/rum'
+      preLoaderRoute: typeof ApiPublicHooksRumRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authenticated/admin/$tenantSlug/students': {
       id: '/_authenticated/admin/$tenantSlug/students'
@@ -1164,6 +1184,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TSlugRoute: TSlugRouteWithChildren,
   VerifyCertNumberRoute: VerifyCertNumberRoute,
+  ApiPublicHooksRumRoute: ApiPublicHooksRumRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
