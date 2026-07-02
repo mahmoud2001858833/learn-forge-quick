@@ -90,7 +90,7 @@ function CoursesListing() {
         <section className="mb-10">
           <h2 className="text-xl font-bold mb-4">الحزم الموفّرة</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {bundles.map((b) => (
+            {bundles.map((b: any) => (
               <div key={b.id} className="p-5 rounded-2xl border-2 bg-card hover:shadow-lg transition-all" style={{ borderColor: `${secondary}40` }}>
                 <h3 className="font-bold text-lg">{b.name}</h3>
                 <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{b.description}</p>
