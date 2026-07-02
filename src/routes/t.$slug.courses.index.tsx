@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, BookOpen } from "lucide-react";
 
-export const Route = createFileRoute("/t/$slug/courses")({
+export const Route = createFileRoute("/t/$slug/courses/")({
   head: ({ params }) => ({
     meta: [
       { title: `الدورات — ${params.slug}` },
@@ -19,7 +19,7 @@ export const Route = createFileRoute("/t/$slug/courses")({
 });
 
 function CoursesListing() {
-  const { slug } = useParams({ from: "/t/$slug/courses" });
+  const { slug } = useParams({ from: "/t/$slug/courses/" });
   const [query, setQuery] = useState("");
   const [collegeId, setCollegeId] = useState<string>("all");
   const [majorId, setMajorId] = useState<string>("all");
