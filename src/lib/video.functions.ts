@@ -264,12 +264,8 @@ export const getThumbnailUrl = createServerFn({ method: "GET" })
     const { data: asset } = await context.supabase
       .from("video_assets").select("tenant_id, thumbnail_key").eq("id", data.assetId).maybeSingle();
     if (!asset?.thumbnail_key) return { url: null };
-    const { data: settings } = await context.supabase
-      .from("platform_settings").select("playback_token_secret, r2_public_worker_url")
-      .eq("tenant_id", asset.tenant_id).maybeSingle();
-    const workerBase = (settings?.r2_public_worker_url || process.env.R2_WORKER_URL || "").replace(/\/$/, "");
+    const workerBase = (process.env.R2_WORKER_URL || "").replace(/\/$/, "");
     if (!workerBase) return { url: null };
-    const secret = settings?.playback_token_secret ?? "";
-    const url = await signWorkerUrl(workerBase, asset.thumbnail_key, context.userId, secret, 24 * 3600);
+    const url = await signWorkerUrl(workerBase, asset.thumbnail_key, context.userId, "", 24 * 3600);
     return { url };
   });
