@@ -1,77 +1,85 @@
-# خطة ربط رفع وتشغيل الفيديو عبر Cloudflare Worker فقط
+# خطة تحسين شامل لأداء المنصة
 
-سنحوّل تدفّق الفيديو ليعتمد كلياً على Worker (`https://raspy-math-67fd.jawarnehm145.workers.dev`)، بدون أي مفاتيح R2 على جهة التطبيق. الـ Worker وحده يتكلّم مع R2.
+الهدف: تسريع أول تحميل (LCP/TTFB)، تقليل حجم الجافاسكربت، تسريع استعلامات قاعدة البيانات، تحسين الصور والفيديو، وتقوية البنية التحتية.
 
-## 1) إعادة كتابة الـ Worker (`cloudflare-worker/src/index.ts`)
+---
 
-Endpoints جديدة (كلها تتعامل مع `R2_BUCKET` binding):
+## 1) السيرفر والـ SSR (أهم مكسب للسرعة)
 
-- `POST /upload` — رفع ملف صغير (≤ 100MB) كملف واحد. Body = الملف الخام. Query: `key`, `contentType`. يرجع `{ ok, key }`.
-- `POST /upload/start` — بدء Multipart. Query: `key`, `contentType`. ينشئ multipart upload عبر `R2_BUCKET.createMultipartUpload(key)` ويرجع `{ uploadId, key }`.
-- `PUT /upload/part?uploadId=...&key=...&partNumber=N` — رفع جزء (10MB). Body = البايتات. يستخدم `mpu.uploadPart(N, body)` ويرجع `{ partNumber, etag }`.
-- `POST /upload/complete` — Body JSON `{ key, uploadId, parts: [{partNumber, etag}] }`. يستدعي `mpu.complete(parts)` ويرجع `{ ok, key }`.
-- `POST /upload/abort` — إلغاء multipart.
-- `GET /video/{key}` و `GET /?key=...` — بثّ من R2 مع دعم Range، CORS، caching.
-- `OPTIONS *` — CORS preflight.
+المشكلة الحالية: كل الصفحات العامة (`/t/$slug`, `/courses`, `/courses/$slug`) تفتح فارغة ثم تجلب البيانات عبر `useQuery` من المتصفح → شاشة بيضاء ثواني + waterfalls.
 
-ملاحظات أمان: نُبقي قيد المفتاح بصيغة `tenants/<tenantId>/videos/<uuid>.<ext>` (يُولَّد على الخادم لدينا، ليس من العميل). للتشغيل: نُبقي توقيع HMAC الحالي اختيارياً (`u`, `e`, `s`) للوصول إلى الفيديوهات المدفوعة، ونرجع 403 إذا فشل، مع إمكانية تعطيل الفحص لاحقاً لكل tenant عبر `platform_settings.r2_public_worker_url`.
+- تحويل الاستعلامات الأساسية لكل صفحة عامة إلى **loader** يعمل على السيرفر باستخدام `queryClient.ensureQueryData` + `useSuspenseQuery`.
+- استخدام **server publishable client** (SUPABASE_PUBLISHABLE_KEY) داخل server functions للصفحات العامة → SSR HTML جاهز + SEO أقوى.
+- إضافة `staleTime` مناسب لكل استعلام (5–30 دقيقة للتينانت، 60 ثانية للدورات، إلخ) لتقليل الجلب المتكرر.
+- تفعيل `defaultPreload: "intent"` مع `defaultPreloadStaleTime: 0` في `router.tsx`.
 
-سيتم نشر هذا الـ Worker من قِبل المستخدم (`wrangler deploy`) — لا يلزم سواه.
+## 2) قاعدة البيانات (Supabase)
 
-## 2) إعدادات على التطبيق
+- **فهارس (Indexes)** على الأعمدة الأكثر استعلاماً:
+  - `courses(tenant_id, status, created_at DESC)`
+  - `courses(tenant_id, slug)` — فريد
+  - `enrollments(student_id, tenant_id)`, `enrollments(course_id)`
+  - `lessons(section_id, order_index)`, `sections(course_id, order_index)`
+  - `notifications(user_id, is_read, created_at DESC)`
+  - `xp_events(tenant_id, user_id, created_at)`
+- تقليص `select("*")` إلى الأعمدة الفعلية (خصوصاً `tenants`, `courses`, `platform_settings`).
+- تشغيل `supabase--slow_queries` لتحديد أبطأ الاستعلامات وإضافة فهارس مستهدفة.
+- تحويل الاستعلامات المتعدّدة على نفس الصفحة إلى **RPC واحدة** ترجع JSON (مثال: `tenant_home_bundle(slug)` تُرجع التينانت + أبرز الدورات + الإحصاءات دفعة واحدة).
 
-- إزالة الاعتماد على `R2_ACCOUNT_ID/R2_ACCESS_KEY_ID/R2_SECRET_ACCESS_KEY/R2_BUCKET` في الكود (نُبقي ملف `r2-sigv4.server.ts` لكن لا نستدعيه).
-- استخدام `R2_WORKER_URL` فقط (مع fallback إلى `platform_settings.r2_public_worker_url` لكل منصّة).
-- إضافة سرّ `R2_WORKER_URL = https://raspy-math-67fd.jawarnehm145.workers.dev` عبر `add_secret`.
+## 3) تقسيم الحزمة (Code Splitting)
 
-## 3) Server functions الجديدة (`src/lib/video.functions.ts`)
+- إزالة أي `export function ...Component` من ملفات الروت (يمنع الـ auto-split).
+- تحميل مكونات ثقيلة عبر `React.lazy` أو `.lazy.tsx`: مشغّل الفيديو، رافع الفيديو، لوحات الأدمن (courses.$courseId 507 سطر، settings 439، reports 405، onboard 496).
+- تقسيم الحزم الكبيرة داخل لوحة الأدمن (charts/recharts) لتحميلها فقط عند فتح التقارير.
 
-نُبسّط الدوال — لا توقيع S3 بعد الآن:
+## 4) الصور والوسائط
 
-- `initVideoUpload({ tenantId, filename, mimeType, sizeBytes, ... })` → يتحقق من صلاحية الـ admin، ينشئ صفّاً في `video_assets` بـ `status='uploading'`، يولّد `r2_key` ويرجع `{ assetId, key, workerUrl, mode: size<=100MB ? 'single' : 'multipart' }`.
-- `completeVideoUpload({ assetId })` → يضع `status='ready'` بعد أن يبلّغ العميل بنجاح الرفع.
-- `abortVideoUpload({ assetId })` → `status='failed'`.
-- `getPlaybackUrl({ assetId })` → يبني `{ workerUrl }/video/{key}?u=&e=&s=` بنفس آلية HMAC الحالية (تبقى كما هي).
+- استخدام صور واجهة (hero/covers) عبر Cloudflare Image transformations أو `?format=webp&width=…` مع `srcset` و `sizes`.
+- `loading="lazy"` و `decoding="async"` على كل صور القوائم، و `fetchpriority="high"` + `preload` لصورة الـ LCP في الصفحة الرئيسية للتينانت.
+- ضغط شعارات المتاجر و covers قبل الرفع (حد 300KB) عبر canvas في `video-uploader`/بورت رفع الصور.
+- تحسين مشغّل الفيديو: HLS تدريجي إن أمكن، `preload="metadata"`، thumbnail poster جاهز.
 
-يُحذف `signVideoPart` لأن التوقيع لم يعد ضرورياً (الـ Worker يستقبل الأجزاء مباشرة).
+## 5) الشبكة والـ Caching
 
-## 4) واجهة الرفع (`src/components/video-uploader.tsx`)
+- إضافة `Cache-Control` headers للـ server routes العامة (`/api/public/...`) و SSR HTML للصفحات العامة (`s-maxage=60, stale-while-revalidate=300`).
+- تفعيل HTTP/2 push للأصول الحرجة عبر `<link rel="preload">` في `head()` للصفحات المهمة.
+- ضغط الاستجابات (Brotli — Cloudflare يفعّله تلقائياً، نتأكد من عدم كسر ذلك).
 
-تدفّق ذكي حسب الحجم:
+## 6) تحسينات React
 
-```text
-file.size ≤ 100MB ──► POST {worker}/upload?key=…&contentType=…   (body = الملف)
-file.size  > 100MB ──► POST {worker}/upload/start
-                      └► PUT  {worker}/upload/part  × N parts (10MB، توازٍ 3)
-                      └► POST {worker}/upload/complete
-```
+- إضافة `React.memo` للـ `CourseCard` وأي عنصر يتكرر في قوائم كبيرة.
+- استخدام `useMemo`/`useCallback` في صفحة `t.$slug.courses.index` (الفلاتر تعيد الحساب على كل ضغطة).
+- إزالة استعلامات مكررة (مثل `public-tenant` يعمل في كل صفحة تينانت — نقله لـ layout `t.$slug.tsx` مع `context`).
 
-- حجم الجزء ثابت 10MB.
-- شريط تقدّم + نسبة مئوية.
-- عرض: حجم الملف، البايتات المرفوعة، السرعة (MB/s محسوبة من نافذة زمنية متحرّكة)، الوقت المتبقّي (ETA).
-- زر إلغاء (يستدعي `/upload/abort` للملفات الكبيرة + `abortVideoUpload`).
-- إعادة المحاولة التلقائية لكل جزء حتى 3 مرات مع backoff؛ إن فشل بعدها يُعرض زرّ "إعادة المحاولة" لذلك الجزء فقط بدون إعادة رفع ما اكتمل.
+## 7) الأمان والاستقرار (Infrastructure)
 
-## 5) المشغّل (`src/components/video-player.tsx`)
+- إضافة **rate limiting** خفيف على `/api/public/*` (verify signature + max req/min per IP).
+- مراجعة سياسات RLS لضمان عدم وجود سياسات مكلفة تحتوي `EXISTS` على جداول بدون فهارس.
+- إعداد **error monitoring** موحّد (نتأكد أن `reportLovableError` يلتقط الأخطاء غير المعالجة).
+- إضافة **health check** `/api/public/health` يفحص Supabase + R2.
 
-يبقى كما هو — يستهلك `getPlaybackUrl` ويشغّل من رابط الـ Worker مباشرة (الـ Worker يدعم Range أصلاً).
+## 8) ملفات وأدوات
 
-## 6) قاعدة البيانات
+- `vite-imagetools` للصور المستوردة كأصول (hero/marketing).
+- مراجعة الحزم غير المستخدمة في `package.json` وحذفها.
+- تفعيل `sideEffects: false` (موجود) — التأكد من عدم استيراد CSS عالمي في مكونات صغيرة.
 
-لا حاجة لتغيير المخطط؛ جدول `video_assets` لديه `r2_key`, `upload_id`, `status` — كافٍ. حقل `upload_id` يُستخدم فقط داخل الواجهة أثناء الجلسة (لن نُخزّنه إلا لو احتجنا استكمال لاحقاً — اختياري).
+---
 
-## 7) خطوات النشر للمستخدم
+## خطة التنفيذ (مراحل)
 
-1. ينسخ كود الـ Worker الجديد إلى مشروعه ويشغّل `wrangler deploy`.
-2. التطبيق يستخدم تلقائياً `R2_WORKER_URL` الذي سنضيفه كسرّ.
-3. لا حاجة لأي مفاتيح R2 إضافية.
+1. **Migration للفهارس** + RPC مجمّعة (`tenant_home_bundle`, `course_page_bundle`).
+2. تحويل الروتات العامة (`t.$slug.index`, `t.$slug.courses.index`, `t.$slug.courses.$courseSlug`) إلى SSR loader + Suspense.
+3. تحسين React (memo/lazy) وتقسيم لوحة الأدمن.
+4. تحسين الصور + preload LCP.
+5. Caching headers + health check.
 
-## الملفات التي ستتغيّر
+---
 
-- `cloudflare-worker/src/index.ts` — إعادة كتابة كاملة.
-- `cloudflare-worker/README.md` — تحديث التعليمات (إزالة ذكر مفاتيح S3).
-- `src/lib/video.functions.ts` — تبسيط (حذف توقيع S3).
-- `src/components/video-uploader.tsx` — تدفّق ذكي + قياس السرعة/ETA + إعادة المحاولة.
-- إضافة سرّ `R2_WORKER_URL`.
+## ملاحظات تقنية
 
-هل أبدأ التنفيذ بهذه الخطة؟
+- سيتم إنشاء server functions تحت `src/lib/*.functions.ts` باستخدام `createServerFn` + supabase publishable client.
+- كل RPC جديدة في migration منفصلة (SECURITY DEFINER، `search_path=public`).
+- لا كسر للسلوك الحالي — التغييرات تدريجية وقابلة للتراجع.
+
+هل أبدأ بالتنفيذ؟ أو تفضّل مرحلة محددة أولاً (مثلاً: الفهارس + SSR فقط)؟

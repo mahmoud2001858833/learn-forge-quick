@@ -2814,6 +2814,7 @@ export type Database = {
           week_4_active: number
         }[]
       }
+      tenant_courses_bundle: { Args: { _slug: string }; Returns: Json }
       tenant_enrollments_by_day: {
         Args: { _days?: number; _tenant_id: string }
         Returns: {
@@ -2829,6 +2830,7 @@ export type Database = {
           stage: string
         }[]
       }
+      tenant_home_bundle: { Args: { _slug: string }; Returns: Json }
       tenant_leaderboard: {
         Args: { _limit?: number; _period?: string; _tenant_id: string }
         Returns: {

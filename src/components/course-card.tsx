@@ -1,7 +1,9 @@
+import { memo } from "react";
 import { Link } from "@tanstack/react-router";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Clock, Users, Sparkles, Flame, Star, Award } from "lucide-react";
+
 
 export type CourseCardData = {
   id: string;
@@ -30,7 +32,7 @@ function priceLabel(c: CourseCardData, currency: string) {
   return `${c.price} ${currency}`;
 }
 
-export function CourseCard({ course, tenantSlug, primaryColor = "#10B981", secondaryColor = "#D4AF37", currency = "ر.س" }: Props) {
+function CourseCardImpl({ course, tenantSlug, primaryColor = "#10B981", secondaryColor = "#D4AF37", currency = "ر.س" }: Props) {
   const style = course.ad_style ?? 1;
   const to = "/t/$slug/courses/$courseSlug" as const;
   const params = { slug: tenantSlug, courseSlug: course.slug };
@@ -159,3 +161,6 @@ export function CourseCard({ course, tenantSlug, primaryColor = "#10B981", secon
     </Link>
   );
 }
+
+export const CourseCard = memo(CourseCardImpl);
+

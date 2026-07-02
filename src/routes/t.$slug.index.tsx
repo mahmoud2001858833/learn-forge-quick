@@ -1,19 +1,28 @@
-import { createFileRoute, Link, useParams } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { CourseCard } from "@/components/course-card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Sparkles } from "lucide-react";
 import { TenantHero } from "@/components/tenant/tenant-hero";
 import { FeaturesSection, StatsSection, TestimonialsSection, FaqSection } from "@/components/tenant/marketing-sections";
-import { getTenantSeo } from "@/lib/seo.functions";
+import { getTenantHomeBundle } from "@/lib/tenant.functions";
 
 const BASE = "https://learn-forge-quick.lovable.app";
 
+const homeBundleOptions = (slug: string) =>
+  queryOptions({
+    queryKey: ["tenant-home-bundle", slug],
+    queryFn: () => getTenantHomeBundle({ data: { slug } }),
+    staleTime: 5 * 60_000,
+  });
+
 export const Route = createFileRoute("/t/$slug/")({
-  loader: ({ params }) => getTenantSeo({ data: { slug: params.slug } }),
+  loader: ({ context, params }) =>
+    context.queryClient.ensureQueryData(homeBundleOptions(params.slug)),
+
   head: ({ params, loaderData }) => {
-    const t = loaderData?.tenant as any;
+    const t = (loaderData as any)?.tenant as any;
+
     const title = t?.name ? `${t.name} — منصة تعليمية` : `${params.slug} — منصة تعليمية`;
     const desc =
       t?.welcome_message?.slice(0, 160) ??
@@ -70,42 +79,14 @@ export const Route = createFileRoute("/t/$slug/")({
 });
 
 function TenantHome() {
-  const { slug } = useParams({ from: "/t/$slug/" });
+  const { slug } = Route.useParams();
+  const { data: bundle } = useSuspenseQuery(homeBundleOptions(slug));
+  const tenant = bundle?.tenant as any;
+  const courses = (bundle?.courses ?? []) as any[];
+  const stats = bundle?.stats
+    ? { courses: bundle.stats.courses_count, students: bundle.stats.enrollments_count }
+    : undefined;
 
-  const { data: tenant } = useQuery({
-    queryKey: ["public-tenant", slug],
-    queryFn: async () => (await supabase.from("tenants").select("*").eq("slug", slug).single()).data,
-  });
-
-  const { data: courses } = useQuery({
-    queryKey: ["public-courses-featured", tenant?.id],
-    enabled: !!tenant,
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("courses")
-        .select("id, slug, title, short_description, description, cover_url, price, is_free, ad_style, students_count, total_duration_seconds, college_id, major_id, average_rating")
-        .eq("tenant_id", tenant!.id)
-        .eq("status", "published")
-        .order("students_count", { ascending: false })
-        .limit(6);
-      return data ?? [];
-    },
-  });
-
-  const { data: stats } = useQuery({
-    queryKey: ["tenant-public-stats", tenant?.id],
-    enabled: !!tenant,
-    queryFn: async () => {
-      const [coursesCount, enrollmentsCount] = await Promise.all([
-        supabase.from("courses").select("id", { count: "exact", head: true }).eq("tenant_id", tenant!.id).eq("status", "published"),
-        supabase.from("enrollments").select("id", { count: "exact", head: true }).eq("tenant_id", tenant!.id),
-      ]);
-      return {
-        courses: coursesCount.count ?? 0,
-        students: enrollmentsCount.count ?? 0,
-      };
-    },
-  });
 
   if (!tenant) return null;
   const primary = tenant.primary_color ?? "#6366f1";
@@ -157,7 +138,7 @@ function TenantHome() {
             </Link>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {courses.map((c) => (
+            {courses.map((c: any) => (
               <CourseCard
                 key={c.id}
                 course={c}

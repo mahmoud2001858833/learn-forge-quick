@@ -1,5 +1,5 @@
-import { createFileRoute, useParams } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { createFileRoute } from "@tanstack/react-router";
+import { queryOptions, useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { CourseCard } from "@/components/course-card";
@@ -7,8 +7,18 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, BookOpen } from "lucide-react";
+import { getTenantCoursesBundle } from "@/lib/tenant.functions";
+
+const coursesBundleOptions = (slug: string) =>
+  queryOptions({
+    queryKey: ["tenant-courses-bundle", slug],
+    queryFn: () => getTenantCoursesBundle({ data: { slug } }),
+    staleTime: 60_000,
+  });
 
 export const Route = createFileRoute("/t/$slug/courses/")({
+  loader: ({ context, params }) =>
+    context.queryClient.ensureQueryData(coursesBundleOptions(params.slug)),
   head: ({ params }) => ({
     meta: [
       { title: `الدورات — ${params.slug}` },
@@ -19,34 +29,23 @@ export const Route = createFileRoute("/t/$slug/courses/")({
 });
 
 function CoursesListing() {
-  const { slug } = useParams({ from: "/t/$slug/courses/" });
+  const { slug } = Route.useParams();
   const [query, setQuery] = useState("");
   const [collegeId, setCollegeId] = useState<string>("all");
   const [majorId, setMajorId] = useState<string>("all");
   const [priceFilter, setPriceFilter] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("newest");
 
-  const { data: tenant } = useQuery({
-    queryKey: ["public-tenant", slug],
-    queryFn: async () => (await supabase.from("tenants").select("*").eq("slug", slug).single()).data,
-  });
-
-  const { data: colleges = [] } = useQuery({
-    queryKey: ["public-colleges", tenant?.id],
-    enabled: !!tenant,
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("colleges")
-        .select("id, name, university_id, universities!inner(tenant_id)")
-        .eq("universities.tenant_id", tenant!.id)
-        .order("name");
-      return data ?? [];
-    },
-  });
+  const { data: bundle } = useSuspenseQuery(coursesBundleOptions(slug));
+  const tenant = bundle?.tenant as any;
+  const colleges = (bundle?.colleges ?? []) as Array<{ id: string; name: string; university_id: string }>;
+  const bundles = (bundle?.bundles ?? []) as any[];
+  const courses = (bundle?.courses ?? []) as any[];
 
   const { data: majors = [] } = useQuery({
     queryKey: ["public-majors", collegeId],
     enabled: collegeId !== "all",
+    staleTime: 5 * 60_000,
     queryFn: async () => {
       const { data } = await supabase
         .from("majors").select("id, name").eq("college_id", collegeId).order("name");
@@ -54,49 +53,25 @@ function CoursesListing() {
     },
   });
 
-  const { data: bundles } = useQuery({
-    queryKey: ["public-bundles", tenant?.id],
-    enabled: !!tenant,
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("course_bundles").select("*")
-        .eq("tenant_id", tenant!.id).eq("is_active", true)
-        .order("created_at", { ascending: false });
-      return data ?? [];
-    },
-  });
-
-  const { data: courses } = useQuery({
-    queryKey: ["public-courses-all", tenant?.id],
-    enabled: !!tenant,
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("courses")
-        .select("id, slug, title, short_description, description, cover_url, price, is_free, ad_style, students_count, total_duration_seconds, college_id, major_id, average_rating, created_at")
-        .eq("tenant_id", tenant!.id)
-        .eq("status", "published")
-        .order("created_at", { ascending: false });
-      if (error) throw error;
-      return data;
-    },
-  });
 
   const filtered = useMemo(() => {
     if (!courses) return [];
-    let list = courses.filter((c) => {
+    const q = query.toLowerCase();
+    let list = courses.filter((c: any) => {
       if (collegeId !== "all" && c.college_id !== collegeId) return false;
       if (majorId !== "all" && c.major_id !== majorId) return false;
       if (priceFilter === "free" && !c.is_free) return false;
       if (priceFilter === "paid" && c.is_free) return false;
-      if (query && !c.title.toLowerCase().includes(query.toLowerCase())) return false;
+      if (q && !c.title.toLowerCase().includes(q)) return false;
       return true;
     });
-    if (sortBy === "rating") list = [...list].sort((a, b) => (b.average_rating ?? 0) - (a.average_rating ?? 0));
-    else if (sortBy === "popular") list = [...list].sort((a, b) => (b.students_count ?? 0) - (a.students_count ?? 0));
-    else if (sortBy === "price-asc") list = [...list].sort((a, b) => (a.price ?? 0) - (b.price ?? 0));
-    else if (sortBy === "price-desc") list = [...list].sort((a, b) => (b.price ?? 0) - (a.price ?? 0));
+    if (sortBy === "rating") list = [...list].sort((a: any, b: any) => (b.average_rating ?? 0) - (a.average_rating ?? 0));
+    else if (sortBy === "popular") list = [...list].sort((a: any, b: any) => (b.students_count ?? 0) - (a.students_count ?? 0));
+    else if (sortBy === "price-asc") list = [...list].sort((a: any, b: any) => (a.price ?? 0) - (b.price ?? 0));
+    else if (sortBy === "price-desc") list = [...list].sort((a: any, b: any) => (b.price ?? 0) - (a.price ?? 0));
     return list;
   }, [courses, collegeId, majorId, priceFilter, query, sortBy]);
+
 
   if (!tenant) return null;
   const primary = tenant.primary_color ?? "#6366f1";
@@ -115,7 +90,7 @@ function CoursesListing() {
         <section className="mb-10">
           <h2 className="text-xl font-bold mb-4">الحزم الموفّرة</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {bundles.map((b) => (
+            {bundles.map((b: any) => (
               <div key={b.id} className="p-5 rounded-2xl border-2 bg-card hover:shadow-lg transition-all" style={{ borderColor: `${secondary}40` }}>
                 <h3 className="font-bold text-lg">{b.name}</h3>
                 <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{b.description}</p>
@@ -161,7 +136,7 @@ function CoursesListing() {
               <SelectTrigger className="w-full md:w-36"><SelectValue placeholder="التخصص" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">كل التخصصات</SelectItem>
-                {majors.map((m) => <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>)}
+                {majors.map((m: any) => <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>)}
               </SelectContent>
             </Select>
           )}
@@ -202,7 +177,7 @@ function CoursesListing() {
         </div>
       ) : (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filtered.map((c) => (
+          {filtered.map((c: any) => (
             <CourseCard
               key={c.id}
               course={c}
