@@ -56,20 +56,22 @@ function CoursesListing() {
 
   const filtered = useMemo(() => {
     if (!courses) return [];
-    let list = courses.filter((c) => {
+    const q = query.toLowerCase();
+    let list = courses.filter((c: any) => {
       if (collegeId !== "all" && c.college_id !== collegeId) return false;
       if (majorId !== "all" && c.major_id !== majorId) return false;
       if (priceFilter === "free" && !c.is_free) return false;
       if (priceFilter === "paid" && c.is_free) return false;
-      if (query && !c.title.toLowerCase().includes(query.toLowerCase())) return false;
+      if (q && !c.title.toLowerCase().includes(q)) return false;
       return true;
     });
-    if (sortBy === "rating") list = [...list].sort((a, b) => (b.average_rating ?? 0) - (a.average_rating ?? 0));
-    else if (sortBy === "popular") list = [...list].sort((a, b) => (b.students_count ?? 0) - (a.students_count ?? 0));
-    else if (sortBy === "price-asc") list = [...list].sort((a, b) => (a.price ?? 0) - (b.price ?? 0));
-    else if (sortBy === "price-desc") list = [...list].sort((a, b) => (b.price ?? 0) - (a.price ?? 0));
+    if (sortBy === "rating") list = [...list].sort((a: any, b: any) => (b.average_rating ?? 0) - (a.average_rating ?? 0));
+    else if (sortBy === "popular") list = [...list].sort((a: any, b: any) => (b.students_count ?? 0) - (a.students_count ?? 0));
+    else if (sortBy === "price-asc") list = [...list].sort((a: any, b: any) => (a.price ?? 0) - (b.price ?? 0));
+    else if (sortBy === "price-desc") list = [...list].sort((a: any, b: any) => (b.price ?? 0) - (a.price ?? 0));
     return list;
   }, [courses, collegeId, majorId, priceFilter, query, sortBy]);
+
 
   if (!tenant) return null;
   const primary = tenant.primary_color ?? "#6366f1";
