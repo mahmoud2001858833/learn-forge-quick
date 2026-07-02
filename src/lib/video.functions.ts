@@ -35,14 +35,13 @@ async function ensureTenantAdmin(supabase: SupabaseClient, userId: string, tenan
   throw new Error("forbidden");
 }
 
-async function workerUrlFor(supabase: SupabaseClient, tenantId: string): Promise<string> {
-  const { data: settings } = await supabase
-    .from("platform_settings").select("r2_public_worker_url")
-    .eq("tenant_id", tenantId).maybeSingle();
-  const base = settings?.r2_public_worker_url || process.env.R2_WORKER_URL || "";
+async function workerUrlFor(_supabase: SupabaseClient, _tenantId: string): Promise<string> {
+  // Single system-wide Worker for ALL tenants.
+  const base = process.env.R2_WORKER_URL || "";
   if (!base) throw new Error("worker_url_not_configured");
   return base.replace(/\/$/, "");
 }
+
 
 export const initVideoUpload = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -242,20 +241,17 @@ export const getPlaybackUrl = createServerFn({ method: "GET" })
 
     if (!allowed) throw new Error("forbidden");
 
-    const { data: settings } = await context.supabase
-      .from("platform_settings").select("playback_token_secret, r2_public_worker_url")
-      .eq("tenant_id", asset.tenant_id).maybeSingle();
-    const workerBase = (settings?.r2_public_worker_url || process.env.R2_WORKER_URL || "").replace(/\/$/, "");
+    const workerBase = (process.env.R2_WORKER_URL || "").replace(/\/$/, "");
     if (!workerBase) throw new Error("worker_url_not_configured");
 
     const exp = Math.floor(Date.now() / 1000) + 60 * 60;
-    const secret = settings?.playback_token_secret ?? "";
-    const url = await signWorkerUrl(workerBase, asset.r2_key, context.userId, secret, 3600);
+    const url = await signWorkerUrl(workerBase, asset.r2_key, context.userId, "", 3600);
     const thumbUrl = asset.thumbnail_key
-      ? await signWorkerUrl(workerBase, asset.thumbnail_key, context.userId, secret, 24 * 3600)
+      ? await signWorkerUrl(workerBase, asset.thumbnail_key, context.userId, "", 24 * 3600)
       : null;
     return { url, expiresAt: exp, thumbnailUrl: thumbUrl };
   });
+
 
 /**
  * Lightweight thumbnail-only URL (no full video access required).
@@ -268,12 +264,8 @@ export const getThumbnailUrl = createServerFn({ method: "GET" })
     const { data: asset } = await context.supabase
       .from("video_assets").select("tenant_id, thumbnail_key").eq("id", data.assetId).maybeSingle();
     if (!asset?.thumbnail_key) return { url: null };
-    const { data: settings } = await context.supabase
-      .from("platform_settings").select("playback_token_secret, r2_public_worker_url")
-      .eq("tenant_id", asset.tenant_id).maybeSingle();
-    const workerBase = (settings?.r2_public_worker_url || process.env.R2_WORKER_URL || "").replace(/\/$/, "");
+    const workerBase = (process.env.R2_WORKER_URL || "").replace(/\/$/, "");
     if (!workerBase) return { url: null };
-    const secret = settings?.playback_token_secret ?? "";
-    const url = await signWorkerUrl(workerBase, asset.thumbnail_key, context.userId, secret, 24 * 3600);
+    const url = await signWorkerUrl(workerBase, asset.thumbnail_key, context.userId, "", 24 * 3600);
     return { url };
   });
