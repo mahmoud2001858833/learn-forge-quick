@@ -1,5 +1,5 @@
-import { createFileRoute, useParams } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { createFileRoute } from "@tanstack/react-router";
+import { queryOptions, useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { CourseCard } from "@/components/course-card";
@@ -7,8 +7,18 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, BookOpen } from "lucide-react";
+import { getTenantCoursesBundle } from "@/lib/tenant.functions";
+
+const coursesBundleOptions = (slug: string) =>
+  queryOptions({
+    queryKey: ["tenant-courses-bundle", slug],
+    queryFn: () => getTenantCoursesBundle({ data: { slug } }),
+    staleTime: 60_000,
+  });
 
 export const Route = createFileRoute("/t/$slug/courses/")({
+  loader: ({ context, params }) =>
+    context.queryClient.ensureQueryData(coursesBundleOptions(params.slug)),
   head: ({ params }) => ({
     meta: [
       { title: `الدورات — ${params.slug}` },
@@ -19,34 +29,23 @@ export const Route = createFileRoute("/t/$slug/courses/")({
 });
 
 function CoursesListing() {
-  const { slug } = useParams({ from: "/t/$slug/courses/" });
+  const { slug } = Route.useParams();
   const [query, setQuery] = useState("");
   const [collegeId, setCollegeId] = useState<string>("all");
   const [majorId, setMajorId] = useState<string>("all");
   const [priceFilter, setPriceFilter] = useState<string>("all");
   const [sortBy, setSortBy] = useState<string>("newest");
 
-  const { data: tenant } = useQuery({
-    queryKey: ["public-tenant", slug],
-    queryFn: async () => (await supabase.from("tenants").select("*").eq("slug", slug).single()).data,
-  });
-
-  const { data: colleges = [] } = useQuery({
-    queryKey: ["public-colleges", tenant?.id],
-    enabled: !!tenant,
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("colleges")
-        .select("id, name, university_id, universities!inner(tenant_id)")
-        .eq("universities.tenant_id", tenant!.id)
-        .order("name");
-      return data ?? [];
-    },
-  });
+  const { data: bundle } = useSuspenseQuery(coursesBundleOptions(slug));
+  const tenant = bundle?.tenant as any;
+  const colleges = (bundle?.colleges ?? []) as Array<{ id: string; name: string; university_id: string }>;
+  const bundles = (bundle?.bundles ?? []) as any[];
+  const courses = (bundle?.courses ?? []) as any[];
 
   const { data: majors = [] } = useQuery({
     queryKey: ["public-majors", collegeId],
     enabled: collegeId !== "all",
+    staleTime: 5 * 60_000,
     queryFn: async () => {
       const { data } = await supabase
         .from("majors").select("id, name").eq("college_id", collegeId).order("name");
@@ -54,32 +53,6 @@ function CoursesListing() {
     },
   });
 
-  const { data: bundles } = useQuery({
-    queryKey: ["public-bundles", tenant?.id],
-    enabled: !!tenant,
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("course_bundles").select("*")
-        .eq("tenant_id", tenant!.id).eq("is_active", true)
-        .order("created_at", { ascending: false });
-      return data ?? [];
-    },
-  });
-
-  const { data: courses } = useQuery({
-    queryKey: ["public-courses-all", tenant?.id],
-    enabled: !!tenant,
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("courses")
-        .select("id, slug, title, short_description, description, cover_url, price, is_free, ad_style, students_count, total_duration_seconds, college_id, major_id, average_rating, created_at")
-        .eq("tenant_id", tenant!.id)
-        .eq("status", "published")
-        .order("created_at", { ascending: false });
-      if (error) throw error;
-      return data;
-    },
-  });
 
   const filtered = useMemo(() => {
     if (!courses) return [];
