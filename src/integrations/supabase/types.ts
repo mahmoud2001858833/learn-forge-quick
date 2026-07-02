@@ -2607,6 +2607,39 @@ export type Database = {
           },
         ]
       }
+      web_vitals: {
+        Row: {
+          created_at: string
+          id: string
+          metric: string
+          rating: string | null
+          tenant_slug: string | null
+          url: string | null
+          user_agent: string | null
+          value: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          metric: string
+          rating?: string | null
+          tenant_slug?: string | null
+          url?: string | null
+          user_agent?: string | null
+          value: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          metric?: string
+          rating?: string | null
+          tenant_slug?: string | null
+          url?: string | null
+          user_agent?: string | null
+          value?: number
+        }
+        Relationships: []
+      }
       xp_events: {
         Row: {
           amount: number
