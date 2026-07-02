@@ -19,7 +19,7 @@ export const Route = createFileRoute("/t/$slug/courses/")({
 });
 
 function CoursesListing() {
-  const { slug } = useParams({ from: "/t/$slug/courses" });
+  const { slug } = useParams({ from: "/t/$slug/courses/" });
   const [query, setQuery] = useState("");
   const [collegeId, setCollegeId] = useState<string>("all");
   const [majorId, setMajorId] = useState<string>("all");
