@@ -161,3 +161,6 @@ function CourseCardImpl({ course, tenantSlug, primaryColor = "#10B981", secondar
     </Link>
   );
 }
+
+export const CourseCard = memo(CourseCardImpl);
+
