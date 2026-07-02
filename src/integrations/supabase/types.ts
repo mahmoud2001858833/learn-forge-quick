@@ -2680,95 +2680,6 @@ export type Database = {
       }
     }
     Views: {
-      live_sessions_public: {
-        Row: {
-          course_id: string | null
-          created_at: string | null
-          description: string | null
-          duration_minutes: number | null
-          id: string | null
-          provider: Database["public"]["Enums"]["live_session_provider"] | null
-          scheduled_at: string | null
-          status: Database["public"]["Enums"]["live_session_status"] | null
-          tenant_id: string | null
-          title: string | null
-        }
-        Insert: {
-          course_id?: string | null
-          created_at?: string | null
-          description?: string | null
-          duration_minutes?: number | null
-          id?: string | null
-          provider?: Database["public"]["Enums"]["live_session_provider"] | null
-          scheduled_at?: string | null
-          status?: Database["public"]["Enums"]["live_session_status"] | null
-          tenant_id?: string | null
-          title?: string | null
-        }
-        Update: {
-          course_id?: string | null
-          created_at?: string | null
-          description?: string | null
-          duration_minutes?: number | null
-          id?: string | null
-          provider?: Database["public"]["Enums"]["live_session_provider"] | null
-          scheduled_at?: string | null
-          status?: Database["public"]["Enums"]["live_session_status"] | null
-          tenant_id?: string | null
-          title?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "live_sessions_course_id_fkey"
-            columns: ["course_id"]
-            isOneToOne: false
-            referencedRelation: "courses"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "live_sessions_tenant_id_fkey"
-            columns: ["tenant_id"]
-            isOneToOne: false
-            referencedRelation: "tenants"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      platform_public_settings: {
-        Row: {
-          maintenance_message: string | null
-          maintenance_mode: boolean | null
-          marquee_color: string | null
-          marquee_enabled: boolean | null
-          marquee_text: string | null
-          tenant_id: string | null
-        }
-        Insert: {
-          maintenance_message?: string | null
-          maintenance_mode?: boolean | null
-          marquee_color?: string | null
-          marquee_enabled?: boolean | null
-          marquee_text?: string | null
-          tenant_id?: string | null
-        }
-        Update: {
-          maintenance_message?: string | null
-          maintenance_mode?: boolean | null
-          marquee_color?: string | null
-          marquee_enabled?: boolean | null
-          marquee_text?: string | null
-          tenant_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "platform_settings_tenant_id_fkey"
-            columns: ["tenant_id"]
-            isOneToOne: true
-            referencedRelation: "tenants"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       quiz_choices_public: {
         Row: {
           id: string | null
@@ -2854,6 +2765,13 @@ export type Database = {
         Returns: string
       }
       enrollment_student: { Args: { _enrollment_id: string }; Returns: string }
+      get_live_session_urls: {
+        Args: { _session_id: string }
+        Returns: {
+          meeting_url: string
+          recording_url: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
