@@ -136,7 +136,7 @@ function CoursesListing() {
               <SelectTrigger className="w-full md:w-36"><SelectValue placeholder="التخصص" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">كل التخصصات</SelectItem>
-                {majors.map((m) => <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>)}
+                {majors.map((m: any) => <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>)}
               </SelectContent>
             </Select>
           )}
@@ -177,7 +177,7 @@ function CoursesListing() {
         </div>
       ) : (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filtered.map((c) => (
+          {filtered.map((c: any) => (
             <CourseCard
               key={c.id}
               course={c}
