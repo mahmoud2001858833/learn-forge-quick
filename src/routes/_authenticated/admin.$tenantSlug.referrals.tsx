@@ -29,7 +29,7 @@ function ReferralsPage() {
   const { data: settings } = useQuery({
     queryKey: ["platform-settings", tenant?.id],
     enabled: !!tenant,
-    queryFn: async () => (await supabase.from("platform_settings").select("*").eq("tenant_id", tenant!.id).single()).data,
+    queryFn: async () => (await supabase.from("platform_settings").select("enable_referrals, referral_commission_percent").eq("tenant_id", tenant!.id).single()).data,
   });
 
   useEffect(() => {
