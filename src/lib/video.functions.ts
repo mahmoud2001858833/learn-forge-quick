@@ -35,14 +35,13 @@ async function ensureTenantAdmin(supabase: SupabaseClient, userId: string, tenan
   throw new Error("forbidden");
 }
 
-async function workerUrlFor(supabase: SupabaseClient, tenantId: string): Promise<string> {
-  const { data: settings } = await supabase
-    .from("platform_settings").select("r2_public_worker_url")
-    .eq("tenant_id", tenantId).maybeSingle();
-  const base = settings?.r2_public_worker_url || process.env.R2_WORKER_URL || "";
+async function workerUrlFor(_supabase: SupabaseClient, _tenantId: string): Promise<string> {
+  // Single system-wide Worker for ALL tenants.
+  const base = process.env.R2_WORKER_URL || "";
   if (!base) throw new Error("worker_url_not_configured");
   return base.replace(/\/$/, "");
 }
+
 
 export const initVideoUpload = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
