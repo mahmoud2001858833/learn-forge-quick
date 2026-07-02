@@ -79,42 +79,14 @@ export const Route = createFileRoute("/t/$slug/")({
 });
 
 function TenantHome() {
-  const { slug } = useParams({ from: "/t/$slug/" });
+  const { slug } = Route.useParams();
+  const { data: bundle } = useSuspenseQuery(homeBundleOptions(slug));
+  const tenant = bundle?.tenant as any;
+  const courses = (bundle?.courses ?? []) as any[];
+  const stats = bundle?.stats
+    ? { courses: bundle.stats.courses_count, students: bundle.stats.enrollments_count }
+    : undefined;
 
-  const { data: tenant } = useQuery({
-    queryKey: ["public-tenant", slug],
-    queryFn: async () => (await supabase.from("tenants").select("*").eq("slug", slug).single()).data,
-  });
-
-  const { data: courses } = useQuery({
-    queryKey: ["public-courses-featured", tenant?.id],
-    enabled: !!tenant,
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("courses")
-        .select("id, slug, title, short_description, description, cover_url, price, is_free, ad_style, students_count, total_duration_seconds, college_id, major_id, average_rating")
-        .eq("tenant_id", tenant!.id)
-        .eq("status", "published")
-        .order("students_count", { ascending: false })
-        .limit(6);
-      return data ?? [];
-    },
-  });
-
-  const { data: stats } = useQuery({
-    queryKey: ["tenant-public-stats", tenant?.id],
-    enabled: !!tenant,
-    queryFn: async () => {
-      const [coursesCount, enrollmentsCount] = await Promise.all([
-        supabase.from("courses").select("id", { count: "exact", head: true }).eq("tenant_id", tenant!.id).eq("status", "published"),
-        supabase.from("enrollments").select("id", { count: "exact", head: true }).eq("tenant_id", tenant!.id),
-      ]);
-      return {
-        courses: coursesCount.count ?? 0,
-        students: enrollmentsCount.count ?? 0,
-      };
-    },
-  });
 
   if (!tenant) return null;
   const primary = tenant.primary_color ?? "#6366f1";
