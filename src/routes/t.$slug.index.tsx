@@ -21,7 +21,8 @@ export const Route = createFileRoute("/t/$slug/")({
     context.queryClient.ensureQueryData(homeBundleOptions(params.slug)),
 
   head: ({ params, loaderData }) => {
-    const t = loaderData?.tenant as any;
+    const t = (loaderData as any)?.tenant as any;
+
     const title = t?.name ? `${t.name} — منصة تعليمية` : `${params.slug} — منصة تعليمية`;
     const desc =
       t?.welcome_message?.slice(0, 160) ??
