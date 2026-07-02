@@ -202,7 +202,7 @@ function PlatformSettingsCard({ tenantId }: { tenantId: string }) {
   const qc = useQueryClient();
   const { data } = useQuery({
     queryKey: ["platform-settings", tenantId],
-    queryFn: async () => (await supabase.from("platform_settings").select("*").eq("tenant_id", tenantId).maybeSingle()).data,
+    queryFn: async () => (await supabase.from("platform_settings").select("id, tenant_id, maintenance_mode, maintenance_message, marquee_enabled, marquee_text, marquee_color, allow_signups, default_commission_pct, enable_referrals, referral_commission_percent, chat_enabled, coupons_enabled, payment_cash_enabled, payment_bank_transfer_enabled, r2_public_worker_url").eq("tenant_id", tenantId).maybeSingle()).data,
   });
 
   const [form, setForm] = useState({

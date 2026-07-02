@@ -2765,6 +2765,13 @@ export type Database = {
         Returns: string
       }
       enrollment_student: { Args: { _enrollment_id: string }; Returns: string }
+      get_live_session_urls: {
+        Args: { _session_id: string }
+        Returns: {
+          meeting_url: string
+          recording_url: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
