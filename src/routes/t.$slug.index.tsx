@@ -1,17 +1,25 @@
-import { createFileRoute, Link, useParams } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { CourseCard } from "@/components/course-card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Sparkles } from "lucide-react";
 import { TenantHero } from "@/components/tenant/tenant-hero";
 import { FeaturesSection, StatsSection, TestimonialsSection, FaqSection } from "@/components/tenant/marketing-sections";
-import { getTenantSeo } from "@/lib/seo.functions";
+import { getTenantHomeBundle } from "@/lib/tenant.functions";
 
 const BASE = "https://learn-forge-quick.lovable.app";
 
+const homeBundleOptions = (slug: string) =>
+  queryOptions({
+    queryKey: ["tenant-home-bundle", slug],
+    queryFn: () => getTenantHomeBundle({ data: { slug } }),
+    staleTime: 5 * 60_000,
+  });
+
 export const Route = createFileRoute("/t/$slug/")({
-  loader: ({ params }) => getTenantSeo({ data: { slug: params.slug } }),
+  loader: ({ context, params }) =>
+    context.queryClient.ensureQueryData(homeBundleOptions(params.slug)),
+
   head: ({ params, loaderData }) => {
     const t = loaderData?.tenant as any;
     const title = t?.name ? `${t.name} — منصة تعليمية` : `${params.slug} — منصة تعليمية`;
