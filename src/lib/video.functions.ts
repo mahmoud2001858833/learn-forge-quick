@@ -241,20 +241,17 @@ export const getPlaybackUrl = createServerFn({ method: "GET" })
 
     if (!allowed) throw new Error("forbidden");
 
-    const { data: settings } = await context.supabase
-      .from("platform_settings").select("playback_token_secret, r2_public_worker_url")
-      .eq("tenant_id", asset.tenant_id).maybeSingle();
-    const workerBase = (settings?.r2_public_worker_url || process.env.R2_WORKER_URL || "").replace(/\/$/, "");
+    const workerBase = (process.env.R2_WORKER_URL || "").replace(/\/$/, "");
     if (!workerBase) throw new Error("worker_url_not_configured");
 
     const exp = Math.floor(Date.now() / 1000) + 60 * 60;
-    const secret = settings?.playback_token_secret ?? "";
-    const url = await signWorkerUrl(workerBase, asset.r2_key, context.userId, secret, 3600);
+    const url = await signWorkerUrl(workerBase, asset.r2_key, context.userId, "", 3600);
     const thumbUrl = asset.thumbnail_key
-      ? await signWorkerUrl(workerBase, asset.thumbnail_key, context.userId, secret, 24 * 3600)
+      ? await signWorkerUrl(workerBase, asset.thumbnail_key, context.userId, "", 24 * 3600)
       : null;
     return { url, expiresAt: exp, thumbnailUrl: thumbUrl };
   });
+
 
 /**
  * Lightweight thumbnail-only URL (no full video access required).
