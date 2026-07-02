@@ -78,11 +78,12 @@ export const initVideoUpload = createServerFn({ method: "POST" })
       }
     }
 
-    const key = r2KeyFor(data.tenantId, data.filename);
+    // Worker will generate the real key; use placeholder until saveUploadId reports it.
+    const placeholderKey = `pending/${crypto.randomUUID()}`;
     const { data: asset, error } = await context.supabase.from("video_assets").insert({
       tenant_id: data.tenantId,
       uploaded_by: context.userId,
-      r2_key: key,
+      r2_key: placeholderKey,
       status: "uploading",
       original_filename: data.filename,
       mime_type: data.mimeType,
@@ -95,10 +96,10 @@ export const initVideoUpload = createServerFn({ method: "POST" })
 
     return {
       assetId: asset.id,
-      key,
+      key: placeholderKey,
       uploadId: null as string | null,
       workerUrl,
-      mode: data.sizeBytes <= SINGLE_SHOT_LIMIT ? ("single" as const) : ("multipart" as const),
+      mode: "multipart" as const,
       partSize: PART_SIZE,
       resumed: false,
     };
@@ -106,15 +107,23 @@ export const initVideoUpload = createServerFn({ method: "POST" })
 
 export const saveUploadId = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((d) => z.object({ assetId: z.string().uuid(), uploadId: z.string().min(1) }).parse(d))
+  .inputValidator((d) => z.object({
+    assetId: z.string().uuid(),
+    uploadId: z.string().min(1),
+    key: z.string().min(1).optional(),
+  }).parse(d))
   .handler(async ({ data, context }) => {
     const { data: asset } = await context.supabase
       .from("video_assets").select("tenant_id").eq("id", data.assetId).maybeSingle();
     if (!asset) throw new Error("asset_not_found");
     await ensureTenantAdmin(context.supabase, context.userId, asset.tenant_id);
-    await context.supabase.from("video_assets").update({ upload_id: data.uploadId }).eq("id", data.assetId);
+    await context.supabase.from("video_assets").update({
+      upload_id: data.uploadId,
+      ...(data.key ? { r2_key: data.key } : {}),
+    }).eq("id", data.assetId);
     return { ok: true };
   });
+
 
 export const listResumableUploads = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])

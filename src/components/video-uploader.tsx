@@ -249,27 +249,10 @@ export function VideoUploader({ tenantId, onUploaded }: Props) {
         },
       });
       currentAsset.current = init.assetId;
-      const { key, workerUrl, mode, partSize } = init;
+      let { key } = init;
+      const { workerUrl, partSize } = init;
 
-      if (mode === "single") {
-        const partState: PartState = { partNumber: 1, size: file.size, loaded: 0, attempts: 0, status: "pending" };
-        setParts([partState]);
-        await uploadWithRetry(
-          "POST",
-          `${workerUrl}/upload?key=${encodeURIComponent(key)}&contentType=${encodeURIComponent(file.type || "video/mp4")}`,
-          file, signal,
-          (loaded) => {
-            const delta = loaded - partState.loaded; partState.loaded = loaded;
-            uploadedBytes += delta; refreshTotals();
-            setPart(1, { loaded, status: "uploading" });
-          },
-          (attempt) => {
-            if (attempt > 1) toast.warning(`إعادة المحاولة (${attempt - 1}) لرفع الملف`);
-            setPart(1, { attempts: attempt });
-          },
-        );
-        setPart(1, { status: "done" });
-      } else {
+      {
         // ─── Multipart with resume support ──────────────────────────────
         const totalParts = Math.ceil(file.size / partSize);
         const initialParts: PartState[] = Array.from({ length: totalParts }, (_, i) => {
@@ -294,15 +277,20 @@ export function VideoUploader({ tenantId, onUploaded }: Props) {
           refreshTotals();
           toast.message(`استكمال الرفع — تم سابقاً ${alreadyDone.length}/${totalParts} جزء`);
         } else {
-          // Begin new multipart
+          // Begin new multipart — worker generates the real key from the filename.
+          const startBody = new Blob(
+            [JSON.stringify({ filename: file.name, contentType: file.type || "video/mp4" })],
+            { type: "application/json" },
+          );
           const startJson = (await uploadWithRetry(
             "POST",
-            `${workerUrl}/upload/start?key=${encodeURIComponent(key)}&contentType=${encodeURIComponent(file.type || "video/mp4")}`,
-            new Blob([]), signal, () => null, () => null,
-          )) as { uploadId: string };
+            `${workerUrl}/upload/start`,
+            startBody, signal, () => null, () => null,
+          )) as { uploadId: string; key: string };
           uploadId = startJson.uploadId;
-          // Persist uploadId server-side so a future page reload can resume.
-          await saveIdFn({ data: { assetId: init.assetId, uploadId } }).catch(() => null);
+          key = startJson.key;
+          // Persist uploadId + real key server-side so a future page reload can resume.
+          await saveIdFn({ data: { assetId: init.assetId, uploadId, key } }).catch(() => null);
         }
 
         // Save resume record locally NOW so that even a hard reload mid-upload
@@ -355,25 +343,19 @@ export function VideoUploader({ tenantId, onUploaded }: Props) {
           }
         };
 
-        try {
-          await Promise.all(Array.from({ length: Math.min(CONCURRENCY, pendingQueue.length || 1) }, worker));
-          if (signal.aborted) throw new DOMException("aborted", "AbortError");
-          await uploadWithRetry(
-            "POST",
-            `${workerUrl}/upload/complete`,
-            new Blob([JSON.stringify({ key, uploadId, parts: doneParts })], { type: "application/json" }),
-            signal, () => null, () => null,
-          );
-        } catch (e) {
-          // Keep resume record on transient network errors / cancellation; only
-          // abort on the Worker if user explicitly cancels.
-          throw e;
-        }
+        await Promise.all(Array.from({ length: Math.min(CONCURRENCY, pendingQueue.length || 1) }, worker));
+        if (signal.aborted) throw new DOMException("aborted", "AbortError");
+        await uploadWithRetry(
+          "POST",
+          `${workerUrl}/upload/complete`,
+          new Blob([JSON.stringify({ key, uploadId, parts: doneParts })], { type: "application/json" }),
+          signal, () => null, () => null,
+        );
       }
 
-      // Upload thumbnail (best-effort), then finalize.
-      const tenantPrefix = key.split("/").slice(0, 2).join("/");
-      const thumbKey = await uploadThumbnail(workerUrl, tenantPrefix, file, signal);
+      // Thumbnails skipped — this Worker only supports multipart uploads.
+      const thumbKey: string | null = null;
+
 
       await completeFn({
         data: {
