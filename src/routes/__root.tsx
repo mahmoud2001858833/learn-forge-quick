@@ -132,6 +132,9 @@ function RootComponent() {
   useEffect(() => {
     // Real-User Monitoring — Web Vitals
     import("@/lib/rum").then((m) => m.initRUM()).catch(() => {});
+    // Progressive Web App — register offline service worker (guarded)
+    import("@/lib/pwa").then((m) => m.registerPWA()).catch(() => {});
+
 
     const { data: sub } = supabase.auth.onAuthStateChange((event) => {
       if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
