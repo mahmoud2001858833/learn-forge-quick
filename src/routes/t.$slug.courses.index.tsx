@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, BookOpen } from "lucide-react";
 
-export const Route = createFileRoute("/t/$slug/courses")({
+export const Route = createFileRoute("/t/$slug/courses/")({
   head: ({ params }) => ({
     meta: [
       { title: `الدورات — ${params.slug}` },

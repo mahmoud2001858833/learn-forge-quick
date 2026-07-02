@@ -30,7 +30,6 @@ import { Route as TSlugTermsRouteImport } from './routes/t.$slug.terms'
 import { Route as TSlugPrivacyRouteImport } from './routes/t.$slug.privacy'
 import { Route as TSlugLiveRouteImport } from './routes/t.$slug.live'
 import { Route as TSlugLeaderboardRouteImport } from './routes/t.$slug.leaderboard'
-import { Route as TSlugCoursesRouteImport } from './routes/t.$slug.courses'
 import { Route as TSlugContactRouteImport } from './routes/t.$slug.contact'
 import { Route as TSlugAuthRouteImport } from './routes/t.$slug.auth'
 import { Route as TSlugAiRouteImport } from './routes/t.$slug.ai'
@@ -40,6 +39,7 @@ import { Route as AuthenticatedOnboardNewTenantRouteImport } from './routes/_aut
 import { Route as AuthenticatedLearnEnrollmentIdRouteImport } from './routes/_authenticated/learn.$enrollmentId'
 import { Route as AuthenticatedAssignmentAssignmentIdRouteImport } from './routes/_authenticated/assignment.$assignmentId'
 import { Route as AuthenticatedAdminTenantSlugRouteImport } from './routes/_authenticated/admin.$tenantSlug'
+import { Route as TSlugCoursesIndexRouteImport } from './routes/t.$slug.courses.index'
 import { Route as AuthenticatedAdminTenantSlugIndexRouteImport } from './routes/_authenticated/admin.$tenantSlug.index'
 import { Route as TSlugCoursesCourseSlugRouteImport } from './routes/t.$slug.courses.$courseSlug'
 import { Route as AuthenticatedAdminTenantSlugStudentsRouteImport } from './routes/_authenticated/admin.$tenantSlug.students'
@@ -168,11 +168,6 @@ const TSlugLeaderboardRoute = TSlugLeaderboardRouteImport.update({
   path: '/leaderboard',
   getParentRoute: () => TSlugRoute,
 } as any)
-const TSlugCoursesRoute = TSlugCoursesRouteImport.update({
-  id: '/courses',
-  path: '/courses',
-  getParentRoute: () => TSlugRoute,
-} as any)
 const TSlugContactRoute = TSlugContactRouteImport.update({
   id: '/contact',
   path: '/contact',
@@ -222,6 +217,11 @@ const AuthenticatedAdminTenantSlugRoute =
     path: '/admin/$tenantSlug',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const TSlugCoursesIndexRoute = TSlugCoursesIndexRouteImport.update({
+  id: '/courses/',
+  path: '/courses/',
+  getParentRoute: () => TSlugRoute,
+} as any)
 const AuthenticatedAdminTenantSlugIndexRoute =
   AuthenticatedAdminTenantSlugIndexRouteImport.update({
     id: '/',
@@ -229,9 +229,9 @@ const AuthenticatedAdminTenantSlugIndexRoute =
     getParentRoute: () => AuthenticatedAdminTenantSlugRoute,
   } as any)
 const TSlugCoursesCourseSlugRoute = TSlugCoursesCourseSlugRouteImport.update({
-  id: '/$courseSlug',
-  path: '/$courseSlug',
-  getParentRoute: () => TSlugCoursesRoute,
+  id: '/courses/$courseSlug',
+  path: '/courses/$courseSlug',
+  getParentRoute: () => TSlugRoute,
 } as any)
 const AuthenticatedAdminTenantSlugStudentsRoute =
   AuthenticatedAdminTenantSlugStudentsRouteImport.update({
@@ -361,7 +361,6 @@ export interface FileRoutesByFullPath {
   '/t/$slug/ai': typeof TSlugAiRoute
   '/t/$slug/auth': typeof TSlugAuthRoute
   '/t/$slug/contact': typeof TSlugContactRoute
-  '/t/$slug/courses': typeof TSlugCoursesRouteWithChildren
   '/t/$slug/leaderboard': typeof TSlugLeaderboardRoute
   '/t/$slug/live': typeof TSlugLiveRoute
   '/t/$slug/privacy': typeof TSlugPrivacyRoute
@@ -383,6 +382,7 @@ export interface FileRoutesByFullPath {
   '/admin/$tenantSlug/students': typeof AuthenticatedAdminTenantSlugStudentsRoute
   '/t/$slug/courses/$courseSlug': typeof TSlugCoursesCourseSlugRoute
   '/admin/$tenantSlug/': typeof AuthenticatedAdminTenantSlugIndexRoute
+  '/t/$slug/courses/': typeof TSlugCoursesIndexRoute
   '/admin/$tenantSlug/courses/$courseId': typeof AuthenticatedAdminTenantSlugCoursesCourseIdRouteWithChildren
   '/admin/$tenantSlug/courses/': typeof AuthenticatedAdminTenantSlugCoursesIndexRoute
   '/admin/$tenantSlug/courses/$courseId/quizzes': typeof AuthenticatedAdminTenantSlugCoursesCourseIdQuizzesRoute
@@ -410,7 +410,6 @@ export interface FileRoutesByTo {
   '/t/$slug/ai': typeof TSlugAiRoute
   '/t/$slug/auth': typeof TSlugAuthRoute
   '/t/$slug/contact': typeof TSlugContactRoute
-  '/t/$slug/courses': typeof TSlugCoursesRouteWithChildren
   '/t/$slug/leaderboard': typeof TSlugLeaderboardRoute
   '/t/$slug/live': typeof TSlugLiveRoute
   '/t/$slug/privacy': typeof TSlugPrivacyRoute
@@ -432,6 +431,7 @@ export interface FileRoutesByTo {
   '/admin/$tenantSlug/students': typeof AuthenticatedAdminTenantSlugStudentsRoute
   '/t/$slug/courses/$courseSlug': typeof TSlugCoursesCourseSlugRoute
   '/admin/$tenantSlug': typeof AuthenticatedAdminTenantSlugIndexRoute
+  '/t/$slug/courses': typeof TSlugCoursesIndexRoute
   '/admin/$tenantSlug/courses/$courseId': typeof AuthenticatedAdminTenantSlugCoursesCourseIdRouteWithChildren
   '/admin/$tenantSlug/courses': typeof AuthenticatedAdminTenantSlugCoursesIndexRoute
   '/admin/$tenantSlug/courses/$courseId/quizzes': typeof AuthenticatedAdminTenantSlugCoursesCourseIdQuizzesRoute
@@ -463,7 +463,6 @@ export interface FileRoutesById {
   '/t/$slug/ai': typeof TSlugAiRoute
   '/t/$slug/auth': typeof TSlugAuthRoute
   '/t/$slug/contact': typeof TSlugContactRoute
-  '/t/$slug/courses': typeof TSlugCoursesRouteWithChildren
   '/t/$slug/leaderboard': typeof TSlugLeaderboardRoute
   '/t/$slug/live': typeof TSlugLiveRoute
   '/t/$slug/privacy': typeof TSlugPrivacyRoute
@@ -485,6 +484,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/$tenantSlug/students': typeof AuthenticatedAdminTenantSlugStudentsRoute
   '/t/$slug/courses/$courseSlug': typeof TSlugCoursesCourseSlugRoute
   '/_authenticated/admin/$tenantSlug/': typeof AuthenticatedAdminTenantSlugIndexRoute
+  '/t/$slug/courses/': typeof TSlugCoursesIndexRoute
   '/_authenticated/admin/$tenantSlug/courses/$courseId': typeof AuthenticatedAdminTenantSlugCoursesCourseIdRouteWithChildren
   '/_authenticated/admin/$tenantSlug/courses/': typeof AuthenticatedAdminTenantSlugCoursesIndexRoute
   '/_authenticated/admin/$tenantSlug/courses/$courseId/quizzes': typeof AuthenticatedAdminTenantSlugCoursesCourseIdQuizzesRoute
@@ -516,7 +516,6 @@ export interface FileRouteTypes {
     | '/t/$slug/ai'
     | '/t/$slug/auth'
     | '/t/$slug/contact'
-    | '/t/$slug/courses'
     | '/t/$slug/leaderboard'
     | '/t/$slug/live'
     | '/t/$slug/privacy'
@@ -538,6 +537,7 @@ export interface FileRouteTypes {
     | '/admin/$tenantSlug/students'
     | '/t/$slug/courses/$courseSlug'
     | '/admin/$tenantSlug/'
+    | '/t/$slug/courses/'
     | '/admin/$tenantSlug/courses/$courseId'
     | '/admin/$tenantSlug/courses/'
     | '/admin/$tenantSlug/courses/$courseId/quizzes'
@@ -565,7 +565,6 @@ export interface FileRouteTypes {
     | '/t/$slug/ai'
     | '/t/$slug/auth'
     | '/t/$slug/contact'
-    | '/t/$slug/courses'
     | '/t/$slug/leaderboard'
     | '/t/$slug/live'
     | '/t/$slug/privacy'
@@ -587,6 +586,7 @@ export interface FileRouteTypes {
     | '/admin/$tenantSlug/students'
     | '/t/$slug/courses/$courseSlug'
     | '/admin/$tenantSlug'
+    | '/t/$slug/courses'
     | '/admin/$tenantSlug/courses/$courseId'
     | '/admin/$tenantSlug/courses'
     | '/admin/$tenantSlug/courses/$courseId/quizzes'
@@ -617,7 +617,6 @@ export interface FileRouteTypes {
     | '/t/$slug/ai'
     | '/t/$slug/auth'
     | '/t/$slug/contact'
-    | '/t/$slug/courses'
     | '/t/$slug/leaderboard'
     | '/t/$slug/live'
     | '/t/$slug/privacy'
@@ -639,6 +638,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/$tenantSlug/students'
     | '/t/$slug/courses/$courseSlug'
     | '/_authenticated/admin/$tenantSlug/'
+    | '/t/$slug/courses/'
     | '/_authenticated/admin/$tenantSlug/courses/$courseId'
     | '/_authenticated/admin/$tenantSlug/courses/'
     | '/_authenticated/admin/$tenantSlug/courses/$courseId/quizzes'
@@ -804,13 +804,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TSlugLeaderboardRouteImport
       parentRoute: typeof TSlugRoute
     }
-    '/t/$slug/courses': {
-      id: '/t/$slug/courses'
-      path: '/courses'
-      fullPath: '/t/$slug/courses'
-      preLoaderRoute: typeof TSlugCoursesRouteImport
-      parentRoute: typeof TSlugRoute
-    }
     '/t/$slug/contact': {
       id: '/t/$slug/contact'
       path: '/contact'
@@ -874,6 +867,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminTenantSlugRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/t/$slug/courses/': {
+      id: '/t/$slug/courses/'
+      path: '/courses'
+      fullPath: '/t/$slug/courses/'
+      preLoaderRoute: typeof TSlugCoursesIndexRouteImport
+      parentRoute: typeof TSlugRoute
+    }
     '/_authenticated/admin/$tenantSlug/': {
       id: '/_authenticated/admin/$tenantSlug/'
       path: '/'
@@ -883,10 +883,10 @@ declare module '@tanstack/react-router' {
     }
     '/t/$slug/courses/$courseSlug': {
       id: '/t/$slug/courses/$courseSlug'
-      path: '/$courseSlug'
+      path: '/courses/$courseSlug'
       fullPath: '/t/$slug/courses/$courseSlug'
       preLoaderRoute: typeof TSlugCoursesCourseSlugRouteImport
-      parentRoute: typeof TSlugCoursesRoute
+      parentRoute: typeof TSlugRoute
     }
     '/_authenticated/admin/$tenantSlug/students': {
       id: '/_authenticated/admin/$tenantSlug/students'
@@ -1125,29 +1125,18 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
-interface TSlugCoursesRouteChildren {
-  TSlugCoursesCourseSlugRoute: typeof TSlugCoursesCourseSlugRoute
-}
-
-const TSlugCoursesRouteChildren: TSlugCoursesRouteChildren = {
-  TSlugCoursesCourseSlugRoute: TSlugCoursesCourseSlugRoute,
-}
-
-const TSlugCoursesRouteWithChildren = TSlugCoursesRoute._addFileChildren(
-  TSlugCoursesRouteChildren,
-)
-
 interface TSlugRouteChildren {
   TSlugAboutRoute: typeof TSlugAboutRoute
   TSlugAiRoute: typeof TSlugAiRoute
   TSlugAuthRoute: typeof TSlugAuthRoute
   TSlugContactRoute: typeof TSlugContactRoute
-  TSlugCoursesRoute: typeof TSlugCoursesRouteWithChildren
   TSlugLeaderboardRoute: typeof TSlugLeaderboardRoute
   TSlugLiveRoute: typeof TSlugLiveRoute
   TSlugPrivacyRoute: typeof TSlugPrivacyRoute
   TSlugTermsRoute: typeof TSlugTermsRoute
   TSlugIndexRoute: typeof TSlugIndexRoute
+  TSlugCoursesCourseSlugRoute: typeof TSlugCoursesCourseSlugRoute
+  TSlugCoursesIndexRoute: typeof TSlugCoursesIndexRoute
 }
 
 const TSlugRouteChildren: TSlugRouteChildren = {
@@ -1155,12 +1144,13 @@ const TSlugRouteChildren: TSlugRouteChildren = {
   TSlugAiRoute: TSlugAiRoute,
   TSlugAuthRoute: TSlugAuthRoute,
   TSlugContactRoute: TSlugContactRoute,
-  TSlugCoursesRoute: TSlugCoursesRouteWithChildren,
   TSlugLeaderboardRoute: TSlugLeaderboardRoute,
   TSlugLiveRoute: TSlugLiveRoute,
   TSlugPrivacyRoute: TSlugPrivacyRoute,
   TSlugTermsRoute: TSlugTermsRoute,
   TSlugIndexRoute: TSlugIndexRoute,
+  TSlugCoursesCourseSlugRoute: TSlugCoursesCourseSlugRoute,
+  TSlugCoursesIndexRoute: TSlugCoursesIndexRoute,
 }
 
 const TSlugRouteWithChildren = TSlugRoute._addFileChildren(TSlugRouteChildren)
