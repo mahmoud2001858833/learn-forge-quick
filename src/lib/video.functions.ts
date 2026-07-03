@@ -77,12 +77,12 @@ export const initVideoUpload = createServerFn({ method: "POST" })
       }
     }
 
-    // Worker will generate the real key; use placeholder until saveUploadId reports it.
-    const placeholderKey = `pending/${crypto.randomUUID()}`;
+    // Mint a valid tenant-scoped R2 key up front (worker's validKey regex requires this shape).
+    const key = r2KeyFor(data.tenantId, data.filename);
     const { data: asset, error } = await context.supabase.from("video_assets").insert({
       tenant_id: data.tenantId,
       uploaded_by: context.userId,
-      r2_key: placeholderKey,
+      r2_key: key,
       status: "uploading",
       original_filename: data.filename,
       mime_type: data.mimeType,
