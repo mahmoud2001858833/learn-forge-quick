@@ -95,7 +95,7 @@ export const initVideoUpload = createServerFn({ method: "POST" })
 
     return {
       assetId: asset.id,
-      key: placeholderKey,
+      key,
       uploadId: null as string | null,
       workerUrl,
       mode: "multipart" as const,
