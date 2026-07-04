@@ -1,35 +1,38 @@
-/**
- * Supabase Image Transformations helper.
- * Converts a public storage URL into a transformed/render URL for smaller payloads.
- * Non-Supabase URLs are returned unchanged.
- */
-export type ImageOpts = {
-  width?: number;
-  height?: number;
-  quality?: number;
-  format?: "webp" | "avif" | "origin";
-  resize?: "cover" | "contain" | "fill";
+import imageCompression from "browser-image-compression";
+
+export type CompressOptions = {
+  maxSizeMB?: number;
+  maxWidthOrHeight?: number;
+  useWebWorker?: boolean;
+  fileType?: string;
 };
 
-export function optimizedImage(url: string | null | undefined, opts: ImageOpts = {}): string {
-  if (!url) return "";
-  // Only transform Supabase Storage URLs
-  const isSupabase = url.includes("/storage/v1/object/public/");
-  if (!isSupabase) return url;
-
-  const transformed = url.replace("/storage/v1/object/public/", "/storage/v1/render/image/public/");
-  const params = new URLSearchParams();
-  if (opts.width) params.set("width", String(opts.width));
-  if (opts.height) params.set("height", String(opts.height));
-  params.set("quality", String(opts.quality ?? 75));
-  if (opts.format && opts.format !== "origin") params.set("format", opts.format);
-  if (opts.resize) params.set("resize", opts.resize);
-  const qs = params.toString();
-  return qs ? `${transformed}?${qs}` : transformed;
+/**
+ * Client-side image compression before upload.
+ * Non-image files are returned as-is. Failures fall back to the original file.
+ */
+export async function compressImage(file: File, options: CompressOptions = {}): Promise<File> {
+  if (!file.type.startsWith("image/")) return file;
+  try {
+    const compressed = await imageCompression(file, {
+      maxSizeMB: options.maxSizeMB ?? 1,
+      maxWidthOrHeight: options.maxWidthOrHeight ?? 1920,
+      useWebWorker: options.useWebWorker ?? true,
+      fileType: options.fileType,
+      initialQuality: 0.82,
+    });
+    return new File([compressed], file.name, {
+      type: compressed.type || file.type,
+      lastModified: Date.now(),
+    });
+  } catch {
+    return file;
+  }
 }
 
-/** Build a `srcset` string for responsive images. */
-export function srcSet(url: string | null | undefined, widths: number[], opts: Omit<ImageOpts, "width"> = {}): string {
-  if (!url) return "";
-  return widths.map((w) => `${optimizedImage(url, { ...opts, width: w })} ${w}w`).join(", ");
+export function formatBytes(bytes: number): string {
+  if (!Number.isFinite(bytes) || bytes <= 0) return "0 B";
+  const units = ["B", "KB", "MB", "GB", "TB"];
+  const i = Math.min(units.length - 1, Math.floor(Math.log(bytes) / Math.log(1024)));
+  return `${(bytes / Math.pow(1024, i)).toFixed(i === 0 ? 0 : 1)} ${units[i]}`;
 }
