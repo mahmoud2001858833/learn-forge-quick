@@ -11,15 +11,6 @@ export default defineConfig({
         output: {
           manualChunks: {
             "vendor-charts": ["recharts"],
-            "vendor-motion": ["framer-motion"],
-            "vendor-editor": [
-              "@tiptap/react",
-              "@tiptap/starter-kit",
-              "@tiptap/extension-image",
-              "@tiptap/extension-link",
-              "@tiptap/extension-placeholder",
-              "@tiptap/extension-underline",
-            ],
             "vendor-radix": [
               "@radix-ui/react-dialog",
               "@radix-ui/react-dropdown-menu",
