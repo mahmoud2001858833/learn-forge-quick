@@ -318,7 +318,7 @@ function SignUpForm({ primary, secondary }: { primary: string; secondary: string
         const { error: applyErr } = await supabase.rpc("apply_to_tenant", {
           _tenant_id: tenantRow.id,
           _desired_role: form.desired_role,
-          _note: form.desired_role === "instructor" ? (form.application_note || null) : null,
+          _note: form.desired_role === "instructor" ? (form.application_note || undefined) : undefined,
         });
         if (applyErr) {
           toast.warning(`تم إنشاء الحساب لكن تعذّر تسجيل الدور: ${applyErr.message}`);
