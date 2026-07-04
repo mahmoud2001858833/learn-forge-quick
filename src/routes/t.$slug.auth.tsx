@@ -155,6 +155,37 @@ function TenantAuthPage() {
             <h1 className="text-2xl font-bold">{tenant.name}</h1>
           </div>
 
+          {alreadySignedIn && (
+            <div className="mb-6 rounded-xl border border-amber-300/60 bg-amber-50 dark:bg-amber-900/20 p-4 text-sm">
+              <p className="font-semibold mb-1">أنت مسجّل الدخول حالياً</p>
+              <p className="text-muted-foreground mb-3">
+                لإنشاء حساب جديد أو تسجيل الدخول بحساب آخر، سجّل الخروج أولاً.
+              </p>
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={async () => {
+                    await supabase.auth.signOut();
+                    toast.success("تم تسجيل الخروج");
+                  }}
+                >
+                  تسجيل الخروج
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={() => navigate({ to: "/t/$slug", params: { slug } })}
+                  style={{ background: `linear-gradient(135deg, ${primary}, ${secondary})` }}
+                  className="text-white border-0"
+                >
+                  متابعة إلى المنصة
+                </Button>
+              </div>
+            </div>
+          )}
+
           <div className="mb-6">
             <h1 className="text-3xl font-bold mb-1">{mode === "signup" ? "إنشاء حساب جديد" : "تسجيل الدخول"}</h1>
             <p className="text-sm text-muted-foreground">
