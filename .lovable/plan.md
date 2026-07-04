@@ -1,75 +1,107 @@
+# خطة التنفيذ متعددة المراحل
 
-## خطة التحسينات الشاملة (10 محاور)
-
-### 1) الصور الديناميكية عبر Supabase Transform
-- إنشاء `src/lib/image.ts` بدالة `optimizedImage(url, { width, quality, format })` تُرجع رابط `/storage/v1/render/image/public/...` مع بارامترات `?width=&quality=&format=webp` — تعمل فقط على روابط Supabase Storage وتُعيد الرابط كما هو للروابط الخارجية.
-- استخدامها في `CourseCard` (كل الأنماط الستة) بأحجام: 600w للأنماط 1/2، 200w للنمط 3 (horizontal)، 400w للنمط 6.
-- استخدامها في `TenantHero` للصورة الرئيسية بحجم 1200w.
-
-### 2) LCP hero preload
-- في `src/routes/t.$slug.index.tsx` داخل `head()`: إضافة `links: [{ rel: "preload", as: "image", href: optimizedImage(hero, 1200), fetchpriority: "high" }]` عندما تتوفر `hero_image_url`.
-- تمرير `fetchpriority="high"` و`loading="eager"` لصورة الـHero في `TenantHero` فقط (وليس lazy).
-
-### 3) قياس أداء `tenant_home_bundle`
-- تشغيل `EXPLAIN (ANALYZE, BUFFERS)` عبر `supabase--read_query`.
-- إذا > 100ms: إنشاء migration بـ `MATERIALIZED VIEW tenant_stats_mv` (courses_count, enrollments_count per tenant) + دالة `refresh_tenant_stats_mv()` + جدولة pg_cron كل 5 دقائق + تعديل `tenant_home_bundle` لقراءة الإحصائيات من الـMV.
-- إذا < 100ms: تخطّي (يُوفر تعقيد بلا فائدة).
-
-### 4) Bundle size — عزل recharts عن الصفحات العامة
-- التحقق أنّ `recharts` مستخدَم فقط في `admin.$tenantSlug.reports.tsx` و`ui/chart.tsx`.
-- تحويل استيراد المكونات الثقيلة داخل `reports.tsx` إلى `React.lazy` مع `Suspense fallback`.
-- تشغيل `bunx vite-bundle-visualizer` لتوليد `stats.html` والتحقق من عدم تسرّب recharts للـ initial chunk.
-
-### 5) Prefetch على hover
-- التحقق أن `router.defaultPreload="intent"` و`defaultPreloadStaleTime: 0` — مفعّل مسبقًا.
-- مراجعة أن كل `<Link>` في القوائم العامة يستعمل `to` type-safe (لا `<a href>`) — فحص `TenantHero` والقوائم.
-- لا تعديل إن كل شيء صحيح.
-
-### 6) Brotli & HTTP/2
-- Cloudflare Workers يفعّلهما تلقائيًا — إضافة تعليق توثيق في `vite.config.ts` فقط + تأكيد `build.cssMinify: "lightningcss"` و`build.minify` تركهما على الافتراضي.
-- لا تغييرات كود.
-
-### 7) Virtual scrolling
-- التحقق من عدد الدورات الحالي في أكبر tenant عبر `supabase--read_query`.
-- إذا وُجد tenant واحد على الأقل > 50 دورة: تثبيت `@tanstack/react-virtual` وتحديث `t.$slug.courses.index.tsx` لعرض `useVirtualizer` عندما `courses.length > 50`.
-- إذا لا: توثيق فقط في تعليق بالملف (بدون تثبيت مكتبة زائدة).
-
-### 8) Web Vitals RUM
-- `bun add web-vitals`.
-- إنشاء `src/lib/rum.ts` يستدعي `onCLS/onLCP/onINP/onTTFB` ويرسل إلى endpoint `/api/public/hooks/rum` (server route جديد يخزّن في جدول `landing_events` الموجود أو جدول `web_vitals` جديد).
-- migration: جدول `web_vitals(id, metric, value, rating, url, user_agent, tenant_slug, created_at)` + GRANT + RLS (INSERT مفتوح للجميع، SELECT للـadmin فقط).
-- استدعاء `initRUM()` من `src/routes/__root.tsx` داخل `useEffect`.
-
-### 9) Service Worker (PWA) — Offline
-- استخدام skill/pwa الرسمي: `bun add -D vite-plugin-pwa`.
-- تكوين `vite.config.ts` بـ `VitePWA({ registerType: "autoUpdate", injectRegister: null, devOptions: { enabled: false }, workbox: { navigateFallback: null, runtimeCaching: [NetworkFirst للنافيغيشن، CacheFirst للأصول الهاش] } })`.
-- إنشاء `src/lib/register-sw.ts` مع الحرّاس (dev، iframe، preview hosts، `?sw=off`).
-- إنشاء `public/manifest.webmanifest` + أيقونات (192, 512).
-- استدعاء `registerSW()` من `__root.tsx`.
-
-### 10) Supabase Pooler
-- Cloudflare Workers = serverless — التحقق من `.env` أن `SUPABASE_URL` يشير للـpooler (port 6543) وليس direct (5432).
-- Supabase Data API (PostgREST) يستخدم HTTP لا يحتاج pooler.
-- توثيق للمستخدم: server functions تستعمل `SUPABASE_URL` (HTTPS/PostgREST) — لا يوجد اتصال Postgres مباشر → لا حاجة لتغيير.
+المشروع كبير جداً لجولة واحدة. سنقسمه إلى **5 مراحل** كل واحدة برسالة/جولة مستقلة قابلة للاختبار قبل الانتقال للتالية.
 
 ---
 
-### ترتيب التنفيذ (5 مراحل)
-1. **قياس أولاً**: EXPLAIN + bundle-visualizer + عدد الدورات → تقرير للمستخدم.
-2. **الصور + LCP preload** (المرحلة الأعلى تأثيرًا على UX).
-3. **Web Vitals RUM** (migration + جدول + endpoint + init).
-4. **Code splitting recharts + Virtual scrolling** (بناءً على نتائج المرحلة 1).
-5. **PWA + توثيق Brotli/Pooler/Prefetch**.
+## المرحلة 1 — تدفق إنشاء المنصة الفوري (سريعة، أساس لباقي المراحل)
+
+**الهدف:** بعد "أنشئ منصتك مجاناً" + تسجيل الدخول → معالج فوري → لوحة التحكم مباشرة.
+
+- حذف صفحة `src/routes/_authenticated/onboard.new-tenant.tsx` والاستعاضة عنها بفتح `CreateTenantWizard` كـ Dialog مباشرة على `/dashboard` عند عدم وجود منصة للمستخدم.
+- CTA "أنشئ منصتك مجاناً" في الصفحة الرئيسية `/` :
+  - إذا غير مسجل → `/auth?intent=create-tenant`
+  - إذا مسجل بدون منصة → `/dashboard?wizard=1` (يفتح المعالج تلقائياً)
+  - إذا مسجل وله منصة → `/admin/<slug>`
+- بعد إنشاء المنصة (`createTenant.onSuccess`) → توجيه لـ `/admin/<slug>` مباشرة (موجود، فقط نتأكد).
+- إزالة أي روابط تشير إلى `/onboard/new-tenant`.
 
 ---
 
-### الملفات المتوقع تعديلها/إنشاؤها
-- جديد: `src/lib/image.ts`, `src/lib/rum.ts`, `src/lib/register-sw.ts`, `src/routes/api/public/hooks/rum.ts`, `public/manifest.webmanifest`, `public/pwa-192.png`, `public/pwa-512.png`
-- تعديل: `src/components/course-card.tsx`, `src/components/tenant/tenant-hero.tsx`, `src/routes/t.$slug.index.tsx`, `src/routes/t.$slug.courses.index.tsx`, `src/routes/__root.tsx`, `src/routes/_authenticated/admin.$tenantSlug.reports.tsx`, `vite.config.ts`
-- migrations: MV للإحصائيات (شرطي) + جدول `web_vitals`
-- حزم جديدة: `web-vitals`, `vite-plugin-pwa` (dev), `@tanstack/react-virtual` (شرطي)
+## المرحلة 2 — نظام أدوار معلم/طالب على مستوى المنصة
 
-### ملاحظات
-- المرحلة 3 (MV) و7 (virtual) شرطيتان — سأعرض النتائج قبل التنفيذ.
-- PWA تعمل فقط في published، ليس في preview (بحسب skill).
-- لن ألمس ملفات auth أو RLS الحالية.
+**الهدف:** كل منصة لها تسجيلها الخاص. طالب يوصل فوراً. معلم يسجّل بس ينتظر موافقة الأدمن.
+
+### قاعدة البيانات (migration واحدة)
+- إضافة قيمة `pending_instructor` إلى `tenant_role` enum (بجانب owner/admin/instructor/student).
+- عمود `applied_role` و `application_note` و `approved_at` و `approved_by` على `tenant_members`.
+- RPC `apply_to_tenant(_tenant_id, _role, _note)`:
+  - إذا `_role = 'student'` → insert بدور `student` فوراً.
+  - إذا `_role = 'instructor'` → insert بدور `pending_instructor` مع `applied_role='instructor'`.
+- RPC `approve_instructor(_tenant_id, _user_id)` و `reject_instructor(...)` (أدمن المنصة فقط).
+- Trigger إشعار للأدمن عند طلب معلم جديد، وللمعلم عند الموافقة/الرفض.
+- سياسات RLS: `pending_instructor` ما يشوف صفحات المعلم إلا بعد الموافقة.
+
+### الواجهة
+- `/t/$slug/auth` (موجودة) → إضافة اختيار "طالب/معلم" في التسجيل + حقل ملاحظة اختياري للمعلم.
+- بعد التسجيل: طالب → `/t/$slug` (يقدر يشتري كورسات). معلم pending → صفحة "طلبك قيد المراجعة".
+- لوحة أدمن جديدة: `/admin/$tenantSlug/instructors` (طلبات + معلمون معتمدون + موافقة/رفض).
+- **لوحة معلم مستقلة**: `/teacher/$tenantSlug/*` (كورساتي، طلابي، تصحيح واجبات، جلسات لايف). حماية بـ `has_tenant_role(user, tenant, ['instructor','owner','admin'])`.
+- **واجهة طالب مستقلة**: `/t/$slug/me/*` (كورساتي، شهاداتي، تقدمي، دفعاتي) — مبسّطة بدون تعقيدات الأدمن.
+
+---
+
+## المرحلة 3 — حصة تخزين الفيديو (10GB افتراضي، قابلة للتخصيص)
+
+### قاعدة البيانات
+- عمود `storage_quota_bytes bigint default 10737418240` على `tenants`.
+- عمود `storage_used_bytes bigint default 0` على `tenants`.
+- Trigger على `video_assets` (بعد `bytes` يصير معروف بعد اكتمال الرفع): يزيد/ينقص `storage_used_bytes`.
+- RPC `check_storage_quota(_tenant_id, _incoming_bytes)` → يرجع boolean.
+- تعديل `initVideoUpload` في `src/lib/video.functions.ts`: يرفض الرفع إذا `used + size > quota`.
+- سوبر-أدمن يقدر يعدّل الحصة من `/super-admin` (حقل رقمي على كل منصة).
+
+### الواجهة
+- كارت "التخزين" في `/admin/$tenantSlug` الرئيسية + صفحة `/admin/$tenantSlug/storage`:
+  - Progress bar (مستخدم/إجمالي)، جدول فيديوهات مع أحجامها، زر حذف.
+  - تحذير بصري > 80%، حظر الرفع = 100%.
+
+---
+
+## المرحلة 4 — إعادة تصميم لوحة التحكم + قوالب مظهر المنصة
+
+### 4أ — لوحة تحكم احترافية
+- Sidebar جديد (shadcn `Sidebar` مع `collapsible="icon"`) بأقسام مجمعة: نظرة عامة / المحتوى / الطلاب / المدفوعات / التسويق / الإعدادات.
+- هيدر ثابت مع بحث سريع، إشعارات، ملف شخصي.
+- كروت إحصائيات محسّنة (Motion على الأرقام، رسوم Sparkline).
+- Skeleton loaders + prefetch على hover (موجود جزئياً).
+- Dark/light mode toggle.
+
+### 4ب — محرّر مظهر المنصة (Theme Editor)
+صفحة جديدة `/admin/$tenantSlug/appearance`:
+- 4-5 قوالب جاهزة (Modern / Classic / Bold / Minimal / Academic) مع معاينة حية.
+- تخصيص: ألوان أساسية/ثانوية، خط (مجموعة خطوط عربية جاهزة)، شكل الهيرو (3 خيارات)، ترتيب الأقسام (drag).
+- حفظ إلى `tenants.theme_config jsonb` جديد + استخدامها في `t.$slug.tsx`.
+
+---
+
+## المرحلة 5 — تحسين شامل للأداء والصور
+
+### أداء
+- تحويل صفحات ثقيلة إلى loaders مع `ensureQueryData` + `useSuspenseQuery`.
+- تقليل حجم bundle: `manualChunks` لـ recharts, framer-motion, tiptap.
+- Prefetch على hover موجود، إضافة `defaultPreloadStaleTime: 30_000`.
+- تحسين استعلامات RPC (تجميع calls متعددة في bundle واحد).
+- إضافة indexes مفقودة على أعمدة الفلترة الأكثر استخداماً.
+
+### الصور
+- سيرفر روت `/api/img/$` بـ Cloudflare Image Resizing (متاح بالفعل على Workers) بدلاً من sharp.
+- تحويل تلقائي WebP/AVIF مع `<picture>` element.
+- `loading="lazy"` + `decoding="async"` على كل الصور غير LCP.
+- رفع الصور مع ضغط client-side (browser-image-compression) قبل الرفع لـ Supabase Storage.
+- Preload صور LCP لكل صفحة عبر `head().links`.
+
+---
+
+## نقاط تقنية مهمة
+
+- كل جدول جديد بحاجة GRANT + RLS + سياسات owner-read كما في `public-schema-grants`.
+- `pending_instructor` يحتاج سياسات RLS صريحة تمنع الوصول للمحتوى الحساس.
+- تعديل `types.ts` تلقائي بعد كل migration — لا نلمسه يدوياً.
+- Cloudflare Image Resizing يتطلب تفعيل من dashboard Cloudflare — سنبلّغ المستخدم إذا احتاج.
+
+---
+
+## البدء
+
+بعد موافقتك على الخطة، سأنفذ **المرحلة 1 فقط** في الجولة التالية (سريعة، تعديلات frontend فقط) وأعرضها لك للاختبار قبل الانتقال للمرحلة 2. هل نبدأ بالمرحلة 1؟ أو تفضّل ترتيب مختلف (مثلاً نبدأ بالمرحلة 3 التخزين أو المرحلة 4 التصميم)؟
