@@ -340,6 +340,42 @@ function SignUpForm({ primary, secondary }: { primary: string; secondary: string
   return (
     <form onSubmit={onSubmit} className="space-y-3">
       <div>
+        <Label>نوع الحساب</Label>
+        <div className="grid grid-cols-2 gap-2 mt-1">
+          {(["student", "instructor"] as const).map((r) => (
+            <button
+              type="button"
+              key={r}
+              onClick={() => setForm({ ...form, desired_role: r })}
+              className={cn(
+                "rounded-lg border px-3 py-2 text-sm font-medium transition",
+                form.desired_role === r
+                  ? "border-transparent text-white shadow"
+                  : "border-input bg-background hover:bg-accent"
+              )}
+              style={form.desired_role === r ? { background: `linear-gradient(135deg, ${primary}, ${secondary})` } : undefined}
+            >
+              {r === "student" ? "طالب" : "معلم"}
+            </button>
+          ))}
+        </div>
+        {form.desired_role === "instructor" && (
+          <p className="text-xs text-amber-600 mt-2">
+            سيتم إنشاء حسابك بانتظار موافقة أدمن المنصة قبل تمكين صلاحيات المعلم.
+          </p>
+        )}
+      </div>
+      {form.desired_role === "instructor" && (
+        <div>
+          <Label>نبذة قصيرة عنك (اختياري)</Label>
+          <Input
+            placeholder="التخصص، سنوات الخبرة، المواد التي تودّ تدريسها..."
+            value={form.application_note}
+            onChange={(e) => setForm({ ...form, application_note: e.target.value })}
+          />
+        </div>
+      )}
+      <div>
         <Label>الاسم الكامل</Label>
         <Input required value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} />
       </div>
