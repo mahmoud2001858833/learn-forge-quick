@@ -265,6 +265,11 @@ function SignInForm({ primary, secondary }: { primary: string; secondary: string
 }
 
 function SignUpForm({ primary, secondary }: { primary: string; secondary: string }) {
+  const { slug } = useParams({ from: "/t/$slug/auth" });
+  const { data: tenantRow } = useQuery({
+    queryKey: ["public-tenant-id", slug],
+    queryFn: async () => (await supabase.from("tenants").select("id").eq("slug", slug).maybeSingle()).data,
+  });
   const [form, setForm] = useState({
     full_name: "",
     email: "",
@@ -273,6 +278,8 @@ function SignUpForm({ primary, secondary }: { primary: string; secondary: string
     phone: "",
     study_year: "",
     research_consent: false,
+    desired_role: "student" as "student" | "instructor",
+    application_note: "",
   });
   const [busy, setBusy] = useState(false);
 
@@ -307,7 +314,22 @@ function SignUpForm({ primary, secondary }: { primary: string; secondary: string
         }
       }
       await finalizeLogin();
-      toast.success("مرحباً بك!");
+      if (tenantRow?.id) {
+        const { error: applyErr } = await supabase.rpc("apply_to_tenant", {
+          _tenant_id: tenantRow.id,
+          _desired_role: form.desired_role,
+          _note: form.desired_role === "instructor" ? (form.application_note || null) : null,
+        });
+        if (applyErr) {
+          toast.warning(`تم إنشاء الحساب لكن تعذّر تسجيل الدور: ${applyErr.message}`);
+        } else if (form.desired_role === "instructor") {
+          toast.success("تم استلام طلبك كمعلم — بانتظار موافقة الأدمن قبل الدخول.");
+        } else {
+          toast.success("مرحباً بك!");
+        }
+      } else {
+        toast.success("مرحباً بك!");
+      }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "تعذّر إنشاء الحساب");
     } finally {
