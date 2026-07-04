@@ -9,6 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
+import { OverviewTrends } from "@/components/admin/overview-trends";
 
 export const Route = createFileRoute("/_authenticated/admin/$tenantSlug/")({
   component: Overview,
@@ -187,6 +188,10 @@ function Overview() {
           </CardContent>
         </Card>
       </div>
+
+      {/* 14-day trends */}
+      {tenant?.id && <OverviewTrends tenantId={tenant.id} currency={currency} />}
+
 
       {/* Quick actions */}
       <div>
