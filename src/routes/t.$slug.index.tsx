@@ -173,7 +173,7 @@ function TenantHome() {
             {tenant.cta_subtitle || "انضم إلى آلاف الطلاب وابدأ في تعلّم مهارات جديدة اليوم."}
           </p>
           <div className="flex justify-center gap-3 flex-wrap relative">
-            <Link to="/auth">
+            <Link to="/t/$slug/auth" params={{ slug }} search={{ mode: "signup" }}>
               <Button size="lg" variant="secondary">إنشاء حساب مجاني</Button>
             </Link>
             <Link to="/t/$slug/courses" params={{ slug }}>
