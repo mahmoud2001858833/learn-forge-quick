@@ -41,6 +41,7 @@ function AdminLayout() {
         <NavItem to="/admin/$tenantSlug/assignments" params={{ tenantSlug }} icon={ClipboardCheck} label="الواجبات" />
         <NavItem to="/admin/$tenantSlug/academic" params={{ tenantSlug }} icon={GraduationCap} label="الهيكل الأكاديمي" />
         <NavItem to="/admin/$tenantSlug/students" params={{ tenantSlug }} icon={Users} label="الطلاب" />
+        <NavItem to="/admin/$tenantSlug/instructor-approvals" params={{ tenantSlug }} icon={UserCheck} label="طلبات المعلمين" />
         <NavItem to="/admin/$tenantSlug/payments" params={{ tenantSlug }} icon={Receipt} label="طلبات الدفع" />
         <NavItem to="/admin/$tenantSlug/bank-accounts" params={{ tenantSlug }} icon={Landmark} label="الحسابات البنكية" />
         <NavItem to="/admin/$tenantSlug/coupons" params={{ tenantSlug }} icon={Ticket} label="الكوبونات" />
