@@ -2319,6 +2319,8 @@ export type Database = {
           slug: string
           stats: Json | null
           status: Database["public"]["Enums"]["tenant_status"]
+          storage_quota_bytes: number
+          storage_used_bytes: number
           suspended_at: string | null
           suspension_reason: string | null
           terms_text: string | null
@@ -2359,6 +2361,8 @@ export type Database = {
           slug: string
           stats?: Json | null
           status?: Database["public"]["Enums"]["tenant_status"]
+          storage_quota_bytes?: number
+          storage_used_bytes?: number
           suspended_at?: string | null
           suspension_reason?: string | null
           terms_text?: string | null
@@ -2399,6 +2403,8 @@ export type Database = {
           slug?: string
           stats?: Json | null
           status?: Database["public"]["Enums"]["tenant_status"]
+          storage_quota_bytes?: number
+          storage_used_bytes?: number
           suspended_at?: string | null
           suspension_reason?: string | null
           terms_text?: string | null
@@ -2733,6 +2739,10 @@ export type Database = {
         Args: { _tenant_id: string; _user_id: string }
         Returns: boolean
       }
+      admin_set_storage_quota: {
+        Args: { _quota_bytes: number; _tenant_id: string }
+        Returns: number
+      }
       apply_to_tenant: {
         Args: {
           _desired_role: Database["public"]["Enums"]["tenant_role"]
@@ -2816,6 +2826,15 @@ export type Database = {
         }
       }
       bump_global_logout: { Args: { _user_id: string }; Returns: undefined }
+      check_storage_quota: {
+        Args: { _incoming_bytes: number; _tenant_id: string }
+        Returns: {
+          allowed: boolean
+          quota_bytes: number
+          remaining_bytes: number
+          used_bytes: number
+        }[]
+      }
       compute_level: { Args: { _xp: number }; Returns: number }
       course_tenant: { Args: { _course_id: string }; Returns: string }
       create_notification: {

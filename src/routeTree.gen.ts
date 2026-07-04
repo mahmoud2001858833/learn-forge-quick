@@ -43,6 +43,7 @@ import { Route as AuthenticatedAdminTenantSlugIndexRouteImport } from './routes/
 import { Route as TSlugCoursesCourseSlugRouteImport } from './routes/t.$slug.courses.$courseSlug'
 import { Route as ApiPublicHooksRumRouteImport } from './routes/api/public/hooks/rum'
 import { Route as AuthenticatedAdminTenantSlugStudentsRouteImport } from './routes/_authenticated/admin.$tenantSlug.students'
+import { Route as AuthenticatedAdminTenantSlugStorageRouteImport } from './routes/_authenticated/admin.$tenantSlug.storage'
 import { Route as AuthenticatedAdminTenantSlugSettingsRouteImport } from './routes/_authenticated/admin.$tenantSlug.settings'
 import { Route as AuthenticatedAdminTenantSlugReportsRouteImport } from './routes/_authenticated/admin.$tenantSlug.reports'
 import { Route as AuthenticatedAdminTenantSlugReferralsRouteImport } from './routes/_authenticated/admin.$tenantSlug.referrals'
@@ -239,6 +240,12 @@ const AuthenticatedAdminTenantSlugStudentsRoute =
     path: '/students',
     getParentRoute: () => AuthenticatedAdminTenantSlugRoute,
   } as any)
+const AuthenticatedAdminTenantSlugStorageRoute =
+  AuthenticatedAdminTenantSlugStorageRouteImport.update({
+    id: '/storage',
+    path: '/storage',
+    getParentRoute: () => AuthenticatedAdminTenantSlugRoute,
+  } as any)
 const AuthenticatedAdminTenantSlugSettingsRoute =
   AuthenticatedAdminTenantSlugSettingsRouteImport.update({
     id: '/settings',
@@ -385,6 +392,7 @@ export interface FileRoutesByFullPath {
   '/admin/$tenantSlug/referrals': typeof AuthenticatedAdminTenantSlugReferralsRoute
   '/admin/$tenantSlug/reports': typeof AuthenticatedAdminTenantSlugReportsRoute
   '/admin/$tenantSlug/settings': typeof AuthenticatedAdminTenantSlugSettingsRoute
+  '/admin/$tenantSlug/storage': typeof AuthenticatedAdminTenantSlugStorageRoute
   '/admin/$tenantSlug/students': typeof AuthenticatedAdminTenantSlugStudentsRoute
   '/api/public/hooks/rum': typeof ApiPublicHooksRumRoute
   '/t/$slug/courses/$courseSlug': typeof TSlugCoursesCourseSlugRoute
@@ -435,6 +443,7 @@ export interface FileRoutesByTo {
   '/admin/$tenantSlug/referrals': typeof AuthenticatedAdminTenantSlugReferralsRoute
   '/admin/$tenantSlug/reports': typeof AuthenticatedAdminTenantSlugReportsRoute
   '/admin/$tenantSlug/settings': typeof AuthenticatedAdminTenantSlugSettingsRoute
+  '/admin/$tenantSlug/storage': typeof AuthenticatedAdminTenantSlugStorageRoute
   '/admin/$tenantSlug/students': typeof AuthenticatedAdminTenantSlugStudentsRoute
   '/api/public/hooks/rum': typeof ApiPublicHooksRumRoute
   '/t/$slug/courses/$courseSlug': typeof TSlugCoursesCourseSlugRoute
@@ -489,6 +498,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/$tenantSlug/referrals': typeof AuthenticatedAdminTenantSlugReferralsRoute
   '/_authenticated/admin/$tenantSlug/reports': typeof AuthenticatedAdminTenantSlugReportsRoute
   '/_authenticated/admin/$tenantSlug/settings': typeof AuthenticatedAdminTenantSlugSettingsRoute
+  '/_authenticated/admin/$tenantSlug/storage': typeof AuthenticatedAdminTenantSlugStorageRoute
   '/_authenticated/admin/$tenantSlug/students': typeof AuthenticatedAdminTenantSlugStudentsRoute
   '/api/public/hooks/rum': typeof ApiPublicHooksRumRoute
   '/t/$slug/courses/$courseSlug': typeof TSlugCoursesCourseSlugRoute
@@ -543,6 +553,7 @@ export interface FileRouteTypes {
     | '/admin/$tenantSlug/referrals'
     | '/admin/$tenantSlug/reports'
     | '/admin/$tenantSlug/settings'
+    | '/admin/$tenantSlug/storage'
     | '/admin/$tenantSlug/students'
     | '/api/public/hooks/rum'
     | '/t/$slug/courses/$courseSlug'
@@ -593,6 +604,7 @@ export interface FileRouteTypes {
     | '/admin/$tenantSlug/referrals'
     | '/admin/$tenantSlug/reports'
     | '/admin/$tenantSlug/settings'
+    | '/admin/$tenantSlug/storage'
     | '/admin/$tenantSlug/students'
     | '/api/public/hooks/rum'
     | '/t/$slug/courses/$courseSlug'
@@ -646,6 +658,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/$tenantSlug/referrals'
     | '/_authenticated/admin/$tenantSlug/reports'
     | '/_authenticated/admin/$tenantSlug/settings'
+    | '/_authenticated/admin/$tenantSlug/storage'
     | '/_authenticated/admin/$tenantSlug/students'
     | '/api/public/hooks/rum'
     | '/t/$slug/courses/$courseSlug'
@@ -908,6 +921,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminTenantSlugStudentsRouteImport
       parentRoute: typeof AuthenticatedAdminTenantSlugRoute
     }
+    '/_authenticated/admin/$tenantSlug/storage': {
+      id: '/_authenticated/admin/$tenantSlug/storage'
+      path: '/storage'
+      fullPath: '/admin/$tenantSlug/storage'
+      preLoaderRoute: typeof AuthenticatedAdminTenantSlugStorageRouteImport
+      parentRoute: typeof AuthenticatedAdminTenantSlugRoute
+    }
     '/_authenticated/admin/$tenantSlug/settings': {
       id: '/_authenticated/admin/$tenantSlug/settings'
       path: '/settings'
@@ -1060,6 +1080,7 @@ interface AuthenticatedAdminTenantSlugRouteChildren {
   AuthenticatedAdminTenantSlugReferralsRoute: typeof AuthenticatedAdminTenantSlugReferralsRoute
   AuthenticatedAdminTenantSlugReportsRoute: typeof AuthenticatedAdminTenantSlugReportsRoute
   AuthenticatedAdminTenantSlugSettingsRoute: typeof AuthenticatedAdminTenantSlugSettingsRoute
+  AuthenticatedAdminTenantSlugStorageRoute: typeof AuthenticatedAdminTenantSlugStorageRoute
   AuthenticatedAdminTenantSlugStudentsRoute: typeof AuthenticatedAdminTenantSlugStudentsRoute
   AuthenticatedAdminTenantSlugIndexRoute: typeof AuthenticatedAdminTenantSlugIndexRoute
   AuthenticatedAdminTenantSlugCoursesCourseIdRoute: typeof AuthenticatedAdminTenantSlugCoursesCourseIdRouteWithChildren
@@ -1096,6 +1117,8 @@ const AuthenticatedAdminTenantSlugRouteChildren: AuthenticatedAdminTenantSlugRou
       AuthenticatedAdminTenantSlugReportsRoute,
     AuthenticatedAdminTenantSlugSettingsRoute:
       AuthenticatedAdminTenantSlugSettingsRoute,
+    AuthenticatedAdminTenantSlugStorageRoute:
+      AuthenticatedAdminTenantSlugStorageRoute,
     AuthenticatedAdminTenantSlugStudentsRoute:
       AuthenticatedAdminTenantSlugStudentsRoute,
     AuthenticatedAdminTenantSlugIndexRoute:

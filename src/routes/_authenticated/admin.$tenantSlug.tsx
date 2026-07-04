@@ -1,7 +1,7 @@
 import { createFileRoute, Link, Outlet, useParams } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { LayoutDashboard, BookOpen, Users, Settings, ArrowRight, GraduationCap, Package, Landmark, Receipt, Ticket, Share2, Activity, BarChart3, MessageCircle, Video, Library, ClipboardCheck, UserCheck } from "lucide-react";
+import { LayoutDashboard, BookOpen, Users, Settings, ArrowRight, GraduationCap, Package, Landmark, Receipt, Ticket, Share2, Activity, BarChart3, MessageCircle, Video, Library, ClipboardCheck, UserCheck, HardDrive } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { NotificationsBell } from "@/components/notifications-bell";
 
@@ -50,6 +50,7 @@ function AdminLayout() {
         <NavItem to="/admin/$tenantSlug/live-sessions" params={{ tenantSlug }} icon={Video} label="الجلسات الحيّة" />
         <NavItem to="/admin/$tenantSlug/activity" params={{ tenantSlug }} icon={Activity} label="سجل النشاط" />
         <NavItem to="/admin/$tenantSlug/reports" params={{ tenantSlug }} icon={BarChart3} label="التقارير" />
+        <NavItem to="/admin/$tenantSlug/storage" params={{ tenantSlug }} icon={HardDrive} label="التخزين" />
         <NavItem to="/admin/$tenantSlug/settings" params={{ tenantSlug }} icon={Settings} label="الإعدادات" />
       </aside>
       <main className="flex-1 overflow-auto">
