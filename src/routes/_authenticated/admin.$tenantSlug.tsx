@@ -50,6 +50,7 @@ function AdminLayout() {
         <NavItem to="/admin/$tenantSlug/live-sessions" params={{ tenantSlug }} icon={Video} label="الجلسات الحيّة" />
         <NavItem to="/admin/$tenantSlug/activity" params={{ tenantSlug }} icon={Activity} label="سجل النشاط" />
         <NavItem to="/admin/$tenantSlug/reports" params={{ tenantSlug }} icon={BarChart3} label="التقارير" />
+        <NavItem to="/admin/$tenantSlug/storage" params={{ tenantSlug }} icon={HardDrive} label="التخزين" />
         <NavItem to="/admin/$tenantSlug/settings" params={{ tenantSlug }} icon={Settings} label="الإعدادات" />
       </aside>
       <main className="flex-1 overflow-auto">
