@@ -56,12 +56,16 @@ function TenantAuthPage() {
   });
 
   useEffect(() => {
-    if (!loading && session) navigate({ to: "/t/$slug", params: { slug } });
+    // Do not auto-redirect a signed-in user away from the auth page.
+    // Owner/admin often lands here to test signup/signin flows for their tenant;
+    // instead we render an "already signed in" panel below with a switch-account option.
   }, [loading, session, navigate, slug]);
 
   if (!tenant) {
     return <div className="min-h-screen grid place-items-center text-muted-foreground">جارٍ التحميل...</div>;
   }
+
+  const alreadySignedIn = !!session;
 
   const primary = tenant.primary_color ?? "#6366f1";
   const secondary = tenant.secondary_color ?? "#D4AF37";
