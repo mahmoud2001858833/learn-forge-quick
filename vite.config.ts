@@ -6,6 +6,32 @@ export default defineConfig({
     server: { entry: "server" },
   },
   vite: {
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            "vendor-charts": ["recharts"],
+            "vendor-motion": ["framer-motion"],
+            "vendor-editor": [
+              "@tiptap/react",
+              "@tiptap/starter-kit",
+              "@tiptap/extension-image",
+              "@tiptap/extension-link",
+              "@tiptap/extension-placeholder",
+              "@tiptap/extension-underline",
+            ],
+            "vendor-radix": [
+              "@radix-ui/react-dialog",
+              "@radix-ui/react-dropdown-menu",
+              "@radix-ui/react-popover",
+              "@radix-ui/react-select",
+              "@radix-ui/react-tabs",
+              "@radix-ui/react-tooltip",
+            ],
+          },
+        },
+      },
+    },
     plugins: [
       VitePWA({
         registerType: "autoUpdate",
