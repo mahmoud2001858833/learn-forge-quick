@@ -49,6 +49,7 @@ import { Route as AuthenticatedAdminTenantSlugReferralsRouteImport } from './rou
 import { Route as AuthenticatedAdminTenantSlugQuestionBankRouteImport } from './routes/_authenticated/admin.$tenantSlug.question-bank'
 import { Route as AuthenticatedAdminTenantSlugPaymentsRouteImport } from './routes/_authenticated/admin.$tenantSlug.payments'
 import { Route as AuthenticatedAdminTenantSlugLiveSessionsRouteImport } from './routes/_authenticated/admin.$tenantSlug.live-sessions'
+import { Route as AuthenticatedAdminTenantSlugInstructorApprovalsRouteImport } from './routes/_authenticated/admin.$tenantSlug.instructor-approvals'
 import { Route as AuthenticatedAdminTenantSlugCouponsRouteImport } from './routes/_authenticated/admin.$tenantSlug.coupons'
 import { Route as AuthenticatedAdminTenantSlugChatRouteImport } from './routes/_authenticated/admin.$tenantSlug.chat'
 import { Route as AuthenticatedAdminTenantSlugBundlesRouteImport } from './routes/_authenticated/admin.$tenantSlug.bundles'
@@ -274,6 +275,12 @@ const AuthenticatedAdminTenantSlugLiveSessionsRoute =
     path: '/live-sessions',
     getParentRoute: () => AuthenticatedAdminTenantSlugRoute,
   } as any)
+const AuthenticatedAdminTenantSlugInstructorApprovalsRoute =
+  AuthenticatedAdminTenantSlugInstructorApprovalsRouteImport.update({
+    id: '/instructor-approvals',
+    path: '/instructor-approvals',
+    getParentRoute: () => AuthenticatedAdminTenantSlugRoute,
+  } as any)
 const AuthenticatedAdminTenantSlugCouponsRoute =
   AuthenticatedAdminTenantSlugCouponsRouteImport.update({
     id: '/coupons',
@@ -371,6 +378,7 @@ export interface FileRoutesByFullPath {
   '/admin/$tenantSlug/bundles': typeof AuthenticatedAdminTenantSlugBundlesRoute
   '/admin/$tenantSlug/chat': typeof AuthenticatedAdminTenantSlugChatRoute
   '/admin/$tenantSlug/coupons': typeof AuthenticatedAdminTenantSlugCouponsRoute
+  '/admin/$tenantSlug/instructor-approvals': typeof AuthenticatedAdminTenantSlugInstructorApprovalsRoute
   '/admin/$tenantSlug/live-sessions': typeof AuthenticatedAdminTenantSlugLiveSessionsRoute
   '/admin/$tenantSlug/payments': typeof AuthenticatedAdminTenantSlugPaymentsRoute
   '/admin/$tenantSlug/question-bank': typeof AuthenticatedAdminTenantSlugQuestionBankRoute
@@ -420,6 +428,7 @@ export interface FileRoutesByTo {
   '/admin/$tenantSlug/bundles': typeof AuthenticatedAdminTenantSlugBundlesRoute
   '/admin/$tenantSlug/chat': typeof AuthenticatedAdminTenantSlugChatRoute
   '/admin/$tenantSlug/coupons': typeof AuthenticatedAdminTenantSlugCouponsRoute
+  '/admin/$tenantSlug/instructor-approvals': typeof AuthenticatedAdminTenantSlugInstructorApprovalsRoute
   '/admin/$tenantSlug/live-sessions': typeof AuthenticatedAdminTenantSlugLiveSessionsRoute
   '/admin/$tenantSlug/payments': typeof AuthenticatedAdminTenantSlugPaymentsRoute
   '/admin/$tenantSlug/question-bank': typeof AuthenticatedAdminTenantSlugQuestionBankRoute
@@ -473,6 +482,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/$tenantSlug/bundles': typeof AuthenticatedAdminTenantSlugBundlesRoute
   '/_authenticated/admin/$tenantSlug/chat': typeof AuthenticatedAdminTenantSlugChatRoute
   '/_authenticated/admin/$tenantSlug/coupons': typeof AuthenticatedAdminTenantSlugCouponsRoute
+  '/_authenticated/admin/$tenantSlug/instructor-approvals': typeof AuthenticatedAdminTenantSlugInstructorApprovalsRoute
   '/_authenticated/admin/$tenantSlug/live-sessions': typeof AuthenticatedAdminTenantSlugLiveSessionsRoute
   '/_authenticated/admin/$tenantSlug/payments': typeof AuthenticatedAdminTenantSlugPaymentsRoute
   '/_authenticated/admin/$tenantSlug/question-bank': typeof AuthenticatedAdminTenantSlugQuestionBankRoute
@@ -526,6 +536,7 @@ export interface FileRouteTypes {
     | '/admin/$tenantSlug/bundles'
     | '/admin/$tenantSlug/chat'
     | '/admin/$tenantSlug/coupons'
+    | '/admin/$tenantSlug/instructor-approvals'
     | '/admin/$tenantSlug/live-sessions'
     | '/admin/$tenantSlug/payments'
     | '/admin/$tenantSlug/question-bank'
@@ -575,6 +586,7 @@ export interface FileRouteTypes {
     | '/admin/$tenantSlug/bundles'
     | '/admin/$tenantSlug/chat'
     | '/admin/$tenantSlug/coupons'
+    | '/admin/$tenantSlug/instructor-approvals'
     | '/admin/$tenantSlug/live-sessions'
     | '/admin/$tenantSlug/payments'
     | '/admin/$tenantSlug/question-bank'
@@ -627,6 +639,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/$tenantSlug/bundles'
     | '/_authenticated/admin/$tenantSlug/chat'
     | '/_authenticated/admin/$tenantSlug/coupons'
+    | '/_authenticated/admin/$tenantSlug/instructor-approvals'
     | '/_authenticated/admin/$tenantSlug/live-sessions'
     | '/_authenticated/admin/$tenantSlug/payments'
     | '/_authenticated/admin/$tenantSlug/question-bank'
@@ -937,6 +950,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminTenantSlugLiveSessionsRouteImport
       parentRoute: typeof AuthenticatedAdminTenantSlugRoute
     }
+    '/_authenticated/admin/$tenantSlug/instructor-approvals': {
+      id: '/_authenticated/admin/$tenantSlug/instructor-approvals'
+      path: '/instructor-approvals'
+      fullPath: '/admin/$tenantSlug/instructor-approvals'
+      preLoaderRoute: typeof AuthenticatedAdminTenantSlugInstructorApprovalsRouteImport
+      parentRoute: typeof AuthenticatedAdminTenantSlugRoute
+    }
     '/_authenticated/admin/$tenantSlug/coupons': {
       id: '/_authenticated/admin/$tenantSlug/coupons'
       path: '/coupons'
@@ -1033,6 +1053,7 @@ interface AuthenticatedAdminTenantSlugRouteChildren {
   AuthenticatedAdminTenantSlugBundlesRoute: typeof AuthenticatedAdminTenantSlugBundlesRoute
   AuthenticatedAdminTenantSlugChatRoute: typeof AuthenticatedAdminTenantSlugChatRoute
   AuthenticatedAdminTenantSlugCouponsRoute: typeof AuthenticatedAdminTenantSlugCouponsRoute
+  AuthenticatedAdminTenantSlugInstructorApprovalsRoute: typeof AuthenticatedAdminTenantSlugInstructorApprovalsRoute
   AuthenticatedAdminTenantSlugLiveSessionsRoute: typeof AuthenticatedAdminTenantSlugLiveSessionsRoute
   AuthenticatedAdminTenantSlugPaymentsRoute: typeof AuthenticatedAdminTenantSlugPaymentsRoute
   AuthenticatedAdminTenantSlugQuestionBankRoute: typeof AuthenticatedAdminTenantSlugQuestionBankRoute
@@ -1061,6 +1082,8 @@ const AuthenticatedAdminTenantSlugRouteChildren: AuthenticatedAdminTenantSlugRou
       AuthenticatedAdminTenantSlugChatRoute,
     AuthenticatedAdminTenantSlugCouponsRoute:
       AuthenticatedAdminTenantSlugCouponsRoute,
+    AuthenticatedAdminTenantSlugInstructorApprovalsRoute:
+      AuthenticatedAdminTenantSlugInstructorApprovalsRoute,
     AuthenticatedAdminTenantSlugLiveSessionsRoute:
       AuthenticatedAdminTenantSlugLiveSessionsRoute,
     AuthenticatedAdminTenantSlugPaymentsRoute:

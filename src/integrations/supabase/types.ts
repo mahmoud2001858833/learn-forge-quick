@@ -2200,22 +2200,40 @@ export type Database = {
       }
       tenant_members: {
         Row: {
+          application_note: string | null
+          applied_role: Database["public"]["Enums"]["tenant_role"] | null
+          approved_at: string | null
+          approved_by: string | null
           created_at: string
           id: string
+          rejected_at: string | null
+          rejection_reason: string | null
           role: Database["public"]["Enums"]["tenant_role"]
           tenant_id: string
           user_id: string
         }
         Insert: {
+          application_note?: string | null
+          applied_role?: Database["public"]["Enums"]["tenant_role"] | null
+          approved_at?: string | null
+          approved_by?: string | null
           created_at?: string
           id?: string
+          rejected_at?: string | null
+          rejection_reason?: string | null
           role?: Database["public"]["Enums"]["tenant_role"]
           tenant_id: string
           user_id: string
         }
         Update: {
+          application_note?: string | null
+          applied_role?: Database["public"]["Enums"]["tenant_role"] | null
+          approved_at?: string | null
+          approved_by?: string | null
           created_at?: string
           id?: string
+          rejected_at?: string | null
+          rejection_reason?: string | null
           role?: Database["public"]["Enums"]["tenant_role"]
           tenant_id?: string
           user_id?: string
@@ -2715,7 +2733,55 @@ export type Database = {
         Args: { _tenant_id: string; _user_id: string }
         Returns: boolean
       }
+      apply_to_tenant: {
+        Args: {
+          _desired_role: Database["public"]["Enums"]["tenant_role"]
+          _note?: string
+          _tenant_id: string
+        }
+        Returns: {
+          application_note: string | null
+          applied_role: Database["public"]["Enums"]["tenant_role"] | null
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string
+          id: string
+          rejected_at: string | null
+          rejection_reason: string | null
+          role: Database["public"]["Enums"]["tenant_role"]
+          tenant_id: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "tenant_members"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       approve_course: { Args: { _course_id: string }; Returns: undefined }
+      approve_instructor: {
+        Args: { _member_id: string }
+        Returns: {
+          application_note: string | null
+          applied_role: Database["public"]["Enums"]["tenant_role"] | null
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string
+          id: string
+          rejected_at: string | null
+          rejection_reason: string | null
+          role: Database["public"]["Enums"]["tenant_role"]
+          tenant_id: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "tenant_members"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       approve_payment_request: {
         Args: { _notes?: string; _req_id: string }
         Returns: undefined
@@ -2821,6 +2887,28 @@ export type Database = {
       reject_course: {
         Args: { _course_id: string; _reason: string }
         Returns: undefined
+      }
+      reject_instructor: {
+        Args: { _member_id: string; _reason?: string }
+        Returns: {
+          application_note: string | null
+          applied_role: Database["public"]["Enums"]["tenant_role"] | null
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string
+          id: string
+          rejected_at: string | null
+          rejection_reason: string | null
+          role: Database["public"]["Enums"]["tenant_role"]
+          tenant_id: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "tenant_members"
+          isOneToOne: true
+          isSetofReturn: false
+        }
       }
       reject_payment_request: {
         Args: { _notes?: string; _req_id: string }
@@ -2956,7 +3044,12 @@ export type Database = {
       payment_request_status: "pending" | "approved" | "rejected" | "cancelled"
       quiz_question_type: "mcq" | "true_false"
       tenant_plan: "free" | "starter" | "pro" | "enterprise"
-      tenant_role: "owner" | "instructor" | "student" | "admin"
+      tenant_role:
+        | "owner"
+        | "instructor"
+        | "student"
+        | "admin"
+        | "pending_instructor"
       tenant_status: "active" | "suspended" | "trial"
       video_status: "pending" | "uploading" | "processing" | "ready" | "failed"
     }
@@ -3096,7 +3189,13 @@ export const Constants = {
       payment_request_status: ["pending", "approved", "rejected", "cancelled"],
       quiz_question_type: ["mcq", "true_false"],
       tenant_plan: ["free", "starter", "pro", "enterprise"],
-      tenant_role: ["owner", "instructor", "student", "admin"],
+      tenant_role: [
+        "owner",
+        "instructor",
+        "student",
+        "admin",
+        "pending_instructor",
+      ],
       tenant_status: ["active", "suspended", "trial"],
       video_status: ["pending", "uploading", "processing", "ready", "failed"],
     },

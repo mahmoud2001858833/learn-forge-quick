@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { GraduationCap, ArrowRight, Sparkles, ShieldCheck, BookOpen } from "lucide-react";
 import { claimSession } from "@/lib/auth.functions";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/t/$slug/auth")({
   ssr: false,
@@ -265,6 +266,11 @@ function SignInForm({ primary, secondary }: { primary: string; secondary: string
 }
 
 function SignUpForm({ primary, secondary }: { primary: string; secondary: string }) {
+  const { slug } = useParams({ from: "/t/$slug/auth" });
+  const { data: tenantRow } = useQuery({
+    queryKey: ["public-tenant-id", slug],
+    queryFn: async () => (await supabase.from("tenants").select("id").eq("slug", slug).maybeSingle()).data,
+  });
   const [form, setForm] = useState({
     full_name: "",
     email: "",
@@ -273,6 +279,8 @@ function SignUpForm({ primary, secondary }: { primary: string; secondary: string
     phone: "",
     study_year: "",
     research_consent: false,
+    desired_role: "student" as "student" | "instructor",
+    application_note: "",
   });
   const [busy, setBusy] = useState(false);
 
@@ -307,7 +315,22 @@ function SignUpForm({ primary, secondary }: { primary: string; secondary: string
         }
       }
       await finalizeLogin();
-      toast.success("مرحباً بك!");
+      if (tenantRow?.id) {
+        const { error: applyErr } = await supabase.rpc("apply_to_tenant", {
+          _tenant_id: tenantRow.id,
+          _desired_role: form.desired_role,
+          _note: form.desired_role === "instructor" ? (form.application_note || undefined) : undefined,
+        });
+        if (applyErr) {
+          toast.warning(`تم إنشاء الحساب لكن تعذّر تسجيل الدور: ${applyErr.message}`);
+        } else if (form.desired_role === "instructor") {
+          toast.success("تم استلام طلبك كمعلم — بانتظار موافقة الأدمن قبل الدخول.");
+        } else {
+          toast.success("مرحباً بك!");
+        }
+      } else {
+        toast.success("مرحباً بك!");
+      }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "تعذّر إنشاء الحساب");
     } finally {
@@ -317,6 +340,42 @@ function SignUpForm({ primary, secondary }: { primary: string; secondary: string
 
   return (
     <form onSubmit={onSubmit} className="space-y-3">
+      <div>
+        <Label>نوع الحساب</Label>
+        <div className="grid grid-cols-2 gap-2 mt-1">
+          {(["student", "instructor"] as const).map((r) => (
+            <button
+              type="button"
+              key={r}
+              onClick={() => setForm({ ...form, desired_role: r })}
+              className={cn(
+                "rounded-lg border px-3 py-2 text-sm font-medium transition",
+                form.desired_role === r
+                  ? "border-transparent text-white shadow"
+                  : "border-input bg-background hover:bg-accent"
+              )}
+              style={form.desired_role === r ? { background: `linear-gradient(135deg, ${primary}, ${secondary})` } : undefined}
+            >
+              {r === "student" ? "طالب" : "معلم"}
+            </button>
+          ))}
+        </div>
+        {form.desired_role === "instructor" && (
+          <p className="text-xs text-amber-600 mt-2">
+            سيتم إنشاء حسابك بانتظار موافقة أدمن المنصة قبل تمكين صلاحيات المعلم.
+          </p>
+        )}
+      </div>
+      {form.desired_role === "instructor" && (
+        <div>
+          <Label>نبذة قصيرة عنك (اختياري)</Label>
+          <Input
+            placeholder="التخصص، سنوات الخبرة، المواد التي تودّ تدريسها..."
+            value={form.application_note}
+            onChange={(e) => setForm({ ...form, application_note: e.target.value })}
+          />
+        </div>
+      )}
       <div>
         <Label>الاسم الكامل</Label>
         <Input required value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} />
