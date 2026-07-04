@@ -77,6 +77,18 @@ export const initVideoUpload = createServerFn({ method: "POST" })
       }
     }
 
+    // Enforce per-tenant storage quota before minting the R2 key
+    const { data: quotaRows, error: quotaErr } = await context.supabase.rpc("check_storage_quota", {
+      _tenant_id: data.tenantId,
+      _incoming_bytes: data.sizeBytes,
+    });
+    if (quotaErr) throw quotaErr;
+    const quota = Array.isArray(quotaRows) ? quotaRows[0] : quotaRows;
+    if (quota && !quota.allowed) {
+      const remainMb = Math.max(0, Math.floor(Number(quota.remaining_bytes) / (1024 * 1024)));
+      throw new Error(`storage_quota_exceeded: المتبقي ${remainMb} MB فقط من الحصة`);
+    }
+
     // Mint a valid tenant-scoped R2 key up front (worker's validKey regex requires this shape).
     const key = r2KeyFor(data.tenantId, data.filename);
     const { data: asset, error } = await context.supabase.from("video_assets").insert({
