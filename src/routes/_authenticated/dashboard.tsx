@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
@@ -7,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { GraduationCap, LogOut, BookOpen, Settings, ExternalLink, Shield, Award, Sparkles, Share2, Receipt } from "lucide-react";
 import { NotificationsBell } from "@/components/notifications-bell";
 import { Plus } from "lucide-react";
+import { CreateTenantWizard } from "@/components/tenant/create-tenant-wizard";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   component: Dashboard,
