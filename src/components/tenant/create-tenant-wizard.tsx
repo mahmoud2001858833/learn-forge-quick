@@ -37,10 +37,24 @@ const PRESET_PALETTES = [
   { name: "أسود ذهبي", primary: "#111827", secondary: "#D4AF37" },
 ];
 
-export function CreateTenantWizard() {
+export function CreateTenantWizard({
+  open: openProp,
+  onOpenChange,
+  hideTrigger = false,
+}: {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  hideTrigger?: boolean;
+} = {}) {
   const qc = useQueryClient();
   const navigate = useNavigate();
-  const [open, setOpen] = useState(false);
+  const [openState, setOpenState] = useState(false);
+  const isControlled = openProp !== undefined;
+  const open = isControlled ? openProp : openState;
+  const setOpen = (v: boolean) => {
+    if (!isControlled) setOpenState(v);
+    onOpenChange?.(v);
+  };
   const [stepIdx, setStepIdx] = useState(0);
 
   // Form state
