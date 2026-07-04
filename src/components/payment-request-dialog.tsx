@@ -82,9 +82,11 @@ export function PaymentRequestDialog({ open, onOpenChange, tenantId, amount, cur
       if (finalAmount < minInstallment) throw new Error(`الحد الأدنى للدفعة ${minInstallment} ${currency}`);
 
       setUploading(true);
-      const ext = receiptFile.name.split(".").pop() || "jpg";
+      const { compressImage } = await import("@/lib/image");
+      const compressed = await compressImage(receiptFile, { maxSizeMB: 0.6, maxWidthOrHeight: 1600 });
+      const ext = (compressed.type.split("/")[1] || compressed.name.split(".").pop() || "jpg").toLowerCase();
       const path = `${tenantId}/${user.id}/${Date.now()}.${ext}`;
-      const { error: upErr } = await supabase.storage.from("receipts").upload(path, receiptFile, { upsert: false });
+      const { error: upErr } = await supabase.storage.from("receipts").upload(path, compressed, { upsert: false, contentType: compressed.type });
       if (upErr) throw upErr;
 
       const refCode = typeof window !== "undefined" ? localStorage.getItem("ref_code") : null;
