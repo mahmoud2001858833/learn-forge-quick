@@ -1,7 +1,7 @@
 import { createFileRoute, Link, Outlet, useParams } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { LayoutDashboard, BookOpen, Users, Settings, ArrowRight, GraduationCap, Package, Landmark, Receipt, Ticket, Share2, Activity, BarChart3, MessageCircle, Video, Library, ClipboardCheck, UserCheck } from "lucide-react";
+import { LayoutDashboard, BookOpen, Users, Settings, ArrowRight, GraduationCap, Package, Landmark, Receipt, Ticket, Share2, Activity, BarChart3, MessageCircle, Video, Library, ClipboardCheck, UserCheck, HardDrive } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { NotificationsBell } from "@/components/notifications-bell";
 
