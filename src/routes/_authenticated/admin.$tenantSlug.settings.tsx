@@ -75,16 +75,30 @@ function BrandingCard({ tenant, onSaved }: { tenant: { id: string; name: string;
           <div><Label>اسم المنصة</Label><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
           <div><Label>الوصف القصير</Label><Textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} rows={2} /></div>
           <div><Label>رسالة ترحيبية (تظهر في الـ Hero)</Label><Textarea value={form.welcome_message} onChange={(e) => setForm({ ...form, welcome_message: e.target.value })} rows={2} /></div>
-          <div className="grid sm:grid-cols-2 gap-3">
-            <div><Label>رابط اللوغو</Label><Input value={form.logo_url} onChange={(e) => setForm({ ...form, logo_url: e.target.value })} placeholder="https://..." /></div>
-            <div><Label>رابط صورة الـ Hero (اختياري)</Label><Input value={form.hero_image_url} onChange={(e) => setForm({ ...form, hero_image_url: e.target.value })} placeholder="https://..." /></div>
+          <div className="grid sm:grid-cols-2 gap-4">
+            <ImageUploadField
+              label="اللوغو"
+              value={form.logo_url}
+              onChange={(url) => setForm({ ...form, logo_url: url })}
+              tenantId={tenant.id}
+              prefix="logo"
+              maxSizeMB={0.3}
+              maxWidthOrHeight={800}
+              previewClassName="h-20 w-20 rounded-xl object-cover border"
+              hint="يفضّل صورة مربعة 512×512 أو أكبر."
+            />
+            <ImageUploadField
+              label="صورة الـ Hero"
+              value={form.hero_image_url}
+              onChange={(url) => setForm({ ...form, hero_image_url: url })}
+              tenantId={tenant.id}
+              prefix="hero"
+              maxSizeMB={0.8}
+              maxWidthOrHeight={1920}
+              previewClassName="h-20 w-32 rounded-xl object-cover border"
+              hint="نسبة عريضة 16:9. سيتم الضغط تلقائياً."
+            />
           </div>
-          {form.logo_url && (
-            <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/30">
-              <img src={form.logo_url} alt="preview" className="h-16 w-16 rounded-xl object-cover border" />
-              <span className="text-sm text-muted-foreground">معاينة اللوغو</span>
-            </div>
-          )}
           <div className="grid grid-cols-3 gap-3">
             <div><Label>لون أساسي</Label><Input type="color" value={form.primary_color} onChange={(e) => setForm({ ...form, primary_color: e.target.value })} className="h-10" /></div>
             <div><Label>لون ثانوي</Label><Input type="color" value={form.secondary_color} onChange={(e) => setForm({ ...form, secondary_color: e.target.value })} className="h-10" /></div>
