@@ -117,11 +117,13 @@ export function CreateTenantWizard({
         if (!v) reset();
       }}
     >
-      <DialogTrigger asChild>
-        <Button>
-          <Plus className="h-4 w-4 ml-1" /> منصة جديدة
-        </Button>
-      </DialogTrigger>
+      {!hideTrigger && (
+        <DialogTrigger asChild>
+          <Button>
+            <Plus className="h-4 w-4 ml-1" /> منصة جديدة
+          </Button>
+        </DialogTrigger>
+      )}
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
