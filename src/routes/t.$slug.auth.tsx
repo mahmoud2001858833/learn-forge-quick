@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { GraduationCap, ArrowRight, Sparkles, ShieldCheck, BookOpen } from "lucide-react";
 import { claimSession } from "@/lib/auth.functions";
+import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/t/$slug/auth")({
   ssr: false,
