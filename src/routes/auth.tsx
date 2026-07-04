@@ -49,7 +49,16 @@ function AuthPage() {
   const { session, loading } = useAuth();
 
   useEffect(() => {
-    if (!loading && session) navigate({ to: "/dashboard" });
+    if (!loading && session) {
+      let intent: string | null = null;
+      try { intent = sessionStorage.getItem("post_auth_intent"); } catch {}
+      if (intent === "create-tenant") {
+        try { sessionStorage.removeItem("post_auth_intent"); } catch {}
+        navigate({ to: "/dashboard", search: { wizard: 1 } as never });
+      } else {
+        navigate({ to: "/dashboard" });
+      }
+    }
   }, [loading, session, navigate]);
 
   return (

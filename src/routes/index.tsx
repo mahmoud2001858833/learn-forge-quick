@@ -143,7 +143,13 @@ function Hero({ cfg, stats }: { cfg: any; stats: { tenants: number; courses: num
         </p>
 
         <div className="flex justify-center gap-3 flex-wrap mb-10 sm:mb-12">
-          <Link to="/auth" onClick={() => trackLanding("cta_click", "hero_primary")}>
+          <Link
+            to="/auth"
+            onClick={() => {
+              try { sessionStorage.setItem("post_auth_intent", "create-tenant"); } catch {}
+              trackLanding("cta_click", "hero_primary");
+            }}
+          >
             <Button size="lg" className="h-12 sm:h-14 px-6 sm:px-8 text-sm sm:text-base shadow-2xl shadow-primary/30">
               <Rocket className="h-5 w-5 ms-2" /> {cta1}
             </Button>

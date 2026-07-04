@@ -37,10 +37,24 @@ const PRESET_PALETTES = [
   { name: "أسود ذهبي", primary: "#111827", secondary: "#D4AF37" },
 ];
 
-export function CreateTenantWizard() {
+export function CreateTenantWizard({
+  open: openProp,
+  onOpenChange,
+  hideTrigger = false,
+}: {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  hideTrigger?: boolean;
+} = {}) {
   const qc = useQueryClient();
   const navigate = useNavigate();
-  const [open, setOpen] = useState(false);
+  const [openState, setOpenState] = useState(false);
+  const isControlled = openProp !== undefined;
+  const open = isControlled ? openProp : openState;
+  const setOpen = (v: boolean) => {
+    if (!isControlled) setOpenState(v);
+    onOpenChange?.(v);
+  };
   const [stepIdx, setStepIdx] = useState(0);
 
   // Form state
@@ -103,11 +117,13 @@ export function CreateTenantWizard() {
         if (!v) reset();
       }}
     >
-      <DialogTrigger asChild>
-        <Button>
-          <Plus className="h-4 w-4 ml-1" /> منصة جديدة
-        </Button>
-      </DialogTrigger>
+      {!hideTrigger && (
+        <DialogTrigger asChild>
+          <Button>
+            <Plus className="h-4 w-4 ml-1" /> منصة جديدة
+          </Button>
+        </DialogTrigger>
+      )}
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
