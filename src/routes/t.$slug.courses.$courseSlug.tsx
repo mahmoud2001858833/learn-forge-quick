@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
 import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient, queryOptions } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
@@ -10,16 +10,85 @@ import { toast } from "sonner";
 import { PaymentRequestDialog } from "@/components/payment-request-dialog";
 import { CourseReviews } from "@/components/course-reviews";
 import { Star } from "lucide-react";
+import { getCourseSeo } from "@/lib/seo.functions";
+
+const BASE = "https://learn-forge-quick.lovable.app";
+
+const courseSeoOptions = (tenantSlug: string, courseSlug: string) =>
+  queryOptions({
+    queryKey: ["course-seo", tenantSlug, courseSlug],
+    queryFn: () => getCourseSeo({ data: { tenantSlug, courseSlug } }),
+    staleTime: 5 * 60_000,
+  });
 
 export const Route = createFileRoute("/t/$slug/courses/$courseSlug")({
-  head: ({ params }) => ({
-    meta: [
-      { title: `${params.courseSlug} — ${params.slug}` },
-      { name: "description", content: `تفاصيل دورة ${params.courseSlug} على منصة ${params.slug}.` },
-      { property: "og:title", content: params.courseSlug },
-      { property: "og:type", content: "article" },
-    ],
-  }),
+  loader: ({ context, params }) =>
+    context.queryClient.ensureQueryData(courseSeoOptions(params.slug, params.courseSlug)),
+  head: ({ params, loaderData }) => {
+    const ld = loaderData as { course: any; tenant: any } | undefined;
+    const course = ld?.course;
+    const tenant = ld?.tenant;
+    const title = course?.title
+      ? `${course.title} — ${tenant?.name ?? params.slug}`
+      : `${params.courseSlug} — ${params.slug}`;
+    const desc = (course?.short_description ?? course?.description ?? `تفاصيل دورة ${params.courseSlug} على منصة ${tenant?.name ?? params.slug}.`)
+      ?.toString()
+      .slice(0, 160);
+    const url = `${BASE}/t/${params.slug}/courses/${params.courseSlug}`;
+    const image = course?.cover_url ?? undefined;
+    const meta: Array<Record<string, string>> = [
+      { title },
+      { name: "description", content: desc },
+      { property: "og:title", content: title },
+      { property: "og:description", content: desc },
+      { property: "og:type", content: "product" },
+      { property: "og:url", content: url },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: title },
+      { name: "twitter:description", content: desc },
+    ];
+    if (image) {
+      meta.push({ property: "og:image", content: image });
+      meta.push({ name: "twitter:image", content: image });
+    }
+    const scripts: Array<{ type: string; children: string }> = [];
+    if (course) {
+      scripts.push({
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Course",
+          name: course.title,
+          description: desc,
+          ...(image ? { image } : {}),
+          provider: tenant
+            ? { "@type": "Organization", name: tenant.name, sameAs: `${BASE}/t/${params.slug}` }
+            : undefined,
+          ...(course.average_rating && course.reviews_count
+            ? {
+                aggregateRating: {
+                  "@type": "AggregateRating",
+                  ratingValue: Number(course.average_rating).toFixed(1),
+                  reviewCount: course.reviews_count,
+                },
+              }
+            : {}),
+          offers: {
+            "@type": "Offer",
+            price: course.is_free ? 0 : course.price,
+            priceCurrency: "SAR",
+            availability: "https://schema.org/InStock",
+            url,
+          },
+        }),
+      });
+    }
+    return {
+      meta,
+      links: [{ rel: "canonical", href: url }],
+      scripts,
+    };
+  },
   component: CourseDetail,
 });
 
