@@ -2956,7 +2956,12 @@ export type Database = {
       payment_request_status: "pending" | "approved" | "rejected" | "cancelled"
       quiz_question_type: "mcq" | "true_false"
       tenant_plan: "free" | "starter" | "pro" | "enterprise"
-      tenant_role: "owner" | "instructor" | "student" | "admin"
+      tenant_role:
+        | "owner"
+        | "instructor"
+        | "student"
+        | "admin"
+        | "pending_instructor"
       tenant_status: "active" | "suspended" | "trial"
       video_status: "pending" | "uploading" | "processing" | "ready" | "failed"
     }
@@ -3096,7 +3101,13 @@ export const Constants = {
       payment_request_status: ["pending", "approved", "rejected", "cancelled"],
       quiz_question_type: ["mcq", "true_false"],
       tenant_plan: ["free", "starter", "pro", "enterprise"],
-      tenant_role: ["owner", "instructor", "student", "admin"],
+      tenant_role: [
+        "owner",
+        "instructor",
+        "student",
+        "admin",
+        "pending_instructor",
+      ],
       tenant_status: ["active", "suspended", "trial"],
       video_status: ["pending", "uploading", "processing", "ready", "failed"],
     },
