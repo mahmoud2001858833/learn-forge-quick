@@ -9,16 +9,11 @@ export default defineConfig({
     build: {
       rollupOptions: {
         output: {
-          manualChunks: {
-            "vendor-charts": ["recharts"],
-            "vendor-radix": [
-              "@radix-ui/react-dialog",
-              "@radix-ui/react-dropdown-menu",
-              "@radix-ui/react-popover",
-              "@radix-ui/react-select",
-              "@radix-ui/react-tabs",
-              "@radix-ui/react-tooltip",
-            ],
+          manualChunks(id) {
+            if (!id.includes("node_modules")) return;
+            if (id.includes("/recharts/") || id.includes("/victory-vendor/") || id.includes("/d3-"))
+              return "vendor-charts";
+            if (id.includes("/@radix-ui/")) return "vendor-radix";
           },
         },
       },
