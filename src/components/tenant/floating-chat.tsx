@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { MessageCircle, X, Send, LogIn } from "lucide-react";
-import { Link } from "@tanstack/react-router";
+import { Link, useParams } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -24,6 +24,7 @@ type Props = {
 
 export function FloatingChat({ tenantId, tenantName, primaryColor, secondaryColor }: Props) {
   const qc = useQueryClient();
+  const { slug } = useParams({ strict: false }) as { slug?: string };
   const [open, setOpen] = useState(false);
   const [body, setBody] = useState("");
   const [sending, setSending] = useState(false);
@@ -191,7 +192,7 @@ export function FloatingChat({ tenantId, tenantName, primaryColor, secondaryColo
                 <LogIn className="h-10 w-10 mx-auto text-muted-foreground/50 mb-3" />
                 <p className="font-semibold mb-1">سجّل الدخول للمحادثة</p>
                 <p className="text-sm text-muted-foreground mb-4">لإرسال رسالة لإدارة المنصة يجب تسجيل الدخول أولاً</p>
-                <Link to="/auth">
+                <Link to="/t/$slug/auth" params={{ slug: slug ?? "" }} search={{ mode: "signin" as const }}>
                   <Button size="sm" style={{ background: primaryColor }} className="text-white">تسجيل الدخول</Button>
                 </Link>
               </div>

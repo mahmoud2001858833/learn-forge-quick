@@ -56,12 +56,16 @@ function TenantAuthPage() {
   });
 
   useEffect(() => {
-    if (!loading && session) navigate({ to: "/t/$slug", params: { slug } });
+    // Do not auto-redirect a signed-in user away from the auth page.
+    // Owner/admin often lands here to test signup/signin flows for their tenant;
+    // instead we render an "already signed in" panel below with a switch-account option.
   }, [loading, session, navigate, slug]);
 
   if (!tenant) {
     return <div className="min-h-screen grid place-items-center text-muted-foreground">جارٍ التحميل...</div>;
   }
+
+  const alreadySignedIn = !!session;
 
   const primary = tenant.primary_color ?? "#6366f1";
   const secondary = tenant.secondary_color ?? "#D4AF37";
@@ -150,6 +154,37 @@ function TenantAuthPage() {
           <div className="lg:hidden mb-6 text-center">
             <h1 className="text-2xl font-bold">{tenant.name}</h1>
           </div>
+
+          {alreadySignedIn && (
+            <div className="mb-6 rounded-xl border border-amber-300/60 bg-amber-50 dark:bg-amber-900/20 p-4 text-sm">
+              <p className="font-semibold mb-1">أنت مسجّل الدخول حالياً</p>
+              <p className="text-muted-foreground mb-3">
+                لإنشاء حساب جديد أو تسجيل الدخول بحساب آخر، سجّل الخروج أولاً.
+              </p>
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={async () => {
+                    await supabase.auth.signOut();
+                    toast.success("تم تسجيل الخروج");
+                  }}
+                >
+                  تسجيل الخروج
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={() => navigate({ to: "/t/$slug", params: { slug } })}
+                  style={{ background: `linear-gradient(135deg, ${primary}, ${secondary})` }}
+                  className="text-white border-0"
+                >
+                  متابعة إلى المنصة
+                </Button>
+              </div>
+            </div>
+          )}
 
           <div className="mb-6">
             <h1 className="text-3xl font-bold mb-1">{mode === "signup" ? "إنشاء حساب جديد" : "تسجيل الدخول"}</h1>
