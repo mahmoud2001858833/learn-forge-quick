@@ -120,10 +120,20 @@ function Dashboard() {
               <h2 className="text-2xl font-bold">منصاتي</h2>
               <p className="text-muted-foreground text-sm">المنصات التعليمية التي تملكها</p>
             </div>
-            <Button asChild><Link to="/onboard/new-tenant"><Plus className="h-4 w-4 ml-1" /> منصة جديدة</Link></Button>
+            <Button onClick={() => setWizardOpen(true)}>
+              <Plus className="h-4 w-4 ml-1" /> منصة جديدة
+            </Button>
+            <CreateTenantWizard open={wizardOpen} onOpenChange={setWizardOpen} hideTrigger />
           </div>
           {ownedTenants && ownedTenants.length === 0 && (
-            <Card><CardContent className="p-10 text-center text-muted-foreground">لم تنشئ أي منصة بعد. اضغط "منصة جديدة" للبدء.</CardContent></Card>
+            <Card>
+              <CardContent className="p-10 text-center space-y-4">
+                <p className="text-muted-foreground">لم تنشئ أي منصة بعد. ابدأ الآن بإطلاق منصتك التعليمية.</p>
+                <Button size="lg" onClick={() => setWizardOpen(true)}>
+                  <Plus className="h-4 w-4 ml-1" /> أنشئ منصتك الآن
+                </Button>
+              </CardContent>
+            </Card>
           )}
           <div className="grid md:grid-cols-3 gap-4">
             {ownedTenants?.map((t) => (
