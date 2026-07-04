@@ -18,6 +18,8 @@ function Dashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const qc = useQueryClient();
+  const [wizardOpen, setWizardOpen] = useState(false);
+  const autoOpenedRef = useRef(false);
 
   const { data: ownedTenants } = useQuery({
     queryKey: ["my-tenants", user?.id],
