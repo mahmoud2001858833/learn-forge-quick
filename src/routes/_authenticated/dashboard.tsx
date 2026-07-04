@@ -63,6 +63,25 @@ function Dashboard() {
   });
 
 
+  // Auto-open the create-tenant wizard on first arrival when:
+  //  - user just clicked "أنشئ منصتك مجاناً" (?wizard=1 in URL), OR
+  //  - user has no owned tenants yet.
+  useEffect(() => {
+    if (autoOpenedRef.current) return;
+    if (!ownedTenants) return; // wait until query resolves
+    const params = new URLSearchParams(window.location.search);
+    const wantsWizard = params.get("wizard") === "1";
+    if (wantsWizard || ownedTenants.length === 0) {
+      autoOpenedRef.current = true;
+      setWizardOpen(true);
+      if (wantsWizard) {
+        params.delete("wizard");
+        const qs = params.toString();
+        window.history.replaceState({}, "", window.location.pathname + (qs ? `?${qs}` : ""));
+      }
+    }
+  }, [ownedTenants]);
+
   async function signOut() {
     await qc.cancelQueries();
     qc.clear();
