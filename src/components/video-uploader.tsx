@@ -25,7 +25,7 @@ export function VideoUploader({ tenantId, onUploaded }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [taskId, setTaskId] = useState<string | null>(null);
   const [resumable, setResumable] = useState<
-    { id: string; filename: string; size_bytes: number }[]
+    { id: string; original_filename: string | null; size_bytes: number | null }[]
   >([]);
 
   const uploads = useUploads();
@@ -110,7 +110,7 @@ export function VideoUploader({ tenantId, onUploaded }: Props) {
           <p className="text-xs font-medium">رفعات غير مكتملة</p>
           {resumable.map((r) => (
             <div key={r.id} className="flex items-center justify-between gap-2 text-xs">
-              <span className="truncate flex-1">{r.filename} · {formatBytes(r.size_bytes)}</span>
+              <span className="truncate flex-1">{r.original_filename ?? "فيديو"} · {formatBytes(r.size_bytes ?? 0)}</span>
               <Button
                 size="sm"
                 variant="secondary"
