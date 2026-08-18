@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { createFileRoute, Link, useParams } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,7 +10,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { OverviewTrends } from "@/components/admin/overview-trends";
+// Charts (recharts) are heavy — load them after the dashboard paints.
+const OverviewTrends = lazy(() =>
+  import("@/components/admin/overview-trends").then((m) => ({ default: m.OverviewTrends })),
+);
 
 export const Route = createFileRoute("/_authenticated/admin/$tenantSlug/")({
   component: Overview,
@@ -190,7 +194,11 @@ function Overview() {
       </div>
 
       {/* 14-day trends */}
-      {tenant?.id && <OverviewTrends tenantId={tenant.id} currency={currency} />}
+      {tenant?.id && (
+        <Suspense fallback={<div className="h-64 rounded-xl border bg-muted/20" />}>
+          <OverviewTrends tenantId={tenant.id} currency={currency} />
+        </Suspense>
+      )}
 
 
       {/* Quick actions */}
