@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type IdleHandle = number;
 
@@ -20,13 +20,14 @@ const cancelIdle = (h: IdleHandle) => {
  */
 export function useIncrementalList<T>(items: T[], initial = 9, step = 9) {
   const [count, setCount] = useState(() => Math.min(initial, items.length));
-  const lengthRef = useRef(items.length);
+  const firstKey = (items[0] as any)?.id ?? null;
 
-  // Reset when the underlying list changes (filters, new data)
+  // Reset when the underlying list changes (filters, new data).
+  // Depend on stable primitives — not the array identity — to avoid loops.
   useEffect(() => {
-    lengthRef.current = items.length;
     setCount(Math.min(initial, items.length));
-  }, [items, initial]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [items.length, firstKey, initial]);
 
   useEffect(() => {
     if (count >= items.length) return;
