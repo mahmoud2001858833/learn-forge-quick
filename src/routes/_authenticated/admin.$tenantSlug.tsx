@@ -89,6 +89,8 @@ function AdminLayout() {
 
   const { data: tenant, isLoading: isTenantLoading } = useQuery({
     queryKey: ["tenant", tenantSlug],
+    staleTime: 10 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
     queryFn: async () => {
       const { data, error } = await supabase.from("tenants").select("*").eq("slug", tenantSlug).maybeSingle();
       if (error) throw error;
@@ -98,12 +100,14 @@ function AdminLayout() {
 
   const { role, isOwner, isAdmin, isStaff, isLoading: isRoleLoading } = useTenantRole(tenant?.id, tenant?.owner_id);
 
-  if (isTenantLoading || isRoleLoading) {
+  // Only block while we truly have nothing to paint. Once the tenant is known
+  // (usually instantly from cache) the shell renders while the role resolves.
+  if (!tenant && isTenantLoading) {
     return (
       <div className="min-h-screen grid place-items-center text-muted-foreground bg-muted/20" dir="rtl">
         <div className="flex flex-col items-center gap-3">
           <div className="h-10 w-10 border-3 border-primary border-t-transparent rounded-full animate-spin" />
-          <div className="text-sm font-medium">جارٍ التحقق من الصلاحيات وتحميل لوحة التحكم...</div>
+          <div className="text-sm font-medium">جارٍ تحميل لوحة التحكم...</div>
         </div>
       </div>
     );
@@ -113,7 +117,7 @@ function AdminLayout() {
     return <AccessDenied title="المنصة غير موجودة" description="لم يتم العثور على المنصة المطلوبة، قد يكون تم حذفها أو تعديل رابطها." />;
   }
 
-  if (!isStaff) {
+  if (!isStaff && !isRoleLoading) {
     return (
       <AccessDenied
         title="غير مصرح لك بالدخول"
@@ -122,6 +126,7 @@ function AdminLayout() {
       />
     );
   }
+
 
   const primary = tenant.primary_color ?? "#6366f1";
   const secondary = tenant.secondary_color ?? "#D4AF37";
