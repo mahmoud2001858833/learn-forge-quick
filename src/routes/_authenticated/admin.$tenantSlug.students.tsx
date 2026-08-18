@@ -12,21 +12,15 @@ export const Route = createFileRoute("/_authenticated/admin/$tenantSlug/students
 function StudentsPage() {
   const { tenantSlug } = useParams({ from: "/_authenticated/admin/$tenantSlug/students" });
 
+  // Single round-trip: tenant + members + profile names come back from one RPC
   const { data: students } = useQuery({
     queryKey: ["tenant-students", tenantSlug],
-    queryFn: async () => {
-      const { data: tenant } = await supabase.from("tenants").select("id").eq("slug", tenantSlug).single();
-      if (!tenant) return [];
-      const { data: members, error } = await supabase
-        .from("tenant_members")
-        .select("*")
-        .eq("tenant_id", tenant.id);
+    staleTime: 60_000,
+    queryFn: async (): Promise<MemberRow[]> => {
+      const { data, error } = await supabase.rpc("tenant_members_bundle", { _slug: tenantSlug });
       if (error) throw error;
-      const userIds = members.map((m) => m.user_id);
-      if (userIds.length === 0) return [];
-      const { data: profiles } = await supabase.from("profiles").select("id, full_name").in("id", userIds);
-      const map = new Map(profiles?.map((p) => [p.id, p]) ?? []);
-      return members.map((m) => ({ ...m, profile: map.get(m.user_id) }));
+      const bundle = data as { members?: MemberRow[] } | null;
+      return bundle?.members ?? [];
     },
   });
 
