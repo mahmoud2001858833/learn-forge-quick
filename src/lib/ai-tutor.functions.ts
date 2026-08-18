@@ -185,17 +185,12 @@ ${courseCtx}
 - استخدم تنسيق Markdown مع عناوين قصيرة ونقاط عند الحاجة.
 - اجعل ردودك واضحة ومنظّمة (3-6 فقرات قصيرة كحد أقصى).`;
 
-    const apiKey = process.env.LOVABLE_API_KEY;
-    if (!apiKey) throw new Error("LOVABLE_API_KEY غير مضبوط");
-
-    const { createLovableAi } = await import("@/integrations/ai/gateway.server");
+    const { getAiModel } = await import("@/integrations/ai/gateway.server");
     const { generateText } = await import("ai");
-
-    const provider = createLovableAi(apiKey);
-    const model = provider("google/gemini-3-flash-preview");
 
     let replyText = "";
     try {
+      const model = getAiModel();
       const result = await generateText({
         model,
         messages: [

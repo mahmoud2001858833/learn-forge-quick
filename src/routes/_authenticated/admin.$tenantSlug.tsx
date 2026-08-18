@@ -16,14 +16,26 @@ import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
+import { useTenantRole } from "@/hooks/use-tenant-role";
+import { AccessDenied } from "@/components/access-denied";
+import { ErrorBoundary } from "@/components/error-boundary";
 
 export const Route = createFileRoute("/_authenticated/admin/$tenantSlug")({
   component: AdminLayout,
 });
 
+type NavItem = {
+  to: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+  exact?: boolean;
+  requiresOwner?: boolean;
+  requiresAdmin?: boolean;
+};
+
 type NavGroup = {
   label: string;
-  items: { to: string; label: string; icon: React.ComponentType<{ className?: string }>; exact?: boolean }[];
+  items: NavItem[];
 };
 
 const NAV_GROUPS = (slug: string): NavGroup[] => [
@@ -49,25 +61,25 @@ const NAV_GROUPS = (slug: string): NavGroup[] => [
   {
     label: "المستخدمون",
     items: [
-      { to: "/admin/$tenantSlug/students", label: "الطلاب", icon: Users },
-      { to: "/admin/$tenantSlug/instructor-approvals", label: "طلبات المعلمين", icon: UserCheck },
+      { to: "/admin/$tenantSlug/students", label: "الطلاب", icon: Users, requiresAdmin: true },
+      { to: "/admin/$tenantSlug/instructor-approvals", label: "طلبات المعلمين", icon: UserCheck, requiresAdmin: true },
       { to: "/admin/$tenantSlug/chat", label: "المحادثات", icon: MessageCircle },
     ],
   },
   {
     label: "المالية والنمو",
     items: [
-      { to: "/admin/$tenantSlug/payments", label: "طلبات الدفع", icon: Receipt },
-      { to: "/admin/$tenantSlug/bank-accounts", label: "الحسابات البنكية", icon: Landmark },
-      { to: "/admin/$tenantSlug/coupons", label: "الكوبونات", icon: Ticket },
-      { to: "/admin/$tenantSlug/referrals", label: "الإحالات", icon: Share2 },
+      { to: "/admin/$tenantSlug/payments", label: "طلبات الدفع", icon: Receipt, requiresOwner: true },
+      { to: "/admin/$tenantSlug/bank-accounts", label: "الحسابات البنكية", icon: Landmark, requiresOwner: true },
+      { to: "/admin/$tenantSlug/coupons", label: "الكوبونات", icon: Ticket, requiresAdmin: true },
+      { to: "/admin/$tenantSlug/referrals", label: "الإحالات", icon: Share2, requiresAdmin: true },
     ],
   },
   {
     label: "النظام",
     items: [
-      { to: "/admin/$tenantSlug/storage", label: "التخزين", icon: HardDrive },
-      { to: "/admin/$tenantSlug/settings", label: "الإعدادات", icon: Settings },
+      { to: "/admin/$tenantSlug/storage", label: "التخزين", icon: HardDrive, requiresAdmin: true },
+      { to: "/admin/$tenantSlug/settings", label: "الإعدادات", icon: Settings, requiresOwner: true },
     ],
   },
 ];
@@ -75,7 +87,7 @@ const NAV_GROUPS = (slug: string): NavGroup[] => [
 function AdminLayout() {
   const { tenantSlug } = useParams({ from: "/_authenticated/admin/$tenantSlug" });
 
-  const { data: tenant, isLoading } = useQuery({
+  const { data: tenant, isLoading: isTenantLoading } = useQuery({
     queryKey: ["tenant", tenantSlug],
     queryFn: async () => {
       const { data, error } = await supabase.from("tenants").select("*").eq("slug", tenantSlug).maybeSingle();
@@ -84,14 +96,32 @@ function AdminLayout() {
     },
   });
 
-  if (isLoading) {
+  const { role, isOwner, isAdmin, isStaff, isLoading: isRoleLoading } = useTenantRole(tenant?.id, tenant?.owner_id);
+
+  if (isTenantLoading || isRoleLoading) {
     return (
-      <div className="min-h-screen grid place-items-center text-muted-foreground">
-        <div className="animate-pulse text-sm">جارٍ تحميل لوحة التحكم...</div>
+      <div className="min-h-screen grid place-items-center text-muted-foreground bg-muted/20" dir="rtl">
+        <div className="flex flex-col items-center gap-3">
+          <div className="h-10 w-10 border-3 border-primary border-t-transparent rounded-full animate-spin" />
+          <div className="text-sm font-medium">جارٍ التحقق من الصلاحيات وتحميل لوحة التحكم...</div>
+        </div>
       </div>
     );
   }
-  if (!tenant) return <div className="p-10 text-center">المنصة غير موجودة</div>;
+
+  if (!tenant) {
+    return <AccessDenied title="المنصة غير موجودة" description="لم يتم العثور على المنصة المطلوبة، قد يكون تم حذفها أو تعديل رابطها." />;
+  }
+
+  if (!isStaff) {
+    return (
+      <AccessDenied
+        title="غير مصرح لك بالدخول"
+        description="ليس لديك صلاحيات إدارة أو تدريس في هذه المنصة. إذا كنت تعتقد أن هذا خطأ، يرجى التواصل مع مالك الأكاديمية."
+        tenantSlug={tenant.slug}
+      />
+    );
+  }
 
   const primary = tenant.primary_color ?? "#6366f1";
   const secondary = tenant.secondary_color ?? "#D4AF37";
@@ -103,13 +133,15 @@ function AdminLayout() {
         dir="rtl"
         style={{ ["--tenant-primary" as string]: primary, ["--tenant-secondary" as string]: secondary }}
       >
-        <AdminSidebar tenant={tenant} />
+        <AdminSidebar tenant={tenant} isOwner={isOwner} isAdmin={isAdmin} />
 
         <div className="flex-1 flex flex-col min-w-0">
-          <AdminHeader tenant={tenant} />
+          <AdminHeader tenant={tenant} role={role} />
           <main className="flex-1 overflow-auto">
             <div className="p-6 lg:p-8 max-w-[1600px] mx-auto w-full">
-              <Outlet />
+              <ErrorBoundary fallbackTitle="حدث خطأ في عرض هذه الصفحة" fallbackDescription="تعذر تحميل جزء من لوحة التحكم، يرجى إعادة المحاولة.">
+                <Outlet />
+              </ErrorBoundary>
             </div>
           </main>
         </div>
@@ -118,7 +150,15 @@ function AdminLayout() {
   );
 }
 
-function AdminSidebar({ tenant }: { tenant: { name: string; slug: string; logo_url: string | null; primary_color: string | null; secondary_color: string | null } }) {
+function AdminSidebar({
+  tenant,
+  isOwner,
+  isAdmin,
+}: {
+  tenant: { name: string; slug: string; logo_url: string | null; primary_color: string | null; secondary_color: string | null };
+  isOwner: boolean;
+  isAdmin: boolean;
+}) {
   const { tenantSlug } = useParams({ from: "/_authenticated/admin/$tenantSlug" });
   const pathname = useRouterState({ select: (r) => r.location.pathname });
   const { state } = useSidebar();
@@ -157,31 +197,40 @@ function AdminSidebar({ tenant }: { tenant: { name: string; slug: string; logo_u
       </SidebarHeader>
 
       <SidebarContent className="gap-0">
-        {NAV_GROUPS(tenantSlug).map((group) => (
-          <SidebarGroup key={group.label}>
-            <SidebarGroupLabel className="text-[10px] uppercase tracking-wider text-muted-foreground/70 font-semibold">
-              {group.label}
-            </SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {group.items.map((item) => {
-                  const targetPath = item.to.replace("$tenantSlug", tenantSlug);
-                  const isActive = item.exact ? pathname === targetPath : pathname.startsWith(targetPath);
-                  return (
-                    <SidebarMenuItem key={item.to}>
-                      <SidebarMenuButton asChild isActive={isActive} tooltip={item.label} className="data-[active=true]:font-semibold">
-                        <Link to={item.to} params={{ tenantSlug }} className="flex items-center gap-2">
-                          <item.icon className="h-4 w-4 shrink-0" />
-                          <span className="truncate">{item.label}</span>
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  );
-                })}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        ))}
+        {NAV_GROUPS(tenantSlug).map((group) => {
+          const visibleItems = group.items.filter((item) => {
+            if (item.requiresOwner && !isOwner) return false;
+            if (item.requiresAdmin && !isAdmin) return false;
+            return true;
+          });
+          if (visibleItems.length === 0) return null;
+
+          return (
+            <SidebarGroup key={group.label}>
+              <SidebarGroupLabel className="text-[10px] uppercase tracking-wider text-muted-foreground/70 font-semibold">
+                {group.label}
+              </SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {visibleItems.map((item) => {
+                    const targetPath = item.to.replace("$tenantSlug", tenantSlug);
+                    const isActive = item.exact ? pathname === targetPath : pathname.startsWith(targetPath);
+                    return (
+                      <SidebarMenuItem key={item.to}>
+                        <SidebarMenuButton asChild isActive={isActive} tooltip={item.label} className="data-[active=true]:font-semibold">
+                          <Link to={item.to} params={{ tenantSlug }} className="flex items-center gap-2">
+                            <item.icon className="h-4 w-4 shrink-0" />
+                            <span className="truncate">{item.label}</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    );
+                  })}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          );
+        })}
       </SidebarContent>
 
       <SidebarSeparator />
@@ -201,15 +250,30 @@ function AdminSidebar({ tenant }: { tenant: { name: string; slug: string; logo_u
   );
 }
 
-function AdminHeader({ tenant }: { tenant: { name: string; plan?: string | null } }) {
+function AdminHeader({ tenant, role }: { tenant: { name: string; plan?: string | null }; role?: string | null }) {
   const { user } = useAuth();
   const initials = (user?.user_metadata?.full_name ?? user?.email ?? "?").slice(0, 1).toUpperCase();
+
+  const roleLabel =
+    role === "owner" || role === "super_admin"
+      ? "مالك المنصة"
+      : role === "admin"
+      ? "مدير"
+      : role === "instructor"
+      ? "معلم"
+      : "عضو";
+
   return (
     <header className="sticky top-0 z-20 h-16 flex items-center gap-3 px-4 lg:px-6 border-b bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
       <SidebarTrigger className="-ms-1" />
       <div className="hidden md:flex items-center gap-2 text-sm text-muted-foreground">
         <LayoutDashboard className="h-4 w-4" />
-        <span>{tenant.name}</span>
+        <span className="font-semibold text-foreground">{tenant.name}</span>
+        {role && (
+          <span className="text-[11px] px-2 py-0.5 rounded-md bg-primary/10 text-primary font-medium">
+            {roleLabel}
+          </span>
+        )}
         {tenant.plan && (
           <span
             className="text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full text-white"
@@ -233,11 +297,6 @@ function AdminHeader({ tenant }: { tenant: { name: string; plan?: string | null 
       <div className="flex-1 lg:hidden" />
 
       <div className="flex items-center gap-2">
-        <Button variant="ghost" size="icon" className="h-9 w-9" asChild>
-          <a href="https://docs.lovable.dev" target="_blank" rel="noreferrer" aria-label="مساعدة">
-            <HelpCircle className="h-4 w-4" />
-          </a>
-        </Button>
         <NotificationsBell />
         <Avatar className="h-8 w-8 ring-2 ring-background shadow">
           <AvatarImage src={user?.user_metadata?.avatar_url} />

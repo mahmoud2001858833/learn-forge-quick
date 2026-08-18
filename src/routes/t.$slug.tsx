@@ -7,9 +7,15 @@ import { useTenantSettings, MarqueeBar, MaintenanceGate } from "@/components/ten
 import { Button } from "@/components/ui/button";
 import { FloatingChat } from "@/components/tenant/floating-chat";
 
+type TenantSearch = {
+  ref?: string;
+};
+
 export const Route = createFileRoute("/t/$slug")({
   component: TenantLayout,
-  validateSearch: (s: Record<string, unknown>) => ({ ref: typeof s.ref === "string" ? s.ref : undefined }),
+  validateSearch: (s: Record<string, unknown>): TenantSearch => ({
+    ...(typeof s.ref === "string" ? { ref: s.ref } : {}),
+  }),
 });
 
 function TenantLayout() {

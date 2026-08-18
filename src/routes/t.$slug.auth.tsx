@@ -14,11 +14,17 @@ import { GraduationCap, ArrowRight, Sparkles, ShieldCheck, BookOpen } from "luci
 import { claimSession } from "@/lib/auth.functions";
 import { cn } from "@/lib/utils";
 
+type AuthSearch = {
+  mode?: "signup" | "signin";
+  ref?: string;
+};
+
 export const Route = createFileRoute("/t/$slug/auth")({
   ssr: false,
   component: TenantAuthPage,
-  validateSearch: (s: Record<string, unknown>) => ({
-    mode: s.mode === "signup" ? ("signup" as const) : ("signin" as const),
+  validateSearch: (s: Record<string, unknown>): AuthSearch => ({
+    mode: s.mode === "signup" ? "signup" : "signin",
+    ...(typeof s.ref === "string" ? { ref: s.ref } : {}),
   }),
 });
 

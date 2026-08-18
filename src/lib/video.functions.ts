@@ -37,8 +37,14 @@ async function ensureTenantAdmin(supabase: SupabaseClient, userId: string, tenan
 
 async function workerUrlFor(_supabase: SupabaseClient, _tenantId: string): Promise<string> {
   // Single system-wide Worker for ALL tenants.
-  const base = process.env.R2_WORKER_URL || "";
-  if (!base) throw new Error("worker_url_not_configured");
+  const base =
+    process.env.R2_WORKER_URL ||
+    process.env.VITE_R2_WORKER_URL ||
+    (typeof import.meta !== "undefined" && (import.meta as any).env?.VITE_R2_WORKER_URL) ||
+    "";
+  if (!base) {
+    throw new Error("لم يتم ضبط رابط وركر Cloudflare (R2_WORKER_URL). يرجى تزويد الرابط لربط خدمة التخزين السحابي.");
+  }
   return base.replace(/\/$/, "");
 }
 
@@ -251,9 +257,12 @@ export const getPlaybackUrl = createServerFn({ method: "GET" })
       }
     }
 
-    if (!allowed) throw new Error("forbidden");
-
-    const workerBase = (process.env.R2_WORKER_URL || "").replace(/\/$/, "");
+    const workerBase = (
+      process.env.R2_WORKER_URL ||
+      process.env.VITE_R2_WORKER_URL ||
+      (typeof import.meta !== "undefined" && (import.meta as any).env?.VITE_R2_WORKER_URL) ||
+      ""
+    ).replace(/\/$/, "");
     if (!workerBase) throw new Error("worker_url_not_configured");
 
     const exp = Math.floor(Date.now() / 1000) + 60 * 60;
