@@ -25,7 +25,9 @@ export function recordTiming(sample: PerfSample): void {
     if (!isError && sample.durationMs < SLOW_MS && Math.random() > SAMPLE_RATE) return;
 
     const url = process.env.SUPABASE_URL;
-    const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    // Service role when available, otherwise the publishable key — the table
+    // is insert-only for anon, so no elevated rights are required.
+    const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_PUBLISHABLE_KEY;
     if (!url || !key) return;
 
     void fetch(`${url}/rest/v1/perf_samples`, {
