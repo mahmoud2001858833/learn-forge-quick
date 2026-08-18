@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { VirtualRows, VIRTUALIZE_THRESHOLD } from "@/components/virtual-list";
 
 export const Route = createFileRoute("/_authenticated/admin/$tenantSlug/students")({
   component: StudentsPage,
