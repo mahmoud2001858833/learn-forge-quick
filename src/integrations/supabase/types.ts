@@ -1115,6 +1115,30 @@ export type Database = {
           },
         ]
       }
+      job_locks: {
+        Row: {
+          locked_until: string
+          name: string
+          pause_reason: string | null
+          paused: boolean
+          updated_at: string
+        }
+        Insert: {
+          locked_until: string
+          name: string
+          pause_reason?: string | null
+          paused?: boolean
+          updated_at?: string
+        }
+        Update: {
+          locked_until?: string
+          name?: string
+          pause_reason?: string | null
+          paused?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       landing_config: {
         Row: {
           created_at: string
@@ -2631,6 +2655,62 @@ export type Database = {
           },
         ]
       }
+      video_jobs: {
+        Row: {
+          asset_id: string
+          attempts: number
+          created_at: string
+          id: string
+          kind: string
+          last_error: string | null
+          locked_until: string | null
+          max_attempts: number
+          payload: Json
+          run_after: string
+          status: string
+          tenant_id: string
+          updated_at: string
+        }
+        Insert: {
+          asset_id: string
+          attempts?: number
+          created_at?: string
+          id?: string
+          kind?: string
+          last_error?: string | null
+          locked_until?: string | null
+          max_attempts?: number
+          payload?: Json
+          run_after?: string
+          status?: string
+          tenant_id: string
+          updated_at?: string
+        }
+        Update: {
+          asset_id?: string
+          attempts?: number
+          created_at?: string
+          id?: string
+          kind?: string
+          last_error?: string | null
+          locked_until?: string | null
+          max_attempts?: number
+          payload?: Json
+          run_after?: string
+          status?: string
+          tenant_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "video_jobs_asset_id_fkey"
+            columns: ["asset_id"]
+            isOneToOne: false
+            referencedRelation: "video_assets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       web_vitals: {
         Row: {
           created_at: string
@@ -2739,6 +2819,10 @@ export type Database = {
         Args: { _tenant_id: string; _user_id: string }
         Returns: boolean
       }
+      acquire_job_lock: {
+        Args: { _name: string; _seconds: number }
+        Returns: boolean
+      }
       admin_set_storage_quota: {
         Args: { _quota_bytes: number; _tenant_id: string }
         Returns: number
@@ -2834,6 +2918,30 @@ export type Database = {
           remaining_bytes: number
           used_bytes: number
         }[]
+      }
+      claim_video_jobs: {
+        Args: { _limit?: number }
+        Returns: {
+          asset_id: string
+          attempts: number
+          created_at: string
+          id: string
+          kind: string
+          last_error: string | null
+          locked_until: string | null
+          max_attempts: number
+          payload: Json
+          run_after: string
+          status: string
+          tenant_id: string
+          updated_at: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "video_jobs"
+          isOneToOne: false
+          isSetofReturn: true
+        }
       }
       compute_level: { Args: { _xp: number }; Returns: number }
       course_tenant: { Args: { _course_id: string }; Returns: string }
