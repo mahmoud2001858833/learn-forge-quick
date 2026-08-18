@@ -79,6 +79,8 @@ const NAV_GROUPS = (slug: string): NavGroup[] => [
     label: "النظام",
     items: [
       { to: "/admin/$tenantSlug/storage", label: "التخزين", icon: HardDrive, requiresAdmin: true },
+      { to: "/admin/$tenantSlug/performance", label: "مراقبة الأداء", icon: Activity, requiresAdmin: true },
+
       { to: "/admin/$tenantSlug/settings", label: "الإعدادات", icon: Settings, requiresOwner: true },
     ],
   },

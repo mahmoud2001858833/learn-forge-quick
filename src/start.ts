@@ -18,7 +18,83 @@ const errorMiddleware = createMiddleware().server(async ({ next }) => {
   }
 });
 
+/**
+ * Internal performance tracking: times every server function and every page
+ * request, and stores slow/failed ones so bottlenecks are visible in the
+ * admin performance dashboard. Sampling + fire-and-forget writes keep the
+ * overhead negligible.
+ */
+/** Turn the opaque `/_serverFn/<base64>` id into a readable "file:export" name. */
+async function serverFnName(fallback: string): Promise<string> {
+  try {
+    const { getRequest } = await import("@tanstack/react-start/server");
+    const url = new URL(getRequest().url);
+    const encoded = url.pathname.split("/_serverFn/")[1]?.split("/")[0];
+    // During SSR the function runs in-process, so there is no /_serverFn id —
+    // attribute it to the page being rendered instead.
+    if (!encoded) return `ssr ${url.pathname}`;
+
+    const json = JSON.parse(atob(decodeURIComponent(encoded))) as { file?: string; export?: string };
+    const file = (json.file ?? "").split("?")[0].replace(/^\/src\//, "");
+    const exported = (json.export ?? "")
+      .replace(/_createServerFn_handler$/, "")
+      .replace(/_handler$/, "");
+    return file || exported ? `${file}:${exported}` : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+const timingFunctionMiddleware = createMiddleware({ type: "function" }).server(async ({ next, ...ctx }) => {
+  const t0 = Date.now();
+  const name = await serverFnName(String((ctx as Record<string, unknown>).functionId ?? "server_fn"));
+
+
+  try {
+    const result = await next();
+    const { recordTiming } = await import("./lib/perf.server");
+    recordTiming({ kind: "server_fn", name, durationMs: Date.now() - t0 });
+    return result;
+  } catch (error) {
+    const { recordTiming } = await import("./lib/perf.server");
+    recordTiming({
+      kind: "server_fn",
+      name,
+      durationMs: Date.now() - t0,
+      status: "error",
+      errorMessage: (error as Error)?.message,
+    });
+    throw error;
+  }
+});
+
+const timingRequestMiddleware = createMiddleware({ type: "request" }).server(async ({ next, request }) => {
+  const t0 = Date.now();
+  const result = await next();
+  try {
+    const url = new URL(request.url);
+    // Skip static assets — only page/API requests are interesting.
+    if (!/\.[a-z0-9]{2,5}$/i.test(url.pathname)) {
+      const { recordTiming } = await import("./lib/perf.server");
+      // Collapse the opaque server-function URLs into one readable bucket;
+      // the function middleware already records them by name.
+      const path = url.pathname.startsWith("/_serverFn/") ? "/_serverFn" : url.pathname;
+      recordTiming({
+        kind: url.pathname.startsWith("/api/") ? "api" : "request",
+        name: `${request.method} ${path}`.slice(0, 200),
+        durationMs: Date.now() - t0,
+        tenantSlug: url.pathname.match(/^\/t\/([^/]+)/)?.[1] ?? null,
+      });
+    }
+
+  } catch {
+    /* never break the response */
+  }
+  return result;
+});
+
 export const startInstance = createStart(() => ({
-  functionMiddleware: [attachSupabaseAuth],
-  requestMiddleware: [errorMiddleware],
+  functionMiddleware: [attachSupabaseAuth, timingFunctionMiddleware],
+  requestMiddleware: [errorMiddleware, timingRequestMiddleware],
 }));
+

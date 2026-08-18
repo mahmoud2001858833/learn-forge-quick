@@ -23,7 +23,7 @@ export const Route = createFileRoute("/api/public/hooks/rum")({
           }
 
           const url = process.env.SUPABASE_URL;
-          const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+          const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_PUBLISHABLE_KEY;
           if (!url || !key) return new Response(null, { status: 204 });
 
           // Direct PostgREST call — avoids importing supabase-js at module scope.
