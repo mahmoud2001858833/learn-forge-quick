@@ -40,24 +40,35 @@ function StudentsPage() {
           {students && students.length === 0 ? (
             <div className="p-10 text-center text-muted-foreground">لا يوجد طلاب بعد</div>
           ) : (
-            <table className="w-full text-sm">
-              <thead className="bg-muted/50 text-right">
-                <tr>
-                  <th className="p-3">الاسم</th>
-                  <th className="p-3">الدور</th>
-                  <th className="p-3">تاريخ الانضمام</th>
-                </tr>
-              </thead>
-              <tbody>
-                {students?.map((m) => (
-                  <tr key={m.id} className="border-t">
-                    <td className="p-3">{m.profile?.full_name ?? "—"}</td>
-                    <td className="p-3"><Badge variant="outline">{m.role}</Badge></td>
-                    <td className="p-3 text-muted-foreground">{new Date(m.created_at).toLocaleDateString("ar")}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <div className="text-sm">
+              <div className="grid grid-cols-3 bg-muted/50 text-right font-medium">
+                <div className="p-3">الاسم</div>
+                <div className="p-3">الدور</div>
+                <div className="p-3">تاريخ الانضمام</div>
+              </div>
+              {(students?.length ?? 0) > VIRTUALIZE_THRESHOLD ? (
+                <VirtualRows
+                  items={students ?? []}
+                  getKey={(m) => m.id}
+                  estimateRowHeight={49}
+                  renderRow={(m) => (
+                    <div className="grid grid-cols-3 border-t text-right">
+                      <div className="p-3">{m.profile?.full_name ?? "—"}</div>
+                      <div className="p-3"><Badge variant="outline">{m.role}</Badge></div>
+                      <div className="p-3 text-muted-foreground">{new Date(m.created_at).toLocaleDateString("ar")}</div>
+                    </div>
+                  )}
+                />
+              ) : (
+                students?.map((m) => (
+                  <div key={m.id} className="grid grid-cols-3 border-t text-right">
+                    <div className="p-3">{m.profile?.full_name ?? "—"}</div>
+                    <div className="p-3"><Badge variant="outline">{m.role}</Badge></div>
+                    <div className="p-3 text-muted-foreground">{new Date(m.created_at).toLocaleDateString("ar")}</div>
+                  </div>
+                ))
+              )}
+            </div>
           )}
         </CardContent>
       </Card>
