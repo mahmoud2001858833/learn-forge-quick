@@ -76,13 +76,17 @@ const timingRequestMiddleware = createMiddleware({ type: "request" }).server(asy
     // Skip static assets — only page/API requests are interesting.
     if (!/\.[a-z0-9]{2,5}$/i.test(url.pathname)) {
       const { recordTiming } = await import("./lib/perf.server");
+      // Collapse the opaque server-function URLs into one readable bucket;
+      // the function middleware already records them by name.
+      const path = url.pathname.startsWith("/_serverFn/") ? "/_serverFn" : url.pathname;
       recordTiming({
         kind: url.pathname.startsWith("/api/") ? "api" : "request",
-        name: `${request.method} ${url.pathname}`.slice(0, 200),
+        name: `${request.method} ${path}`.slice(0, 200),
         durationMs: Date.now() - t0,
         tenantSlug: url.pathname.match(/^\/t\/([^/]+)/)?.[1] ?? null,
       });
     }
+
   } catch {
     /* never break the response */
   }
