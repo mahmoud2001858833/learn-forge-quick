@@ -56,7 +56,7 @@ function StudentsPage() {
                   estimateRowHeight={49}
                   renderRow={(m) => (
                     <div className="grid grid-cols-3 border-t text-right">
-                      <div className="p-3">{m.profile?.full_name ?? "—"}</div>
+                      <div className="p-3">{m.full_name ?? "—"}</div>
                       <div className="p-3"><Badge variant="outline">{m.role}</Badge></div>
                       <div className="p-3 text-muted-foreground">{new Date(m.created_at).toLocaleDateString("ar")}</div>
                     </div>
@@ -65,7 +65,7 @@ function StudentsPage() {
               ) : (
                 students?.map((m) => (
                   <div key={m.id} className="grid grid-cols-3 border-t text-right">
-                    <div className="p-3">{m.profile?.full_name ?? "—"}</div>
+                    <div className="p-3">{m.full_name ?? "—"}</div>
                     <div className="p-3"><Badge variant="outline">{m.role}</Badge></div>
                     <div className="p-3 text-muted-foreground">{new Date(m.created_at).toLocaleDateString("ar")}</div>
                   </div>
