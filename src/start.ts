@@ -30,7 +30,10 @@ async function serverFnName(fallback: string): Promise<string> {
     const { getRequest } = await import("@tanstack/react-start/server");
     const url = new URL(getRequest().url);
     const encoded = url.pathname.split("/_serverFn/")[1]?.split("/")[0];
-    if (!encoded) return fallback;
+    // During SSR the function runs in-process, so there is no /_serverFn id —
+    // attribute it to the page being rendered instead.
+    if (!encoded) return `ssr ${url.pathname}`;
+
     const json = JSON.parse(atob(decodeURIComponent(encoded))) as { file?: string; export?: string };
     const file = (json.file ?? "").split("?")[0].replace(/^\/src\//, "");
     const exported = (json.export ?? "")
