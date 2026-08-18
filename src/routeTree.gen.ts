@@ -9,76 +9,62 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
-import { Route as AuthRouteImport } from './routes/auth'
-import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
-import { Route as SearchRouteImport } from './routes/search'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
-import { Route as AuthenticatedLandingAnalyticsRouteImport } from './routes/_authenticated/landing-analytics'
-import { Route as AuthenticatedMyBadgesRouteImport } from './routes/_authenticated/my-badges'
-import { Route as AuthenticatedMyCertificatesRouteImport } from './routes/_authenticated/my-certificates'
-import { Route as AuthenticatedMyPaymentsRouteImport } from './routes/_authenticated/my-payments'
-import { Route as AuthenticatedMyReferralsRouteImport } from './routes/_authenticated/my-referrals'
-import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
-import { Route as AuthenticatedSuperAdminRouteImport } from './routes/_authenticated/super-admin'
-import { Route as TSlugRouteImport } from './routes/t.$slug'
+import { Route as SearchRouteImport } from './routes/search'
+import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as VerifyCertNumberRouteImport } from './routes/verify.$certNumber'
-import { Route as AuthenticatedAdminTenantSlugRouteImport } from './routes/_authenticated/admin.$tenantSlug'
-import { Route as AuthenticatedAssignmentAssignmentIdRouteImport } from './routes/_authenticated/assignment.$assignmentId'
-import { Route as AuthenticatedLearnEnrollmentIdRouteImport } from './routes/_authenticated/learn.$enrollmentId'
-import { Route as AuthenticatedQuizQuizIdRouteImport } from './routes/_authenticated/quiz.$quizId'
+import { Route as TSlugRouteImport } from './routes/t.$slug'
+import { Route as AuthenticatedSuperAdminRouteImport } from './routes/_authenticated/super-admin'
+import { Route as AuthenticatedNotificationsRouteImport } from './routes/_authenticated/notifications'
+import { Route as AuthenticatedMyReferralsRouteImport } from './routes/_authenticated/my-referrals'
+import { Route as AuthenticatedMyPaymentsRouteImport } from './routes/_authenticated/my-payments'
+import { Route as AuthenticatedMyCertificatesRouteImport } from './routes/_authenticated/my-certificates'
+import { Route as AuthenticatedMyBadgesRouteImport } from './routes/_authenticated/my-badges'
+import { Route as AuthenticatedLandingAnalyticsRouteImport } from './routes/_authenticated/landing-analytics'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as TSlugIndexRouteImport } from './routes/t.$slug.index'
-import { Route as TSlugAboutRouteImport } from './routes/t.$slug.about'
-import { Route as TSlugAiRouteImport } from './routes/t.$slug.ai'
-import { Route as TSlugAuthRouteImport } from './routes/t.$slug.auth'
-import { Route as TSlugContactRouteImport } from './routes/t.$slug.contact'
-import { Route as TSlugLeaderboardRouteImport } from './routes/t.$slug.leaderboard'
-import { Route as TSlugLiveRouteImport } from './routes/t.$slug.live'
-import { Route as TSlugPrivacyRouteImport } from './routes/t.$slug.privacy'
 import { Route as TSlugTermsRouteImport } from './routes/t.$slug.terms'
-import { Route as AuthenticatedAdminTenantSlugIndexRouteImport } from './routes/_authenticated/admin.$tenantSlug.index'
-import { Route as AuthenticatedAdminTenantSlugAcademicRouteImport } from './routes/_authenticated/admin.$tenantSlug.academic'
-import { Route as AuthenticatedAdminTenantSlugActivityRouteImport } from './routes/_authenticated/admin.$tenantSlug.activity'
-import { Route as AuthenticatedAdminTenantSlugAssignmentsRouteImport } from './routes/_authenticated/admin.$tenantSlug.assignments'
-import { Route as AuthenticatedAdminTenantSlugBankAccountsRouteImport } from './routes/_authenticated/admin.$tenantSlug.bank-accounts'
-import { Route as AuthenticatedAdminTenantSlugBundlesRouteImport } from './routes/_authenticated/admin.$tenantSlug.bundles'
-import { Route as AuthenticatedAdminTenantSlugChatRouteImport } from './routes/_authenticated/admin.$tenantSlug.chat'
-import { Route as AuthenticatedAdminTenantSlugCouponsRouteImport } from './routes/_authenticated/admin.$tenantSlug.coupons'
-import { Route as AuthenticatedAdminTenantSlugInstructorApprovalsRouteImport } from './routes/_authenticated/admin.$tenantSlug.instructor-approvals'
-import { Route as AuthenticatedAdminTenantSlugLiveSessionsRouteImport } from './routes/_authenticated/admin.$tenantSlug.live-sessions'
-import { Route as AuthenticatedAdminTenantSlugPaymentsRouteImport } from './routes/_authenticated/admin.$tenantSlug.payments'
-import { Route as AuthenticatedAdminTenantSlugQuestionBankRouteImport } from './routes/_authenticated/admin.$tenantSlug.question-bank'
-import { Route as AuthenticatedAdminTenantSlugReferralsRouteImport } from './routes/_authenticated/admin.$tenantSlug.referrals'
-import { Route as AuthenticatedAdminTenantSlugReportsRouteImport } from './routes/_authenticated/admin.$tenantSlug.reports'
-import { Route as AuthenticatedAdminTenantSlugSettingsRouteImport } from './routes/_authenticated/admin.$tenantSlug.settings'
-import { Route as AuthenticatedAdminTenantSlugStorageRouteImport } from './routes/_authenticated/admin.$tenantSlug.storage'
-import { Route as AuthenticatedAdminTenantSlugStudentsRouteImport } from './routes/_authenticated/admin.$tenantSlug.students'
-import { Route as ApiPublicHooksRumRouteImport } from './routes/api/public/hooks/rum'
+import { Route as TSlugPrivacyRouteImport } from './routes/t.$slug.privacy'
+import { Route as TSlugLiveRouteImport } from './routes/t.$slug.live'
+import { Route as TSlugLeaderboardRouteImport } from './routes/t.$slug.leaderboard'
+import { Route as TSlugContactRouteImport } from './routes/t.$slug.contact'
+import { Route as TSlugAuthRouteImport } from './routes/t.$slug.auth'
+import { Route as TSlugAiRouteImport } from './routes/t.$slug.ai'
+import { Route as TSlugAboutRouteImport } from './routes/t.$slug.about'
+import { Route as AuthenticatedQuizQuizIdRouteImport } from './routes/_authenticated/quiz.$quizId'
+import { Route as AuthenticatedLearnEnrollmentIdRouteImport } from './routes/_authenticated/learn.$enrollmentId'
+import { Route as AuthenticatedAssignmentAssignmentIdRouteImport } from './routes/_authenticated/assignment.$assignmentId'
+import { Route as AuthenticatedAdminTenantSlugRouteImport } from './routes/_authenticated/admin.$tenantSlug'
 import { Route as TSlugCoursesIndexRouteImport } from './routes/t.$slug.courses.index'
+import { Route as AuthenticatedAdminTenantSlugIndexRouteImport } from './routes/_authenticated/admin.$tenantSlug.index'
 import { Route as TSlugCoursesCourseSlugRouteImport } from './routes/t.$slug.courses.$courseSlug'
+import { Route as ApiPublicHooksRumRouteImport } from './routes/api/public/hooks/rum'
+import { Route as AuthenticatedAdminTenantSlugStudentsRouteImport } from './routes/_authenticated/admin.$tenantSlug.students'
+import { Route as AuthenticatedAdminTenantSlugStorageRouteImport } from './routes/_authenticated/admin.$tenantSlug.storage'
+import { Route as AuthenticatedAdminTenantSlugSettingsRouteImport } from './routes/_authenticated/admin.$tenantSlug.settings'
+import { Route as AuthenticatedAdminTenantSlugReportsRouteImport } from './routes/_authenticated/admin.$tenantSlug.reports'
+import { Route as AuthenticatedAdminTenantSlugReferralsRouteImport } from './routes/_authenticated/admin.$tenantSlug.referrals'
+import { Route as AuthenticatedAdminTenantSlugQuestionBankRouteImport } from './routes/_authenticated/admin.$tenantSlug.question-bank'
+import { Route as AuthenticatedAdminTenantSlugPaymentsRouteImport } from './routes/_authenticated/admin.$tenantSlug.payments'
+import { Route as AuthenticatedAdminTenantSlugLiveSessionsRouteImport } from './routes/_authenticated/admin.$tenantSlug.live-sessions'
+import { Route as AuthenticatedAdminTenantSlugInstructorApprovalsRouteImport } from './routes/_authenticated/admin.$tenantSlug.instructor-approvals'
+import { Route as AuthenticatedAdminTenantSlugCouponsRouteImport } from './routes/_authenticated/admin.$tenantSlug.coupons'
+import { Route as AuthenticatedAdminTenantSlugChatRouteImport } from './routes/_authenticated/admin.$tenantSlug.chat'
+import { Route as AuthenticatedAdminTenantSlugBundlesRouteImport } from './routes/_authenticated/admin.$tenantSlug.bundles'
+import { Route as AuthenticatedAdminTenantSlugBankAccountsRouteImport } from './routes/_authenticated/admin.$tenantSlug.bank-accounts'
+import { Route as AuthenticatedAdminTenantSlugAssignmentsRouteImport } from './routes/_authenticated/admin.$tenantSlug.assignments'
+import { Route as AuthenticatedAdminTenantSlugActivityRouteImport } from './routes/_authenticated/admin.$tenantSlug.activity'
+import { Route as AuthenticatedAdminTenantSlugAcademicRouteImport } from './routes/_authenticated/admin.$tenantSlug.academic'
 import { Route as AuthenticatedAdminTenantSlugCoursesIndexRouteImport } from './routes/_authenticated/admin.$tenantSlug.courses.index'
 import { Route as AuthenticatedAdminTenantSlugCoursesCourseIdRouteImport } from './routes/_authenticated/admin.$tenantSlug.courses.$courseId'
 import { Route as AuthenticatedAdminTenantSlugCoursesCourseIdQuizzesRouteImport } from './routes/_authenticated/admin.$tenantSlug.courses.$courseId.quizzes'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
-  id: '/_authenticated',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
-  id: '/robots.txt',
-  path: '/robots.txt',
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SearchRoute = SearchRouteImport.update({
@@ -86,25 +72,55 @@ const SearchRoute = SearchRouteImport.update({
   path: '/search',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
+const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
+  id: '/robots.txt',
+  path: '/robots.txt',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VerifyCertNumberRoute = VerifyCertNumberRouteImport.update({
+  id: '/verify/$certNumber',
+  path: '/verify/$certNumber',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TSlugRoute = TSlugRouteImport.update({
+  id: '/t/$slug',
+  path: '/t/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedSuperAdminRoute = AuthenticatedSuperAdminRouteImport.update({
+  id: '/super-admin',
+  path: '/super-admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedLandingAnalyticsRoute =
-  AuthenticatedLandingAnalyticsRouteImport.update({
-    id: '/landing-analytics',
-    path: '/landing-analytics',
+const AuthenticatedNotificationsRoute =
+  AuthenticatedNotificationsRouteImport.update({
+    id: '/notifications',
+    path: '/notifications',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedMyBadgesRoute = AuthenticatedMyBadgesRouteImport.update({
-  id: '/my-badges',
-  path: '/my-badges',
+const AuthenticatedMyReferralsRoute =
+  AuthenticatedMyReferralsRouteImport.update({
+    id: '/my-referrals',
+    path: '/my-referrals',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedMyPaymentsRoute = AuthenticatedMyPaymentsRouteImport.update({
+  id: '/my-payments',
+  path: '/my-payments',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedMyCertificatesRoute =
@@ -113,42 +129,76 @@ const AuthenticatedMyCertificatesRoute =
     path: '/my-certificates',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedMyPaymentsRoute = AuthenticatedMyPaymentsRouteImport.update({
-  id: '/my-payments',
-  path: '/my-payments',
+const AuthenticatedMyBadgesRoute = AuthenticatedMyBadgesRouteImport.update({
+  id: '/my-badges',
+  path: '/my-badges',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedMyReferralsRoute =
-  AuthenticatedMyReferralsRouteImport.update({
-    id: '/my-referrals',
-    path: '/my-referrals',
+const AuthenticatedLandingAnalyticsRoute =
+  AuthenticatedLandingAnalyticsRouteImport.update({
+    id: '/landing-analytics',
+    path: '/landing-analytics',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedNotificationsRoute =
-  AuthenticatedNotificationsRouteImport.update({
-    id: '/notifications',
-    path: '/notifications',
-    getParentRoute: () => AuthenticatedRouteRoute,
-  } as any)
-const AuthenticatedSuperAdminRoute = AuthenticatedSuperAdminRouteImport.update({
-  id: '/super-admin',
-  path: '/super-admin',
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const TSlugRoute = TSlugRouteImport.update({
-  id: '/t/$slug',
-  path: '/t/$slug',
-  getParentRoute: () => rootRouteImport,
+const TSlugIndexRoute = TSlugIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => TSlugRoute,
 } as any)
-const VerifyCertNumberRoute = VerifyCertNumberRouteImport.update({
-  id: '/verify/$certNumber',
-  path: '/verify/$certNumber',
-  getParentRoute: () => rootRouteImport,
+const TSlugTermsRoute = TSlugTermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => TSlugRoute,
 } as any)
-const AuthenticatedAdminTenantSlugRoute =
-  AuthenticatedAdminTenantSlugRouteImport.update({
-    id: '/admin/$tenantSlug',
-    path: '/admin/$tenantSlug',
+const TSlugPrivacyRoute = TSlugPrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => TSlugRoute,
+} as any)
+const TSlugLiveRoute = TSlugLiveRouteImport.update({
+  id: '/live',
+  path: '/live',
+  getParentRoute: () => TSlugRoute,
+} as any)
+const TSlugLeaderboardRoute = TSlugLeaderboardRouteImport.update({
+  id: '/leaderboard',
+  path: '/leaderboard',
+  getParentRoute: () => TSlugRoute,
+} as any)
+const TSlugContactRoute = TSlugContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => TSlugRoute,
+} as any)
+const TSlugAuthRoute = TSlugAuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => TSlugRoute,
+} as any)
+const TSlugAiRoute = TSlugAiRouteImport.update({
+  id: '/ai',
+  path: '/ai',
+  getParentRoute: () => TSlugRoute,
+} as any)
+const TSlugAboutRoute = TSlugAboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => TSlugRoute,
+} as any)
+const AuthenticatedQuizQuizIdRoute = AuthenticatedQuizQuizIdRouteImport.update({
+  id: '/quiz/$quizId',
+  path: '/quiz/$quizId',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedLearnEnrollmentIdRoute =
+  AuthenticatedLearnEnrollmentIdRouteImport.update({
+    id: '/learn/$enrollmentId',
+    path: '/learn/$enrollmentId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedAssignmentAssignmentIdRoute =
@@ -157,60 +207,15 @@ const AuthenticatedAssignmentAssignmentIdRoute =
     path: '/assignment/$assignmentId',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedLearnEnrollmentIdRoute =
-  AuthenticatedLearnEnrollmentIdRouteImport.update({
-    id: '/learn/$enrollmentId',
-    path: '/learn/$enrollmentId',
+const AuthenticatedAdminTenantSlugRoute =
+  AuthenticatedAdminTenantSlugRouteImport.update({
+    id: '/admin/$tenantSlug',
+    path: '/admin/$tenantSlug',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedQuizQuizIdRoute = AuthenticatedQuizQuizIdRouteImport.update({
-  id: '/quiz/$quizId',
-  path: '/quiz/$quizId',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
-const TSlugIndexRoute = TSlugIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => TSlugRoute,
-} as any)
-const TSlugAboutRoute = TSlugAboutRouteImport.update({
-  id: '/about',
-  path: '/about',
-  getParentRoute: () => TSlugRoute,
-} as any)
-const TSlugAiRoute = TSlugAiRouteImport.update({
-  id: '/ai',
-  path: '/ai',
-  getParentRoute: () => TSlugRoute,
-} as any)
-const TSlugAuthRoute = TSlugAuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
-  getParentRoute: () => TSlugRoute,
-} as any)
-const TSlugContactRoute = TSlugContactRouteImport.update({
-  id: '/contact',
-  path: '/contact',
-  getParentRoute: () => TSlugRoute,
-} as any)
-const TSlugLeaderboardRoute = TSlugLeaderboardRouteImport.update({
-  id: '/leaderboard',
-  path: '/leaderboard',
-  getParentRoute: () => TSlugRoute,
-} as any)
-const TSlugLiveRoute = TSlugLiveRouteImport.update({
-  id: '/live',
-  path: '/live',
-  getParentRoute: () => TSlugRoute,
-} as any)
-const TSlugPrivacyRoute = TSlugPrivacyRouteImport.update({
-  id: '/privacy',
-  path: '/privacy',
-  getParentRoute: () => TSlugRoute,
-} as any)
-const TSlugTermsRoute = TSlugTermsRouteImport.update({
-  id: '/terms',
-  path: '/terms',
+const TSlugCoursesIndexRoute = TSlugCoursesIndexRouteImport.update({
+  id: '/courses/',
+  path: '/courses/',
   getParentRoute: () => TSlugRoute,
 } as any)
 const AuthenticatedAdminTenantSlugIndexRoute =
@@ -219,88 +224,20 @@ const AuthenticatedAdminTenantSlugIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedAdminTenantSlugRoute,
   } as any)
-const AuthenticatedAdminTenantSlugAcademicRoute =
-  AuthenticatedAdminTenantSlugAcademicRouteImport.update({
-    id: '/academic',
-    path: '/academic',
-    getParentRoute: () => AuthenticatedAdminTenantSlugRoute,
-  } as any)
-const AuthenticatedAdminTenantSlugActivityRoute =
-  AuthenticatedAdminTenantSlugActivityRouteImport.update({
-    id: '/activity',
-    path: '/activity',
-    getParentRoute: () => AuthenticatedAdminTenantSlugRoute,
-  } as any)
-const AuthenticatedAdminTenantSlugAssignmentsRoute =
-  AuthenticatedAdminTenantSlugAssignmentsRouteImport.update({
-    id: '/assignments',
-    path: '/assignments',
-    getParentRoute: () => AuthenticatedAdminTenantSlugRoute,
-  } as any)
-const AuthenticatedAdminTenantSlugBankAccountsRoute =
-  AuthenticatedAdminTenantSlugBankAccountsRouteImport.update({
-    id: '/bank-accounts',
-    path: '/bank-accounts',
-    getParentRoute: () => AuthenticatedAdminTenantSlugRoute,
-  } as any)
-const AuthenticatedAdminTenantSlugBundlesRoute =
-  AuthenticatedAdminTenantSlugBundlesRouteImport.update({
-    id: '/bundles',
-    path: '/bundles',
-    getParentRoute: () => AuthenticatedAdminTenantSlugRoute,
-  } as any)
-const AuthenticatedAdminTenantSlugChatRoute =
-  AuthenticatedAdminTenantSlugChatRouteImport.update({
-    id: '/chat',
-    path: '/chat',
-    getParentRoute: () => AuthenticatedAdminTenantSlugRoute,
-  } as any)
-const AuthenticatedAdminTenantSlugCouponsRoute =
-  AuthenticatedAdminTenantSlugCouponsRouteImport.update({
-    id: '/coupons',
-    path: '/coupons',
-    getParentRoute: () => AuthenticatedAdminTenantSlugRoute,
-  } as any)
-const AuthenticatedAdminTenantSlugInstructorApprovalsRoute =
-  AuthenticatedAdminTenantSlugInstructorApprovalsRouteImport.update({
-    id: '/instructor-approvals',
-    path: '/instructor-approvals',
-    getParentRoute: () => AuthenticatedAdminTenantSlugRoute,
-  } as any)
-const AuthenticatedAdminTenantSlugLiveSessionsRoute =
-  AuthenticatedAdminTenantSlugLiveSessionsRouteImport.update({
-    id: '/live-sessions',
-    path: '/live-sessions',
-    getParentRoute: () => AuthenticatedAdminTenantSlugRoute,
-  } as any)
-const AuthenticatedAdminTenantSlugPaymentsRoute =
-  AuthenticatedAdminTenantSlugPaymentsRouteImport.update({
-    id: '/payments',
-    path: '/payments',
-    getParentRoute: () => AuthenticatedAdminTenantSlugRoute,
-  } as any)
-const AuthenticatedAdminTenantSlugQuestionBankRoute =
-  AuthenticatedAdminTenantSlugQuestionBankRouteImport.update({
-    id: '/question-bank',
-    path: '/question-bank',
-    getParentRoute: () => AuthenticatedAdminTenantSlugRoute,
-  } as any)
-const AuthenticatedAdminTenantSlugReferralsRoute =
-  AuthenticatedAdminTenantSlugReferralsRouteImport.update({
-    id: '/referrals',
-    path: '/referrals',
-    getParentRoute: () => AuthenticatedAdminTenantSlugRoute,
-  } as any)
-const AuthenticatedAdminTenantSlugReportsRoute =
-  AuthenticatedAdminTenantSlugReportsRouteImport.update({
-    id: '/reports',
-    path: '/reports',
-    getParentRoute: () => AuthenticatedAdminTenantSlugRoute,
-  } as any)
-const AuthenticatedAdminTenantSlugSettingsRoute =
-  AuthenticatedAdminTenantSlugSettingsRouteImport.update({
-    id: '/settings',
-    path: '/settings',
+const TSlugCoursesCourseSlugRoute = TSlugCoursesCourseSlugRouteImport.update({
+  id: '/courses/$courseSlug',
+  path: '/courses/$courseSlug',
+  getParentRoute: () => TSlugRoute,
+} as any)
+const ApiPublicHooksRumRoute = ApiPublicHooksRumRouteImport.update({
+  id: '/api/public/hooks/rum',
+  path: '/api/public/hooks/rum',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAdminTenantSlugStudentsRoute =
+  AuthenticatedAdminTenantSlugStudentsRouteImport.update({
+    id: '/students',
+    path: '/students',
     getParentRoute: () => AuthenticatedAdminTenantSlugRoute,
   } as any)
 const AuthenticatedAdminTenantSlugStorageRoute =
@@ -309,27 +246,90 @@ const AuthenticatedAdminTenantSlugStorageRoute =
     path: '/storage',
     getParentRoute: () => AuthenticatedAdminTenantSlugRoute,
   } as any)
-const AuthenticatedAdminTenantSlugStudentsRoute =
-  AuthenticatedAdminTenantSlugStudentsRouteImport.update({
-    id: '/students',
-    path: '/students',
+const AuthenticatedAdminTenantSlugSettingsRoute =
+  AuthenticatedAdminTenantSlugSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
     getParentRoute: () => AuthenticatedAdminTenantSlugRoute,
   } as any)
-const ApiPublicHooksRumRoute = ApiPublicHooksRumRouteImport.update({
-  id: '/api/public/hooks/rum',
-  path: '/api/public/hooks/rum',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TSlugCoursesIndexRoute = TSlugCoursesIndexRouteImport.update({
-  id: '/courses/',
-  path: '/courses/',
-  getParentRoute: () => TSlugRoute,
-} as any)
-const TSlugCoursesCourseSlugRoute = TSlugCoursesCourseSlugRouteImport.update({
-  id: '/courses/$courseSlug',
-  path: '/courses/$courseSlug',
-  getParentRoute: () => TSlugRoute,
-} as any)
+const AuthenticatedAdminTenantSlugReportsRoute =
+  AuthenticatedAdminTenantSlugReportsRouteImport.update({
+    id: '/reports',
+    path: '/reports',
+    getParentRoute: () => AuthenticatedAdminTenantSlugRoute,
+  } as any)
+const AuthenticatedAdminTenantSlugReferralsRoute =
+  AuthenticatedAdminTenantSlugReferralsRouteImport.update({
+    id: '/referrals',
+    path: '/referrals',
+    getParentRoute: () => AuthenticatedAdminTenantSlugRoute,
+  } as any)
+const AuthenticatedAdminTenantSlugQuestionBankRoute =
+  AuthenticatedAdminTenantSlugQuestionBankRouteImport.update({
+    id: '/question-bank',
+    path: '/question-bank',
+    getParentRoute: () => AuthenticatedAdminTenantSlugRoute,
+  } as any)
+const AuthenticatedAdminTenantSlugPaymentsRoute =
+  AuthenticatedAdminTenantSlugPaymentsRouteImport.update({
+    id: '/payments',
+    path: '/payments',
+    getParentRoute: () => AuthenticatedAdminTenantSlugRoute,
+  } as any)
+const AuthenticatedAdminTenantSlugLiveSessionsRoute =
+  AuthenticatedAdminTenantSlugLiveSessionsRouteImport.update({
+    id: '/live-sessions',
+    path: '/live-sessions',
+    getParentRoute: () => AuthenticatedAdminTenantSlugRoute,
+  } as any)
+const AuthenticatedAdminTenantSlugInstructorApprovalsRoute =
+  AuthenticatedAdminTenantSlugInstructorApprovalsRouteImport.update({
+    id: '/instructor-approvals',
+    path: '/instructor-approvals',
+    getParentRoute: () => AuthenticatedAdminTenantSlugRoute,
+  } as any)
+const AuthenticatedAdminTenantSlugCouponsRoute =
+  AuthenticatedAdminTenantSlugCouponsRouteImport.update({
+    id: '/coupons',
+    path: '/coupons',
+    getParentRoute: () => AuthenticatedAdminTenantSlugRoute,
+  } as any)
+const AuthenticatedAdminTenantSlugChatRoute =
+  AuthenticatedAdminTenantSlugChatRouteImport.update({
+    id: '/chat',
+    path: '/chat',
+    getParentRoute: () => AuthenticatedAdminTenantSlugRoute,
+  } as any)
+const AuthenticatedAdminTenantSlugBundlesRoute =
+  AuthenticatedAdminTenantSlugBundlesRouteImport.update({
+    id: '/bundles',
+    path: '/bundles',
+    getParentRoute: () => AuthenticatedAdminTenantSlugRoute,
+  } as any)
+const AuthenticatedAdminTenantSlugBankAccountsRoute =
+  AuthenticatedAdminTenantSlugBankAccountsRouteImport.update({
+    id: '/bank-accounts',
+    path: '/bank-accounts',
+    getParentRoute: () => AuthenticatedAdminTenantSlugRoute,
+  } as any)
+const AuthenticatedAdminTenantSlugAssignmentsRoute =
+  AuthenticatedAdminTenantSlugAssignmentsRouteImport.update({
+    id: '/assignments',
+    path: '/assignments',
+    getParentRoute: () => AuthenticatedAdminTenantSlugRoute,
+  } as any)
+const AuthenticatedAdminTenantSlugActivityRoute =
+  AuthenticatedAdminTenantSlugActivityRouteImport.update({
+    id: '/activity',
+    path: '/activity',
+    getParentRoute: () => AuthenticatedAdminTenantSlugRoute,
+  } as any)
+const AuthenticatedAdminTenantSlugAcademicRoute =
+  AuthenticatedAdminTenantSlugAcademicRouteImport.update({
+    id: '/academic',
+    path: '/academic',
+    getParentRoute: () => AuthenticatedAdminTenantSlugRoute,
+  } as any)
 const AuthenticatedAdminTenantSlugCoursesIndexRoute =
   AuthenticatedAdminTenantSlugCoursesIndexRouteImport.update({
     id: '/courses/',
@@ -683,32 +683,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated': {
-      id: '/_authenticated'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof AuthenticatedRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/robots.txt': {
-      id: '/robots.txt'
-      path: '/robots.txt'
-      fullPath: '/robots.txt'
-      preLoaderRoute: typeof RobotsDottxtRouteImport
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/search': {
@@ -718,74 +697,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SearchRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/sitemap.xml': {
-      id: '/sitemap.xml'
-      path: '/sitemap.xml'
-      fullPath: '/sitemap.xml'
-      preLoaderRoute: typeof SitemapDotxmlRouteImport
+    '/robots.txt': {
+      id: '/robots.txt'
+      path: '/robots.txt'
+      fullPath: '/robots.txt'
+      preLoaderRoute: typeof RobotsDottxtRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/dashboard': {
-      id: '/_authenticated/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/landing-analytics': {
-      id: '/_authenticated/landing-analytics'
-      path: '/landing-analytics'
-      fullPath: '/landing-analytics'
-      preLoaderRoute: typeof AuthenticatedLandingAnalyticsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/my-badges': {
-      id: '/_authenticated/my-badges'
-      path: '/my-badges'
-      fullPath: '/my-badges'
-      preLoaderRoute: typeof AuthenticatedMyBadgesRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/my-certificates': {
-      id: '/_authenticated/my-certificates'
-      path: '/my-certificates'
-      fullPath: '/my-certificates'
-      preLoaderRoute: typeof AuthenticatedMyCertificatesRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/my-payments': {
-      id: '/_authenticated/my-payments'
-      path: '/my-payments'
-      fullPath: '/my-payments'
-      preLoaderRoute: typeof AuthenticatedMyPaymentsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/my-referrals': {
-      id: '/_authenticated/my-referrals'
-      path: '/my-referrals'
-      fullPath: '/my-referrals'
-      preLoaderRoute: typeof AuthenticatedMyReferralsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/notifications': {
-      id: '/_authenticated/notifications'
-      path: '/notifications'
-      fullPath: '/notifications'
-      preLoaderRoute: typeof AuthenticatedNotificationsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/_authenticated/super-admin': {
-      id: '/_authenticated/super-admin'
-      path: '/super-admin'
-      fullPath: '/super-admin'
-      preLoaderRoute: typeof AuthenticatedSuperAdminRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
-    '/t/$slug': {
-      id: '/t/$slug'
-      path: '/t/$slug'
-      fullPath: '/t/$slug'
-      preLoaderRoute: typeof TSlugRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/verify/$certNumber': {
@@ -795,32 +732,67 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VerifyCertNumberRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/admin/$tenantSlug': {
-      id: '/_authenticated/admin/$tenantSlug'
-      path: '/admin/$tenantSlug'
-      fullPath: '/admin/$tenantSlug'
-      preLoaderRoute: typeof AuthenticatedAdminTenantSlugRouteImport
+    '/t/$slug': {
+      id: '/t/$slug'
+      path: '/t/$slug'
+      fullPath: '/t/$slug'
+      preLoaderRoute: typeof TSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/super-admin': {
+      id: '/_authenticated/super-admin'
+      path: '/super-admin'
+      fullPath: '/super-admin'
+      preLoaderRoute: typeof AuthenticatedSuperAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/assignment/$assignmentId': {
-      id: '/_authenticated/assignment/$assignmentId'
-      path: '/assignment/$assignmentId'
-      fullPath: '/assignment/$assignmentId'
-      preLoaderRoute: typeof AuthenticatedAssignmentAssignmentIdRouteImport
+    '/_authenticated/notifications': {
+      id: '/_authenticated/notifications'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof AuthenticatedNotificationsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/learn/$enrollmentId': {
-      id: '/_authenticated/learn/$enrollmentId'
-      path: '/learn/$enrollmentId'
-      fullPath: '/learn/$enrollmentId'
-      preLoaderRoute: typeof AuthenticatedLearnEnrollmentIdRouteImport
+    '/_authenticated/my-referrals': {
+      id: '/_authenticated/my-referrals'
+      path: '/my-referrals'
+      fullPath: '/my-referrals'
+      preLoaderRoute: typeof AuthenticatedMyReferralsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/quiz/$quizId': {
-      id: '/_authenticated/quiz/$quizId'
-      path: '/quiz/$quizId'
-      fullPath: '/quiz/$quizId'
-      preLoaderRoute: typeof AuthenticatedQuizQuizIdRouteImport
+    '/_authenticated/my-payments': {
+      id: '/_authenticated/my-payments'
+      path: '/my-payments'
+      fullPath: '/my-payments'
+      preLoaderRoute: typeof AuthenticatedMyPaymentsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/my-certificates': {
+      id: '/_authenticated/my-certificates'
+      path: '/my-certificates'
+      fullPath: '/my-certificates'
+      preLoaderRoute: typeof AuthenticatedMyCertificatesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/my-badges': {
+      id: '/_authenticated/my-badges'
+      path: '/my-badges'
+      fullPath: '/my-badges'
+      preLoaderRoute: typeof AuthenticatedMyBadgesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/landing-analytics': {
+      id: '/_authenticated/landing-analytics'
+      path: '/landing-analytics'
+      fullPath: '/landing-analytics'
+      preLoaderRoute: typeof AuthenticatedLandingAnalyticsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/t/$slug/': {
@@ -830,46 +802,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TSlugIndexRouteImport
       parentRoute: typeof TSlugRoute
     }
-    '/t/$slug/about': {
-      id: '/t/$slug/about'
-      path: '/about'
-      fullPath: '/t/$slug/about'
-      preLoaderRoute: typeof TSlugAboutRouteImport
-      parentRoute: typeof TSlugRoute
-    }
-    '/t/$slug/ai': {
-      id: '/t/$slug/ai'
-      path: '/ai'
-      fullPath: '/t/$slug/ai'
-      preLoaderRoute: typeof TSlugAiRouteImport
-      parentRoute: typeof TSlugRoute
-    }
-    '/t/$slug/auth': {
-      id: '/t/$slug/auth'
-      path: '/auth'
-      fullPath: '/t/$slug/auth'
-      preLoaderRoute: typeof TSlugAuthRouteImport
-      parentRoute: typeof TSlugRoute
-    }
-    '/t/$slug/contact': {
-      id: '/t/$slug/contact'
-      path: '/contact'
-      fullPath: '/t/$slug/contact'
-      preLoaderRoute: typeof TSlugContactRouteImport
-      parentRoute: typeof TSlugRoute
-    }
-    '/t/$slug/leaderboard': {
-      id: '/t/$slug/leaderboard'
-      path: '/leaderboard'
-      fullPath: '/t/$slug/leaderboard'
-      preLoaderRoute: typeof TSlugLeaderboardRouteImport
-      parentRoute: typeof TSlugRoute
-    }
-    '/t/$slug/live': {
-      id: '/t/$slug/live'
-      path: '/live'
-      fullPath: '/t/$slug/live'
-      preLoaderRoute: typeof TSlugLiveRouteImport
+    '/t/$slug/terms': {
+      id: '/t/$slug/terms'
+      path: '/terms'
+      fullPath: '/t/$slug/terms'
+      preLoaderRoute: typeof TSlugTermsRouteImport
       parentRoute: typeof TSlugRoute
     }
     '/t/$slug/privacy': {
@@ -879,11 +816,81 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TSlugPrivacyRouteImport
       parentRoute: typeof TSlugRoute
     }
-    '/t/$slug/terms': {
-      id: '/t/$slug/terms'
-      path: '/terms'
-      fullPath: '/t/$slug/terms'
-      preLoaderRoute: typeof TSlugTermsRouteImport
+    '/t/$slug/live': {
+      id: '/t/$slug/live'
+      path: '/live'
+      fullPath: '/t/$slug/live'
+      preLoaderRoute: typeof TSlugLiveRouteImport
+      parentRoute: typeof TSlugRoute
+    }
+    '/t/$slug/leaderboard': {
+      id: '/t/$slug/leaderboard'
+      path: '/leaderboard'
+      fullPath: '/t/$slug/leaderboard'
+      preLoaderRoute: typeof TSlugLeaderboardRouteImport
+      parentRoute: typeof TSlugRoute
+    }
+    '/t/$slug/contact': {
+      id: '/t/$slug/contact'
+      path: '/contact'
+      fullPath: '/t/$slug/contact'
+      preLoaderRoute: typeof TSlugContactRouteImport
+      parentRoute: typeof TSlugRoute
+    }
+    '/t/$slug/auth': {
+      id: '/t/$slug/auth'
+      path: '/auth'
+      fullPath: '/t/$slug/auth'
+      preLoaderRoute: typeof TSlugAuthRouteImport
+      parentRoute: typeof TSlugRoute
+    }
+    '/t/$slug/ai': {
+      id: '/t/$slug/ai'
+      path: '/ai'
+      fullPath: '/t/$slug/ai'
+      preLoaderRoute: typeof TSlugAiRouteImport
+      parentRoute: typeof TSlugRoute
+    }
+    '/t/$slug/about': {
+      id: '/t/$slug/about'
+      path: '/about'
+      fullPath: '/t/$slug/about'
+      preLoaderRoute: typeof TSlugAboutRouteImport
+      parentRoute: typeof TSlugRoute
+    }
+    '/_authenticated/quiz/$quizId': {
+      id: '/_authenticated/quiz/$quizId'
+      path: '/quiz/$quizId'
+      fullPath: '/quiz/$quizId'
+      preLoaderRoute: typeof AuthenticatedQuizQuizIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/learn/$enrollmentId': {
+      id: '/_authenticated/learn/$enrollmentId'
+      path: '/learn/$enrollmentId'
+      fullPath: '/learn/$enrollmentId'
+      preLoaderRoute: typeof AuthenticatedLearnEnrollmentIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/assignment/$assignmentId': {
+      id: '/_authenticated/assignment/$assignmentId'
+      path: '/assignment/$assignmentId'
+      fullPath: '/assignment/$assignmentId'
+      preLoaderRoute: typeof AuthenticatedAssignmentAssignmentIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/admin/$tenantSlug': {
+      id: '/_authenticated/admin/$tenantSlug'
+      path: '/admin/$tenantSlug'
+      fullPath: '/admin/$tenantSlug'
+      preLoaderRoute: typeof AuthenticatedAdminTenantSlugRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/t/$slug/courses/': {
+      id: '/t/$slug/courses/'
+      path: '/courses'
+      fullPath: '/t/$slug/courses/'
+      preLoaderRoute: typeof TSlugCoursesIndexRouteImport
       parentRoute: typeof TSlugRoute
     }
     '/_authenticated/admin/$tenantSlug/': {
@@ -893,102 +900,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminTenantSlugIndexRouteImport
       parentRoute: typeof AuthenticatedAdminTenantSlugRoute
     }
-    '/_authenticated/admin/$tenantSlug/academic': {
-      id: '/_authenticated/admin/$tenantSlug/academic'
-      path: '/academic'
-      fullPath: '/admin/$tenantSlug/academic'
-      preLoaderRoute: typeof AuthenticatedAdminTenantSlugAcademicRouteImport
-      parentRoute: typeof AuthenticatedAdminTenantSlugRoute
+    '/t/$slug/courses/$courseSlug': {
+      id: '/t/$slug/courses/$courseSlug'
+      path: '/courses/$courseSlug'
+      fullPath: '/t/$slug/courses/$courseSlug'
+      preLoaderRoute: typeof TSlugCoursesCourseSlugRouteImport
+      parentRoute: typeof TSlugRoute
     }
-    '/_authenticated/admin/$tenantSlug/activity': {
-      id: '/_authenticated/admin/$tenantSlug/activity'
-      path: '/activity'
-      fullPath: '/admin/$tenantSlug/activity'
-      preLoaderRoute: typeof AuthenticatedAdminTenantSlugActivityRouteImport
-      parentRoute: typeof AuthenticatedAdminTenantSlugRoute
+    '/api/public/hooks/rum': {
+      id: '/api/public/hooks/rum'
+      path: '/api/public/hooks/rum'
+      fullPath: '/api/public/hooks/rum'
+      preLoaderRoute: typeof ApiPublicHooksRumRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/admin/$tenantSlug/assignments': {
-      id: '/_authenticated/admin/$tenantSlug/assignments'
-      path: '/assignments'
-      fullPath: '/admin/$tenantSlug/assignments'
-      preLoaderRoute: typeof AuthenticatedAdminTenantSlugAssignmentsRouteImport
-      parentRoute: typeof AuthenticatedAdminTenantSlugRoute
-    }
-    '/_authenticated/admin/$tenantSlug/bank-accounts': {
-      id: '/_authenticated/admin/$tenantSlug/bank-accounts'
-      path: '/bank-accounts'
-      fullPath: '/admin/$tenantSlug/bank-accounts'
-      preLoaderRoute: typeof AuthenticatedAdminTenantSlugBankAccountsRouteImport
-      parentRoute: typeof AuthenticatedAdminTenantSlugRoute
-    }
-    '/_authenticated/admin/$tenantSlug/bundles': {
-      id: '/_authenticated/admin/$tenantSlug/bundles'
-      path: '/bundles'
-      fullPath: '/admin/$tenantSlug/bundles'
-      preLoaderRoute: typeof AuthenticatedAdminTenantSlugBundlesRouteImport
-      parentRoute: typeof AuthenticatedAdminTenantSlugRoute
-    }
-    '/_authenticated/admin/$tenantSlug/chat': {
-      id: '/_authenticated/admin/$tenantSlug/chat'
-      path: '/chat'
-      fullPath: '/admin/$tenantSlug/chat'
-      preLoaderRoute: typeof AuthenticatedAdminTenantSlugChatRouteImport
-      parentRoute: typeof AuthenticatedAdminTenantSlugRoute
-    }
-    '/_authenticated/admin/$tenantSlug/coupons': {
-      id: '/_authenticated/admin/$tenantSlug/coupons'
-      path: '/coupons'
-      fullPath: '/admin/$tenantSlug/coupons'
-      preLoaderRoute: typeof AuthenticatedAdminTenantSlugCouponsRouteImport
-      parentRoute: typeof AuthenticatedAdminTenantSlugRoute
-    }
-    '/_authenticated/admin/$tenantSlug/instructor-approvals': {
-      id: '/_authenticated/admin/$tenantSlug/instructor-approvals'
-      path: '/instructor-approvals'
-      fullPath: '/admin/$tenantSlug/instructor-approvals'
-      preLoaderRoute: typeof AuthenticatedAdminTenantSlugInstructorApprovalsRouteImport
-      parentRoute: typeof AuthenticatedAdminTenantSlugRoute
-    }
-    '/_authenticated/admin/$tenantSlug/live-sessions': {
-      id: '/_authenticated/admin/$tenantSlug/live-sessions'
-      path: '/live-sessions'
-      fullPath: '/admin/$tenantSlug/live-sessions'
-      preLoaderRoute: typeof AuthenticatedAdminTenantSlugLiveSessionsRouteImport
-      parentRoute: typeof AuthenticatedAdminTenantSlugRoute
-    }
-    '/_authenticated/admin/$tenantSlug/payments': {
-      id: '/_authenticated/admin/$tenantSlug/payments'
-      path: '/payments'
-      fullPath: '/admin/$tenantSlug/payments'
-      preLoaderRoute: typeof AuthenticatedAdminTenantSlugPaymentsRouteImport
-      parentRoute: typeof AuthenticatedAdminTenantSlugRoute
-    }
-    '/_authenticated/admin/$tenantSlug/question-bank': {
-      id: '/_authenticated/admin/$tenantSlug/question-bank'
-      path: '/question-bank'
-      fullPath: '/admin/$tenantSlug/question-bank'
-      preLoaderRoute: typeof AuthenticatedAdminTenantSlugQuestionBankRouteImport
-      parentRoute: typeof AuthenticatedAdminTenantSlugRoute
-    }
-    '/_authenticated/admin/$tenantSlug/referrals': {
-      id: '/_authenticated/admin/$tenantSlug/referrals'
-      path: '/referrals'
-      fullPath: '/admin/$tenantSlug/referrals'
-      preLoaderRoute: typeof AuthenticatedAdminTenantSlugReferralsRouteImport
-      parentRoute: typeof AuthenticatedAdminTenantSlugRoute
-    }
-    '/_authenticated/admin/$tenantSlug/reports': {
-      id: '/_authenticated/admin/$tenantSlug/reports'
-      path: '/reports'
-      fullPath: '/admin/$tenantSlug/reports'
-      preLoaderRoute: typeof AuthenticatedAdminTenantSlugReportsRouteImport
-      parentRoute: typeof AuthenticatedAdminTenantSlugRoute
-    }
-    '/_authenticated/admin/$tenantSlug/settings': {
-      id: '/_authenticated/admin/$tenantSlug/settings'
-      path: '/settings'
-      fullPath: '/admin/$tenantSlug/settings'
-      preLoaderRoute: typeof AuthenticatedAdminTenantSlugSettingsRouteImport
+    '/_authenticated/admin/$tenantSlug/students': {
+      id: '/_authenticated/admin/$tenantSlug/students'
+      path: '/students'
+      fullPath: '/admin/$tenantSlug/students'
+      preLoaderRoute: typeof AuthenticatedAdminTenantSlugStudentsRouteImport
       parentRoute: typeof AuthenticatedAdminTenantSlugRoute
     }
     '/_authenticated/admin/$tenantSlug/storage': {
@@ -998,33 +928,103 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminTenantSlugStorageRouteImport
       parentRoute: typeof AuthenticatedAdminTenantSlugRoute
     }
-    '/_authenticated/admin/$tenantSlug/students': {
-      id: '/_authenticated/admin/$tenantSlug/students'
-      path: '/students'
-      fullPath: '/admin/$tenantSlug/students'
-      preLoaderRoute: typeof AuthenticatedAdminTenantSlugStudentsRouteImport
+    '/_authenticated/admin/$tenantSlug/settings': {
+      id: '/_authenticated/admin/$tenantSlug/settings'
+      path: '/settings'
+      fullPath: '/admin/$tenantSlug/settings'
+      preLoaderRoute: typeof AuthenticatedAdminTenantSlugSettingsRouteImport
       parentRoute: typeof AuthenticatedAdminTenantSlugRoute
     }
-    '/api/public/hooks/rum': {
-      id: '/api/public/hooks/rum'
-      path: '/api/public/hooks/rum'
-      fullPath: '/api/public/hooks/rum'
-      preLoaderRoute: typeof ApiPublicHooksRumRouteImport
-      parentRoute: typeof rootRouteImport
+    '/_authenticated/admin/$tenantSlug/reports': {
+      id: '/_authenticated/admin/$tenantSlug/reports'
+      path: '/reports'
+      fullPath: '/admin/$tenantSlug/reports'
+      preLoaderRoute: typeof AuthenticatedAdminTenantSlugReportsRouteImport
+      parentRoute: typeof AuthenticatedAdminTenantSlugRoute
     }
-    '/t/$slug/courses/': {
-      id: '/t/$slug/courses/'
-      path: '/courses'
-      fullPath: '/t/$slug/courses/'
-      preLoaderRoute: typeof TSlugCoursesIndexRouteImport
-      parentRoute: typeof TSlugRoute
+    '/_authenticated/admin/$tenantSlug/referrals': {
+      id: '/_authenticated/admin/$tenantSlug/referrals'
+      path: '/referrals'
+      fullPath: '/admin/$tenantSlug/referrals'
+      preLoaderRoute: typeof AuthenticatedAdminTenantSlugReferralsRouteImport
+      parentRoute: typeof AuthenticatedAdminTenantSlugRoute
     }
-    '/t/$slug/courses/$courseSlug': {
-      id: '/t/$slug/courses/$courseSlug'
-      path: '/courses/$courseSlug'
-      fullPath: '/t/$slug/courses/$courseSlug'
-      preLoaderRoute: typeof TSlugCoursesCourseSlugRouteImport
-      parentRoute: typeof TSlugRoute
+    '/_authenticated/admin/$tenantSlug/question-bank': {
+      id: '/_authenticated/admin/$tenantSlug/question-bank'
+      path: '/question-bank'
+      fullPath: '/admin/$tenantSlug/question-bank'
+      preLoaderRoute: typeof AuthenticatedAdminTenantSlugQuestionBankRouteImport
+      parentRoute: typeof AuthenticatedAdminTenantSlugRoute
+    }
+    '/_authenticated/admin/$tenantSlug/payments': {
+      id: '/_authenticated/admin/$tenantSlug/payments'
+      path: '/payments'
+      fullPath: '/admin/$tenantSlug/payments'
+      preLoaderRoute: typeof AuthenticatedAdminTenantSlugPaymentsRouteImport
+      parentRoute: typeof AuthenticatedAdminTenantSlugRoute
+    }
+    '/_authenticated/admin/$tenantSlug/live-sessions': {
+      id: '/_authenticated/admin/$tenantSlug/live-sessions'
+      path: '/live-sessions'
+      fullPath: '/admin/$tenantSlug/live-sessions'
+      preLoaderRoute: typeof AuthenticatedAdminTenantSlugLiveSessionsRouteImport
+      parentRoute: typeof AuthenticatedAdminTenantSlugRoute
+    }
+    '/_authenticated/admin/$tenantSlug/instructor-approvals': {
+      id: '/_authenticated/admin/$tenantSlug/instructor-approvals'
+      path: '/instructor-approvals'
+      fullPath: '/admin/$tenantSlug/instructor-approvals'
+      preLoaderRoute: typeof AuthenticatedAdminTenantSlugInstructorApprovalsRouteImport
+      parentRoute: typeof AuthenticatedAdminTenantSlugRoute
+    }
+    '/_authenticated/admin/$tenantSlug/coupons': {
+      id: '/_authenticated/admin/$tenantSlug/coupons'
+      path: '/coupons'
+      fullPath: '/admin/$tenantSlug/coupons'
+      preLoaderRoute: typeof AuthenticatedAdminTenantSlugCouponsRouteImport
+      parentRoute: typeof AuthenticatedAdminTenantSlugRoute
+    }
+    '/_authenticated/admin/$tenantSlug/chat': {
+      id: '/_authenticated/admin/$tenantSlug/chat'
+      path: '/chat'
+      fullPath: '/admin/$tenantSlug/chat'
+      preLoaderRoute: typeof AuthenticatedAdminTenantSlugChatRouteImport
+      parentRoute: typeof AuthenticatedAdminTenantSlugRoute
+    }
+    '/_authenticated/admin/$tenantSlug/bundles': {
+      id: '/_authenticated/admin/$tenantSlug/bundles'
+      path: '/bundles'
+      fullPath: '/admin/$tenantSlug/bundles'
+      preLoaderRoute: typeof AuthenticatedAdminTenantSlugBundlesRouteImport
+      parentRoute: typeof AuthenticatedAdminTenantSlugRoute
+    }
+    '/_authenticated/admin/$tenantSlug/bank-accounts': {
+      id: '/_authenticated/admin/$tenantSlug/bank-accounts'
+      path: '/bank-accounts'
+      fullPath: '/admin/$tenantSlug/bank-accounts'
+      preLoaderRoute: typeof AuthenticatedAdminTenantSlugBankAccountsRouteImport
+      parentRoute: typeof AuthenticatedAdminTenantSlugRoute
+    }
+    '/_authenticated/admin/$tenantSlug/assignments': {
+      id: '/_authenticated/admin/$tenantSlug/assignments'
+      path: '/assignments'
+      fullPath: '/admin/$tenantSlug/assignments'
+      preLoaderRoute: typeof AuthenticatedAdminTenantSlugAssignmentsRouteImport
+      parentRoute: typeof AuthenticatedAdminTenantSlugRoute
+    }
+    '/_authenticated/admin/$tenantSlug/activity': {
+      id: '/_authenticated/admin/$tenantSlug/activity'
+      path: '/activity'
+      fullPath: '/admin/$tenantSlug/activity'
+      preLoaderRoute: typeof AuthenticatedAdminTenantSlugActivityRouteImport
+      parentRoute: typeof AuthenticatedAdminTenantSlugRoute
+    }
+    '/_authenticated/admin/$tenantSlug/academic': {
+      id: '/_authenticated/admin/$tenantSlug/academic'
+      path: '/academic'
+      fullPath: '/admin/$tenantSlug/academic'
+      preLoaderRoute: typeof AuthenticatedAdminTenantSlugAcademicRouteImport
+      parentRoute: typeof AuthenticatedAdminTenantSlugRoute
     }
     '/_authenticated/admin/$tenantSlug/courses/': {
       id: '/_authenticated/admin/$tenantSlug/courses/'
