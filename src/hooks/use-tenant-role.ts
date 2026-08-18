@@ -24,48 +24,23 @@ export function useTenantRole(tenantId?: string | null, tenantOwnerId?: string |
   const { data, isLoading } = useQuery({
     queryKey: ["tenant-role", tenantId, userId],
     enabled: !!tenantId && !!userId && !authLoading,
-    staleTime: 60 * 1000, // 1 minute
+    staleTime: 10 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
     queryFn: async () => {
       if (!tenantId || !userId) return { role: null as TenantRole, isSuperAdmin: false };
 
-      // 1. Check if super admin
-      const { data: superRole } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", userId)
-        .eq("role", "super_admin")
-        .maybeSingle();
+      // All three checks in parallel — one round-trip instead of up to three.
+      const [superRes, memberRes, tenantRes] = await Promise.all([
+        supabase.from("user_roles").select("role").eq("user_id", userId).eq("role", "super_admin").maybeSingle(),
+        supabase.from("tenant_members").select("role").eq("tenant_id", tenantId).eq("user_id", userId).maybeSingle(),
+        tenantOwnerId
+          ? Promise.resolve({ data: { owner_id: tenantOwnerId } })
+          : supabase.from("tenants").select("owner_id").eq("id", tenantId).maybeSingle(),
+      ]);
 
-      const isSuper = !!superRole;
-
-      // 2. Check if owner from passed prop or db
-      if (tenantOwnerId && tenantOwnerId === userId) {
-        return { role: "owner" as TenantRole, isSuperAdmin: isSuper };
-      }
-
-      // 3. Query tenant_members
-      const { data: member } = await supabase
-        .from("tenant_members")
-        .select("role")
-        .eq("tenant_id", tenantId)
-        .eq("user_id", userId)
-        .maybeSingle();
-
-      if (member) {
-        return { role: member.role as TenantRole, isSuperAdmin: isSuper };
-      }
-
-      // 4. Double check tenant owner if not passed
-      const { data: tenant } = await supabase
-        .from("tenants")
-        .select("owner_id")
-        .eq("id", tenantId)
-        .maybeSingle();
-
-      if (tenant?.owner_id === userId) {
-        return { role: "owner" as TenantRole, isSuperAdmin: isSuper };
-      }
-
+      const isSuper = !!superRes.data;
+      if (tenantRes.data?.owner_id === userId) return { role: "owner" as TenantRole, isSuperAdmin: isSuper };
+      if (memberRes.data) return { role: memberRes.data.role as TenantRole, isSuperAdmin: isSuper };
       return { role: null as TenantRole, isSuperAdmin: isSuper };
     },
   });
