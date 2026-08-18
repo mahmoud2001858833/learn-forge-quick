@@ -42,7 +42,6 @@ export const Route = createFileRoute("/api/public/hooks/rum")({
               url: body.url ?? null,
               path: body.path ?? null,
               user_agent: body.user_agent ?? null,
-              path: body.path ?? null,
               tenant_slug: body.tenant_slug ?? null,
             }),
           }).catch(() => {});
