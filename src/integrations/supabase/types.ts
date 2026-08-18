@@ -1689,6 +1689,42 @@ export type Database = {
           },
         ]
       }
+      perf_samples: {
+        Row: {
+          created_at: string
+          duration_ms: number
+          error_message: string | null
+          id: string
+          kind: string
+          name: string
+          status: string
+          tenant_slug: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          duration_ms: number
+          error_message?: string | null
+          id?: string
+          kind?: string
+          name: string
+          status?: string
+          tenant_slug?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          duration_ms?: number
+          error_message?: string | null
+          id?: string
+          kind?: string
+          name?: string
+          status?: string
+          tenant_slug?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       platform_settings: {
         Row: {
           allow_signups: boolean
@@ -2716,6 +2752,7 @@ export type Database = {
           created_at: string
           id: string
           metric: string
+          path: string | null
           rating: string | null
           tenant_slug: string | null
           url: string | null
@@ -2726,6 +2763,7 @@ export type Database = {
           created_at?: string
           id?: string
           metric: string
+          path?: string | null
           rating?: string | null
           tenant_slug?: string | null
           url?: string | null
@@ -2736,6 +2774,7 @@ export type Database = {
           created_at?: string
           id?: string
           metric?: string
+          path?: string | null
           rating?: string | null
           tenant_slug?: string | null
           url?: string | null
@@ -3007,6 +3046,30 @@ export type Database = {
         Returns: undefined
       }
       mark_all_notifications_read: { Args: never; Returns: number }
+      perf_server_summary: {
+        Args: { _hours?: number; _tenant_slug?: string }
+        Returns: {
+          avg_ms: number
+          calls: number
+          errors: number
+          kind: string
+          max_ms: number
+          name: string
+          p95_ms: number
+        }[]
+      }
+      perf_vitals_summary: {
+        Args: { _hours?: number; _tenant_slug?: string }
+        Returns: {
+          metric: string
+          p50: number
+          p75: number
+          p95: number
+          path: string
+          poor_ratio: number
+          samples: number
+        }[]
+      }
       recompute_course_rating: {
         Args: { _course_id: string }
         Returns: undefined
