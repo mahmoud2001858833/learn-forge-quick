@@ -60,7 +60,7 @@ function CoursesPage() {
       const { error } = await supabase.rpc("approve_course", { _course_id: id });
       if (error) throw error;
     },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["tenant-courses"] }); toast.success("تمت الموافقة على الدورة"); },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["admin-courses-bundle"] }); toast.success("تمت الموافقة على الدورة"); },
     onError: (e: Error) => toast.error(e.message),
   });
 
@@ -69,7 +69,7 @@ function CoursesPage() {
       const { error } = await supabase.rpc("reject_course", { _course_id: id, _reason: reason });
       if (error) throw error;
     },
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ["tenant-courses"] }); toast.success("تم الرفض"); },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["admin-courses-bundle"] }); toast.success("تم الرفض"); },
     onError: (e: Error) => toast.error(e.message),
   });
 
@@ -187,7 +187,7 @@ function NewCourseDialog({ tenantId }: { tenantId: string }) {
     },
     onSuccess: () => {
       toast.success("تم إنشاء الدورة (مسودة)");
-      qc.invalidateQueries({ queryKey: ["tenant-courses"] });
+      qc.invalidateQueries({ queryKey: ["admin-courses-bundle"] });
       setOpen(false); setTitle(""); setSlug(""); setDescription(""); setPrice("0");
     },
     onError: (e: Error) => toast.error(e.message),
