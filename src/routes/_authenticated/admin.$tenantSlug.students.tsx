@@ -9,24 +9,26 @@ export const Route = createFileRoute("/_authenticated/admin/$tenantSlug/students
   component: StudentsPage,
 });
 
+type MemberRow = {
+  id: string;
+  user_id: string;
+  role: string;
+  created_at: string;
+  full_name: string | null;
+};
+
 function StudentsPage() {
   const { tenantSlug } = useParams({ from: "/_authenticated/admin/$tenantSlug/students" });
 
+  // Single round-trip: tenant + members + profile names come back from one RPC
   const { data: students } = useQuery({
     queryKey: ["tenant-students", tenantSlug],
-    queryFn: async () => {
-      const { data: tenant } = await supabase.from("tenants").select("id").eq("slug", tenantSlug).single();
-      if (!tenant) return [];
-      const { data: members, error } = await supabase
-        .from("tenant_members")
-        .select("*")
-        .eq("tenant_id", tenant.id);
+    staleTime: 60_000,
+    queryFn: async (): Promise<MemberRow[]> => {
+      const { data, error } = await supabase.rpc("tenant_members_bundle", { _slug: tenantSlug });
       if (error) throw error;
-      const userIds = members.map((m) => m.user_id);
-      if (userIds.length === 0) return [];
-      const { data: profiles } = await supabase.from("profiles").select("id, full_name").in("id", userIds);
-      const map = new Map(profiles?.map((p) => [p.id, p]) ?? []);
-      return members.map((m) => ({ ...m, profile: map.get(m.user_id) }));
+      const bundle = data as { members?: MemberRow[] } | null;
+      return bundle?.members ?? [];
     },
   });
 
@@ -54,7 +56,7 @@ function StudentsPage() {
                   estimateRowHeight={49}
                   renderRow={(m) => (
                     <div className="grid grid-cols-3 border-t text-right">
-                      <div className="p-3">{m.profile?.full_name ?? "—"}</div>
+                      <div className="p-3">{m.full_name ?? "—"}</div>
                       <div className="p-3"><Badge variant="outline">{m.role}</Badge></div>
                       <div className="p-3 text-muted-foreground">{new Date(m.created_at).toLocaleDateString("ar")}</div>
                     </div>
@@ -63,7 +65,7 @@ function StudentsPage() {
               ) : (
                 students?.map((m) => (
                   <div key={m.id} className="grid grid-cols-3 border-t text-right">
-                    <div className="p-3">{m.profile?.full_name ?? "—"}</div>
+                    <div className="p-3">{m.full_name ?? "—"}</div>
                     <div className="p-3"><Badge variant="outline">{m.role}</Badge></div>
                     <div className="p-3 text-muted-foreground">{new Date(m.created_at).toLocaleDateString("ar")}</div>
                   </div>

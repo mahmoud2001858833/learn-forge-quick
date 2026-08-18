@@ -2938,6 +2938,7 @@ export type Database = {
         Args: { _answers: Json; _quiz_id: string }
         Returns: string
       }
+      tenant_admin_courses_bundle: { Args: { _slug: string }; Returns: Json }
       tenant_at_risk_students: {
         Args: { _inactive_days?: number; _limit?: number; _tenant_id: string }
         Returns: {
@@ -2990,6 +2991,7 @@ export type Database = {
           user_id: string
         }[]
       }
+      tenant_members_bundle: { Args: { _slug: string }; Returns: Json }
       tenant_overview_stats: { Args: { _tenant_id: string }; Returns: Json }
       tenant_revenue_by_day: {
         Args: { _days?: number; _tenant_id: string }
