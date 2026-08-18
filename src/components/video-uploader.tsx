@@ -277,20 +277,22 @@ export function VideoUploader({ tenantId, onUploaded }: Props) {
           refreshTotals();
           toast.message(`استكمال الرفع — تم سابقاً ${alreadyDone.length}/${totalParts} جزء`);
         } else {
-          // Begin new multipart. The Worker reads key + contentType from query params
-          // and requires the key to match `tenants/<uuid>/videos/...` — the server
-          // function has already minted a valid key for us in `init.key`.
+          // Begin new multipart. The deployed Worker reads a JSON body and mints
+          // its own R2 key, which it returns — we must adopt that key for all
+          // subsequent part/complete calls and persist it server-side.
           const contentType = file.type || "video/mp4";
           const startJson = (await uploadWithRetry(
             "POST",
-            `${workerUrl}/upload/start?key=${encodeURIComponent(key)}&contentType=${encodeURIComponent(contentType)}`,
-            new Blob([], { type: "application/json" }),
+            `${workerUrl}/upload/start`,
+            new Blob([JSON.stringify({ key, contentType, filename: file.name })], { type: "application/json" }),
             signal, () => null, () => null,
           )) as { uploadId: string; key: string };
           uploadId = startJson.uploadId;
-          // Persist uploadId server-side so a future page reload can resume.
-          await saveIdFn({ data: { assetId: init.assetId, uploadId } }).catch(() => null);
+          if (startJson.key) key = startJson.key;
+          // Persist uploadId + final key server-side so a reload can resume.
+          await saveIdFn({ data: { assetId: init.assetId, uploadId, key } }).catch(() => null);
         }
+
 
         // Save resume record locally NOW so that even a hard reload mid-upload
         // can be picked back up.
