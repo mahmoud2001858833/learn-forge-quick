@@ -41,6 +41,7 @@ import { Route as AuthenticatedAdminTenantSlugRouteImport } from './routes/_auth
 import { Route as TSlugCoursesIndexRouteImport } from './routes/t.$slug.courses.index'
 import { Route as AuthenticatedAdminTenantSlugIndexRouteImport } from './routes/_authenticated/admin.$tenantSlug.index'
 import { Route as TSlugCoursesCourseSlugRouteImport } from './routes/t.$slug.courses.$courseSlug'
+import { Route as ApiPublicHooksVideoJobsRouteImport } from './routes/api/public/hooks/video-jobs'
 import { Route as ApiPublicHooksRumRouteImport } from './routes/api/public/hooks/rum'
 import { Route as AuthenticatedAdminTenantSlugStudentsRouteImport } from './routes/_authenticated/admin.$tenantSlug.students'
 import { Route as AuthenticatedAdminTenantSlugStorageRouteImport } from './routes/_authenticated/admin.$tenantSlug.storage'
@@ -229,6 +230,11 @@ const TSlugCoursesCourseSlugRoute = TSlugCoursesCourseSlugRouteImport.update({
   path: '/courses/$courseSlug',
   getParentRoute: () => TSlugRoute,
 } as any)
+const ApiPublicHooksVideoJobsRoute = ApiPublicHooksVideoJobsRouteImport.update({
+  id: '/api/public/hooks/video-jobs',
+  path: '/api/public/hooks/video-jobs',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicHooksRumRoute = ApiPublicHooksRumRouteImport.update({
   id: '/api/public/hooks/rum',
   path: '/api/public/hooks/rum',
@@ -395,6 +401,7 @@ export interface FileRoutesByFullPath {
   '/admin/$tenantSlug/storage': typeof AuthenticatedAdminTenantSlugStorageRoute
   '/admin/$tenantSlug/students': typeof AuthenticatedAdminTenantSlugStudentsRoute
   '/api/public/hooks/rum': typeof ApiPublicHooksRumRoute
+  '/api/public/hooks/video-jobs': typeof ApiPublicHooksVideoJobsRoute
   '/t/$slug/courses/$courseSlug': typeof TSlugCoursesCourseSlugRoute
   '/admin/$tenantSlug/': typeof AuthenticatedAdminTenantSlugIndexRoute
   '/t/$slug/courses/': typeof TSlugCoursesIndexRoute
@@ -446,6 +453,7 @@ export interface FileRoutesByTo {
   '/admin/$tenantSlug/storage': typeof AuthenticatedAdminTenantSlugStorageRoute
   '/admin/$tenantSlug/students': typeof AuthenticatedAdminTenantSlugStudentsRoute
   '/api/public/hooks/rum': typeof ApiPublicHooksRumRoute
+  '/api/public/hooks/video-jobs': typeof ApiPublicHooksVideoJobsRoute
   '/t/$slug/courses/$courseSlug': typeof TSlugCoursesCourseSlugRoute
   '/admin/$tenantSlug': typeof AuthenticatedAdminTenantSlugIndexRoute
   '/t/$slug/courses': typeof TSlugCoursesIndexRoute
@@ -501,6 +509,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/$tenantSlug/storage': typeof AuthenticatedAdminTenantSlugStorageRoute
   '/_authenticated/admin/$tenantSlug/students': typeof AuthenticatedAdminTenantSlugStudentsRoute
   '/api/public/hooks/rum': typeof ApiPublicHooksRumRoute
+  '/api/public/hooks/video-jobs': typeof ApiPublicHooksVideoJobsRoute
   '/t/$slug/courses/$courseSlug': typeof TSlugCoursesCourseSlugRoute
   '/_authenticated/admin/$tenantSlug/': typeof AuthenticatedAdminTenantSlugIndexRoute
   '/t/$slug/courses/': typeof TSlugCoursesIndexRoute
@@ -556,6 +565,7 @@ export interface FileRouteTypes {
     | '/admin/$tenantSlug/storage'
     | '/admin/$tenantSlug/students'
     | '/api/public/hooks/rum'
+    | '/api/public/hooks/video-jobs'
     | '/t/$slug/courses/$courseSlug'
     | '/admin/$tenantSlug/'
     | '/t/$slug/courses/'
@@ -607,6 +617,7 @@ export interface FileRouteTypes {
     | '/admin/$tenantSlug/storage'
     | '/admin/$tenantSlug/students'
     | '/api/public/hooks/rum'
+    | '/api/public/hooks/video-jobs'
     | '/t/$slug/courses/$courseSlug'
     | '/admin/$tenantSlug'
     | '/t/$slug/courses'
@@ -661,6 +672,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/$tenantSlug/storage'
     | '/_authenticated/admin/$tenantSlug/students'
     | '/api/public/hooks/rum'
+    | '/api/public/hooks/video-jobs'
     | '/t/$slug/courses/$courseSlug'
     | '/_authenticated/admin/$tenantSlug/'
     | '/t/$slug/courses/'
@@ -679,6 +691,7 @@ export interface RootRouteChildren {
   TSlugRoute: typeof TSlugRouteWithChildren
   VerifyCertNumberRoute: typeof VerifyCertNumberRoute
   ApiPublicHooksRumRoute: typeof ApiPublicHooksRumRoute
+  ApiPublicHooksVideoJobsRoute: typeof ApiPublicHooksVideoJobsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -906,6 +919,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/t/$slug/courses/$courseSlug'
       preLoaderRoute: typeof TSlugCoursesCourseSlugRouteImport
       parentRoute: typeof TSlugRoute
+    }
+    '/api/public/hooks/video-jobs': {
+      id: '/api/public/hooks/video-jobs'
+      path: '/api/public/hooks/video-jobs'
+      fullPath: '/api/public/hooks/video-jobs'
+      preLoaderRoute: typeof ApiPublicHooksVideoJobsRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/public/hooks/rum': {
       id: '/api/public/hooks/rum'
@@ -1209,6 +1229,7 @@ const rootRouteChildren: RootRouteChildren = {
   TSlugRoute: TSlugRouteWithChildren,
   VerifyCertNumberRoute: VerifyCertNumberRoute,
   ApiPublicHooksRumRoute: ApiPublicHooksRumRoute,
+  ApiPublicHooksVideoJobsRoute: ApiPublicHooksVideoJobsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

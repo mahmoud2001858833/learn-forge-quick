@@ -14,6 +14,8 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AuthProvider } from "@/hooks/use-auth";
 import { Toaster } from "@/components/ui/sonner";
 import { InstallAppPrompt } from "@/components/install-app-prompt";
+import { UploadTray } from "@/components/upload-tray";
+
 import { supabase } from "@/integrations/supabase/client";
 
 function NotFoundComponent() {
@@ -149,6 +151,8 @@ function RootComponent() {
       <AuthProvider>
         <Outlet />
         <InstallAppPrompt />
+        <UploadTray />
+
         <Toaster richColors position="top-center" />
       </AuthProvider>
     </QueryClientProvider>

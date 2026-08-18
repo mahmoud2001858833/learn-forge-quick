@@ -170,16 +170,50 @@ export const completeVideoUpload = createServerFn({ method: "POST" })
       .from("video_assets").select("tenant_id").eq("id", data.assetId).maybeSingle();
     if (!asset) throw new Error("asset_not_found");
     await ensureTenantAdmin(context.supabase, context.userId, asset.tenant_id);
+    // Bytes are in R2 — hand off finalization to the background job queue so the
+    // UI never blocks on post-processing.
     await context.supabase.from("video_assets").update({
-      status: "ready",
+      status: "processing",
       upload_id: null,
       ...(data.thumbnailKey ? { thumbnail_key: data.thumbnailKey } : {}),
       ...(data.durationSeconds != null ? { duration_seconds: data.durationSeconds } : {}),
       ...(data.width ? { width: data.width } : {}),
       ...(data.height ? { height: data.height } : {}),
     }).eq("id", data.assetId);
-    return { ok: true };
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    await supabaseAdmin.from("video_jobs").upsert({
+      tenant_id: asset.tenant_id,
+      asset_id: data.assetId,
+      kind: "finalize",
+      status: "queued",
+      attempts: 0,
+      last_error: null,
+      run_after: new Date().toISOString(),
+      locked_until: null,
+      payload: {
+        durationSeconds: data.durationSeconds ?? null,
+        width: data.width ?? null,
+        height: data.height ?? null,
+      },
+    }, { onConflict: "asset_id,kind" });
+
+    return { ok: true, status: "processing" as const };
   });
+
+/** Lightweight polling endpoint so the UI can track background processing. */
+export const getVideoAssetStatus = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d) => z.object({ assetId: z.string().uuid() }).parse(d))
+  .handler(async ({ data, context }) => {
+    const { data: asset } = await context.supabase
+      .from("video_assets")
+      .select("id, status, error_message, duration_seconds, thumbnail_key")
+      .eq("id", data.assetId).maybeSingle();
+    if (!asset) throw new Error("asset_not_found");
+    return asset;
+  });
+
 
 export const abortVideoUpload = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
