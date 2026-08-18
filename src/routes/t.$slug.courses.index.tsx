@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, BookOpen } from "lucide-react";
 import { getTenantCoursesBundle } from "@/lib/tenant.functions";
+import { VirtualGrid, VIRTUALIZE_THRESHOLD } from "@/components/virtual-list";
 
 const coursesBundleOptions = (slug: string) =>
   queryOptions({
