@@ -36,26 +36,24 @@ function CoursesPage() {
   const { user } = useAuth();
   const qc = useQueryClient();
 
-  const { data: tenant } = useQuery({
-    queryKey: ["tenant", tenantSlug],
-    queryFn: async () => (await supabase.from("tenants").select("*").eq("slug", tenantSlug).single()).data,
-  });
-
-  const isOwner = !!user && !!tenant && tenant.owner_id === user.id;
-
-  const { data: courses } = useQuery({
-    queryKey: ["tenant-courses", tenant?.id],
-    enabled: !!tenant,
+  // Single round-trip: tenant + courses + ownership flag
+  const { data: bundle } = useQuery({
+    queryKey: ["admin-courses-bundle", tenantSlug],
+    staleTime: 60_000,
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("courses")
-        .select("id, title, status, price, is_free, ad_style, instructor_id, approved_at, rejection_reason")
-        .eq("tenant_id", tenant!.id)
-        .order("created_at", { ascending: false });
+      const { data, error } = await supabase.rpc("tenant_admin_courses_bundle", { _slug: tenantSlug });
       if (error) throw error;
-      return data as CourseRow[];
+      return data as unknown as {
+        tenant: { id: string; owner_id: string } | null;
+        is_owner: boolean;
+        courses: CourseRow[];
+      } | null;
     },
   });
+
+  const tenant = bundle?.tenant ?? null;
+  const courses = bundle?.courses;
+  const isOwner = !!user && !!bundle?.is_owner;
 
   const approve = useMutation({
     mutationFn: async (id: string) => {
