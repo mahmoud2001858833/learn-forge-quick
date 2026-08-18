@@ -175,6 +175,23 @@ function CoursesListing() {
           <p className="text-lg font-semibold">لا توجد دورات تطابق البحث</p>
           <p className="text-muted-foreground text-sm mt-1">جرّب تعديل الفلاتر</p>
         </div>
+      ) : filtered.length > VIRTUALIZE_THRESHOLD ? (
+        <VirtualGrid
+          items={filtered}
+          getKey={(c: any) => c.id}
+          estimateRowHeight={380}
+          minColumnWidth={320}
+          maxColumns={3}
+          renderItem={(c: any) => (
+            <CourseCard
+              course={c}
+              tenantSlug={slug}
+              primaryColor={primary}
+              secondaryColor={secondary}
+              currency={tenant.currency ?? "ر.س"}
+            />
+          )}
+        />
       ) : (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filtered.map((c: any) => (
