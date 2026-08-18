@@ -25,16 +25,18 @@ const errorMiddleware = createMiddleware().server(async ({ next }) => {
  * overhead negligible.
  */
 /** Turn the opaque `/_serverFn/<base64>` id into a readable "file:export" name. */
-function serverFnName(fallback: string): string {
+async function serverFnName(fallback: string): Promise<string> {
   try {
-    const { getRequest } = require("@tanstack/react-start/server") as typeof import("@tanstack/react-start/server");
+    const { getRequest } = await import("@tanstack/react-start/server");
     const url = new URL(getRequest().url);
     const encoded = url.pathname.split("/_serverFn/")[1]?.split("/")[0];
     if (!encoded) return fallback;
     const json = JSON.parse(atob(decodeURIComponent(encoded))) as { file?: string; export?: string };
     const file = (json.file ?? "").split("?")[0].replace(/^\/src\//, "");
-    const exported = (json.export ?? "").replace(/_createServerFn_handler$/, "");
-    return `${file}:${exported}` || fallback;
+    const exported = (json.export ?? "")
+      .replace(/_createServerFn_handler$/, "")
+      .replace(/_handler$/, "");
+    return file || exported ? `${file}:${exported}` : fallback;
   } catch {
     return fallback;
   }
@@ -42,7 +44,8 @@ function serverFnName(fallback: string): string {
 
 const timingFunctionMiddleware = createMiddleware({ type: "function" }).server(async ({ next, ...ctx }) => {
   const t0 = Date.now();
-  const name = serverFnName(String((ctx as Record<string, unknown>).functionId ?? "server_fn"));
+  const name = await serverFnName(String((ctx as Record<string, unknown>).functionId ?? "server_fn"));
+
 
   try {
     const result = await next();
