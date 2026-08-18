@@ -9,6 +9,14 @@ export const Route = createFileRoute("/_authenticated/admin/$tenantSlug/students
   component: StudentsPage,
 });
 
+type MemberRow = {
+  id: string;
+  user_id: string;
+  role: string;
+  created_at: string;
+  full_name: string | null;
+};
+
 function StudentsPage() {
   const { tenantSlug } = useParams({ from: "/_authenticated/admin/$tenantSlug/students" });
 
