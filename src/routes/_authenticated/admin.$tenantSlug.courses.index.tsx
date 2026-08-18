@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, Dialog
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Plus, Edit, CheckCircle, XCircle, Clock, Video } from "lucide-react";
+import { VirtualGrid, VIRTUALIZE_THRESHOLD } from "@/components/virtual-list";
 
 export const Route = createFileRoute("/_authenticated/admin/$tenantSlug/courses/")({
   component: CoursesPage,
@@ -95,58 +96,74 @@ function CoursesPage() {
         <Card><CardContent className="p-10 text-center text-muted-foreground">لا توجد دورات. ابدأ بإضافة أول دورة.</CardContent></Card>
       )}
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {courses?.map((c) => (
-          <Card key={c.id}>
-            <CardHeader>
-              <div className="flex items-start justify-between gap-2">
-                <CardTitle className="text-base">{c.title}</CardTitle>
-                {statusBadge(c)}
-              </div>
-              {c.rejection_reason && (
-                <p className="text-xs text-destructive mt-1">سبب الرفض: {c.rejection_reason}</p>
-              )}
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="text-sm font-medium">{c.is_free || c.price === 0 ? "مجاني" : `${c.price} ر.س`}</span>
-                <div className="flex gap-1">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => navigate({ to: "/admin/$tenantSlug/courses/$courseId", params: { tenantSlug, courseId: c.id }, search: { upload: "1" } as never })}
-                    title="رفع فيديو سريع"
-                  >
-                    <Video className="h-3 w-3 ml-1" /> فيديو
-                  </Button>
-                  <Button
-                    variant="default"
-                    size="sm"
-                    onClick={() => navigate({ to: "/admin/$tenantSlug/courses/$courseId", params: { tenantSlug, courseId: c.id } })}
-                  >
-                    <Edit className="h-3 w-3 ml-1" /> تحرير
-                  </Button>
-                </div>
-              </div>
-              {isOwner && c.status === "pending_approval" && (
-                <div className="flex gap-2 pt-2 border-t">
-                  <Button size="sm" className="flex-1" onClick={() => approve.mutate(c.id)} disabled={approve.isPending}>
-                    <CheckCircle className="h-3 w-3 ml-1" /> موافقة
-                  </Button>
-                  <Button size="sm" variant="destructive" className="flex-1" onClick={() => {
-                    const r = prompt("سبب الرفض:");
-                    if (r) reject.mutate({ id: c.id, reason: r });
-                  }} disabled={reject.isPending}>
-                    <XCircle className="h-3 w-3 ml-1" /> رفض
-                  </Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      {(courses?.length ?? 0) > VIRTUALIZE_THRESHOLD ? (
+        <VirtualGrid
+          items={courses ?? []}
+          getKey={(c) => c.id}
+          estimateRowHeight={200}
+          gap={16}
+          minColumnWidth={300}
+          maxColumns={3}
+          renderItem={(c) => renderCourseCard(c)}
+        />
+      ) : (
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {courses?.map((c) => renderCourseCard(c))}
+        </div>
+      )}
     </div>
   );
+
+  function renderCourseCard(c: CourseRow) {
+    return (
+      <Card key={c.id}>
+        <CardHeader>
+          <div className="flex items-start justify-between gap-2">
+            <CardTitle className="text-base">{c.title}</CardTitle>
+            {statusBadge(c)}
+          </div>
+          {c.rejection_reason && (
+            <p className="text-xs text-destructive mt-1">سبب الرفض: {c.rejection_reason}</p>
+          )}
+        </CardHeader>
+        <CardContent className="space-y-2">
+          <div className="flex justify-between items-center">
+            <span className="text-sm font-medium">{c.is_free || c.price === 0 ? "مجاني" : `${c.price} ر.س`}</span>
+            <div className="flex gap-1">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate({ to: "/admin/$tenantSlug/courses/$courseId", params: { tenantSlug, courseId: c.id }, search: { upload: "1" } as never })}
+                title="رفع فيديو سريع"
+              >
+                <Video className="h-3 w-3 ml-1" /> فيديو
+              </Button>
+              <Button
+                variant="default"
+                size="sm"
+                onClick={() => navigate({ to: "/admin/$tenantSlug/courses/$courseId", params: { tenantSlug, courseId: c.id } })}
+              >
+                <Edit className="h-3 w-3 ml-1" /> تحرير
+              </Button>
+            </div>
+          </div>
+          {isOwner && c.status === "pending_approval" && (
+            <div className="flex gap-2 pt-2 border-t">
+              <Button size="sm" className="flex-1" onClick={() => approve.mutate(c.id)} disabled={approve.isPending}>
+                <CheckCircle className="h-3 w-3 ml-1" /> موافقة
+              </Button>
+              <Button size="sm" variant="destructive" className="flex-1" onClick={() => {
+                const r = prompt("سبب الرفض:");
+                if (r) reject.mutate({ id: c.id, reason: r });
+              }} disabled={reject.isPending}>
+                <XCircle className="h-3 w-3 ml-1" /> رفض
+              </Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    );
+  }
 }
 
 function NewCourseDialog({ tenantId }: { tenantId: string }) {
