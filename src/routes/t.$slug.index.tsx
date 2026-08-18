@@ -7,6 +7,7 @@ import { TenantHero } from "@/components/tenant/tenant-hero";
 import { FeaturesSection, StatsSection, TestimonialsSection, FaqSection } from "@/components/tenant/marketing-sections";
 import { getTenantHomeBundle } from "@/lib/tenant.functions";
 import { optimizedImage } from "@/lib/image";
+import { useIncrementalList } from "@/hooks/use-incremental";
 
 const BASE = "https://learn-forge-quick.lovable.app";
 
@@ -94,6 +95,8 @@ function TenantHome() {
     : undefined;
 
 
+  const { visible: visibleCourses } = useIncrementalList(courses, 3, 3);
+
   if (!tenant) return null;
   const primary = tenant.primary_color ?? "#6366f1";
   const secondary = tenant.secondary_color ?? "#D4AF37";
@@ -144,7 +147,7 @@ function TenantHome() {
             </Link>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {courses.map((c: any) => (
+            {visibleCourses.map((c: any) => (
               <CourseCard
                 key={c.id}
                 course={c}

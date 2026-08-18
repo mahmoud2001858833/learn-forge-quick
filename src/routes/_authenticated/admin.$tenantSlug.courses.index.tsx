@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Plus, Edit, CheckCircle, XCircle, Clock, Video } from "lucide-react";
 import { VirtualGrid, VIRTUALIZE_THRESHOLD } from "@/components/virtual-list";
+import { useIncrementalList } from "@/hooks/use-incremental";
 
 export const Route = createFileRoute("/_authenticated/admin/$tenantSlug/courses/")({
   component: CoursesPage,
@@ -54,6 +55,9 @@ function CoursesPage() {
   const tenant = bundle?.tenant ?? null;
   const courses = bundle?.courses;
   const isOwner = !!user && !!bundle?.is_owner;
+
+  // Incremental rendering: first rows paint immediately, rest stream in on idle
+  const { visible: visibleCourses, done: coursesDone } = useIncrementalList(courses ?? [], 9, 9);
 
   const approve = useMutation({
     mutationFn: async (id: string) => {
@@ -106,7 +110,8 @@ function CoursesPage() {
         />
       ) : (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {courses?.map((c) => renderCourseCard(c))}
+          {visibleCourses.map((c) => renderCourseCard(c))}
+          {!coursesDone && <Card className="animate-pulse h-[180px]" />}
         </div>
       )}
     </div>
