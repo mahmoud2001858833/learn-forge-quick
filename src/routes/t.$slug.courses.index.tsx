@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Search, BookOpen } from "lucide-react";
 import { getTenantCoursesBundle } from "@/lib/tenant.functions";
 import { VirtualGrid, VIRTUALIZE_THRESHOLD } from "@/components/virtual-list";
+import { useIncrementalList } from "@/hooks/use-incremental";
 
 const coursesBundleOptions = (slug: string) =>
   queryOptions({
@@ -73,6 +74,8 @@ function CoursesListing() {
     return list;
   }, [courses, collegeId, majorId, priceFilter, query, sortBy]);
 
+
+  const { visible: visibleCourses, done: coursesDone } = useIncrementalList(filtered, 9, 9);
 
   if (!tenant) return null;
   const primary = tenant.primary_color ?? "#6366f1";
@@ -195,7 +198,7 @@ function CoursesListing() {
         />
       ) : (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filtered.map((c: any) => (
+          {visibleCourses.map((c: any) => (
             <CourseCard
               key={c.id}
               course={c}
@@ -205,6 +208,7 @@ function CoursesListing() {
               currency={tenant.currency ?? "ر.س"}
             />
           ))}
+          {!coursesDone && <div className="rounded-2xl border bg-muted/40 animate-pulse h-[340px]" />}
         </div>
       )}
     </div>
