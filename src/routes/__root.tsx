@@ -149,6 +149,8 @@ function RootComponent() {
       <AuthProvider>
         <Outlet />
         <InstallAppPrompt />
+        <UploadTray />
+
         <Toaster richColors position="top-center" />
       </AuthProvider>
     </QueryClientProvider>
