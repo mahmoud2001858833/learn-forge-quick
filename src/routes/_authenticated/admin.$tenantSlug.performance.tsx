@@ -89,8 +89,31 @@ function PerformancePage() {
     },
   });
 
+  // Aggregated production errors (visible to super admins; returns empty otherwise).
+  const errors = useQuery({
+    queryKey: ["error-events", hours],
+    staleTime: 60_000,
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("error_events_summary", { _hours: hours, _limit: 30 });
+      if (error) throw error;
+      return (data ?? []) as ErrorRow[];
+    },
+  });
+
+  // Health of external dependencies (video Worker).
+  const health = useQuery({
+    queryKey: ["service-health"],
+    staleTime: 30_000,
+    refetchInterval: 60_000,
+    queryFn: async () => {
+      const { data } = await supabase.from("service_health").select("*");
+      return (data ?? []) as HealthRow[];
+    },
+  });
+
   const rows = vitals.data ?? [];
   const srv = server.data ?? [];
+
 
   // Overall per-metric numbers (weighted by sample count).
   const overview = ["LCP", "TTFB", "INP", "CLS"].map((metric) => {
