@@ -1115,6 +1115,57 @@ export type Database = {
           },
         ]
       }
+      error_events: {
+        Row: {
+          count: number
+          environment: string
+          fingerprint: string
+          first_seen: string
+          id: string
+          last_seen: string
+          message: string
+          path: string | null
+          source: string
+          stack: string | null
+          status: string
+          tenant_slug: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          count?: number
+          environment?: string
+          fingerprint: string
+          first_seen?: string
+          id?: string
+          last_seen?: string
+          message: string
+          path?: string | null
+          source?: string
+          stack?: string | null
+          status?: string
+          tenant_slug?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          count?: number
+          environment?: string
+          fingerprint?: string
+          first_seen?: string
+          id?: string
+          last_seen?: string
+          message?: string
+          path?: string | null
+          source?: string
+          stack?: string | null
+          status?: string
+          tenant_slug?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       job_locks: {
         Row: {
           locked_until: string
@@ -2258,6 +2309,36 @@ export type Database = {
           },
         ]
       }
+      service_health: {
+        Row: {
+          checked_at: string
+          consecutive_failures: number
+          error_message: string | null
+          last_ok_at: string | null
+          latency_ms: number | null
+          name: string
+          status: string
+        }
+        Insert: {
+          checked_at?: string
+          consecutive_failures?: number
+          error_message?: string | null
+          last_ok_at?: string | null
+          latency_ms?: number | null
+          name: string
+          status?: string
+        }
+        Update: {
+          checked_at?: string
+          consecutive_failures?: number
+          error_message?: string | null
+          last_ok_at?: string | null
+          latency_ms?: number | null
+          name?: string
+          status?: string
+        }
+        Relationships: []
+      }
       tenant_members: {
         Row: {
           application_note: string | null
@@ -2982,6 +3063,7 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      cleanup_monitoring: { Args: never; Returns: undefined }
       compute_level: { Args: { _xp: number }; Returns: number }
       course_tenant: { Args: { _course_id: string }; Returns: string }
       create_notification: {
@@ -2997,6 +3079,20 @@ export type Database = {
         Returns: string
       }
       enrollment_student: { Args: { _enrollment_id: string }; Returns: string }
+      error_events_summary: {
+        Args: { _hours?: number; _limit?: number }
+        Returns: {
+          count: number
+          first_seen: string
+          id: string
+          last_seen: string
+          message: string
+          path: string
+          source: string
+          status: string
+          tenant_slug: string
+        }[]
+      }
       get_live_session_urls: {
         Args: { _session_id: string }
         Returns: {
@@ -3072,6 +3168,27 @@ export type Database = {
       }
       recompute_course_rating: {
         Args: { _course_id: string }
+        Returns: undefined
+      }
+      record_error_event: {
+        Args: {
+          _environment?: string
+          _message: string
+          _path?: string
+          _source: string
+          _stack?: string
+          _tenant_slug?: string
+          _user_agent?: string
+        }
+        Returns: string
+      }
+      record_service_health: {
+        Args: {
+          _error?: string
+          _latency_ms?: number
+          _name: string
+          _status: string
+        }
         Returns: undefined
       }
       reject_course: {
