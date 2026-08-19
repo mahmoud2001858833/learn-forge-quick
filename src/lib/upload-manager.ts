@@ -325,9 +325,22 @@ async function runUpload(
     const err = e as Error;
     if (err.name === "AbortError") patch(id, { status: "canceled" });
     else {
-      patch(id, { status: "error", error: err.message || "فشل الرفع" });
-      opts.onError?.(err.message || "فشل الرفع");
+      // Re-probe the storage Worker so its health status (and the admin badge)
+      // reflect reality, and give the user an actionable message.
+      let message = err.message || "فشل الرفع";
+      try {
+        const probe = await fetch("/api/public/hooks/worker-health", { method: "POST" });
+        const health = (await probe.json().catch(() => null)) as { status?: string } | null;
+        if (health?.status === "down") {
+          message = "خدمة تخزين الفيديو غير متاحة حاليًا. تم تسجيل العطل، ورفعك محفوظ ويمكن استئنافه لاحقًا.";
+        }
+      } catch {
+        /* health probe is best-effort */
+      }
+      patch(id, { status: "error", error: message });
+      opts.onError?.(message);
     }
+
   } finally {
     controllers.delete(id);
   }
