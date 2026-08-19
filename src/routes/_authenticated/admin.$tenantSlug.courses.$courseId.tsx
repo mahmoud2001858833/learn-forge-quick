@@ -20,6 +20,7 @@ import { Plus, Trash2, ArrowRight, Sparkles, Send, QrCode, Eye, EyeOff, Video } 
 import { CourseCard } from "@/components/course-card";
 import { VideoUploader } from "@/components/video-uploader";
 import { getThumbnailUrl } from "@/lib/video.functions";
+import { useTenantRole } from "@/hooks/use-tenant-role";
 
 function LessonThumb({ assetId }: { assetId: string }) {
   const getThumb = useServerFn(getThumbnailUrl);
@@ -73,12 +74,28 @@ function CourseEditor() {
     onError: (e: Error) => toast.error(e.message),
   });
 
+  const { isOwner } = useTenantRole(course?.tenant_id ?? null);
+
   const submitForApproval = useMutation({
     mutationFn: async () => {
       const { error } = await supabase.from("courses").update({ status: "pending_approval" }).eq("id", courseId);
       if (error) throw error;
     },
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["course", courseId] }); toast.success("تم إرسال الدورة للموافقة"); },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  // مالك المنصة ينشر مباشرة بدون موافقة
+  const publishNow = useMutation({
+    mutationFn: async () => {
+      const { error } = await supabase.rpc("approve_course", { _course_id: courseId });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["course", courseId] });
+      qc.invalidateQueries({ queryKey: ["admin-courses-bundle"] });
+      toast.success("تم نشر الدورة مباشرة");
+    },
     onError: (e: Error) => toast.error(e.message),
   });
 
@@ -124,8 +141,16 @@ function CourseEditor() {
           <Button variant="secondary" onClick={() => setQuickUploadOpen(true)}>
             <Video className="h-4 w-4 ml-1" /> رفع فيديو
           </Button>
-          {course.status === "draft" && (
-            <Button onClick={() => submitForApproval.mutate()}><Send className="h-4 w-4 ml-1" /> إرسال للموافقة</Button>
+          {course.status !== "published" && (
+            isOwner ? (
+              <Button onClick={() => publishNow.mutate()} disabled={publishNow.isPending}>
+                <Send className="h-4 w-4 ml-1" /> نشر الآن
+              </Button>
+            ) : course.status === "draft" ? (
+              <Button onClick={() => submitForApproval.mutate()} disabled={submitForApproval.isPending}>
+                <Send className="h-4 w-4 ml-1" /> إرسال للموافقة
+              </Button>
+            ) : null
           )}
           {course.status === "published" && (
             <Button variant="outline" onClick={() => update.mutate({ status: "draft" })}>إلغاء النشر</Button>

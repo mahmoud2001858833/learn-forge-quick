@@ -150,6 +150,13 @@ function CoursesPage() {
               </Button>
             </div>
           </div>
+          {isOwner && c.status === "draft" && (
+            <div className="pt-2 border-t">
+              <Button size="sm" className="w-full" onClick={() => approve.mutate(c.id)} disabled={approve.isPending}>
+                <CheckCircle className="h-3 w-3 ml-1" /> نشر الآن
+              </Button>
+            </div>
+          )}
           {isOwner && c.status === "pending_approval" && (
             <div className="flex gap-2 pt-2 border-t">
               <Button size="sm" className="flex-1" onClick={() => approve.mutate(c.id)} disabled={approve.isPending}>
