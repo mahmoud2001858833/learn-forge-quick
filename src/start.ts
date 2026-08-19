@@ -3,7 +3,7 @@ import { createStart, createMiddleware } from "@tanstack/react-start";
 import { renderErrorPage } from "./lib/error-page";
 import { attachSupabaseAuth } from "@/integrations/supabase/auth-attacher";
 
-const errorMiddleware = createMiddleware().server(async ({ next }) => {
+const errorMiddleware = createMiddleware().server(async ({ next, request }) => {
   try {
     return await next();
   } catch (error) {
@@ -11,6 +11,18 @@ const errorMiddleware = createMiddleware().server(async ({ next }) => {
       throw error;
     }
     console.error(error);
+    try {
+      const { recordServerError } = await import("./lib/monitor.server");
+      const url = new URL(request.url);
+      recordServerError({
+        message: (error as Error)?.message ?? String(error),
+        stack: (error as Error)?.stack ?? null,
+        path: url.pathname,
+        tenantSlug: url.pathname.match(/^\/t\/([^/]+)/)?.[1] ?? null,
+      });
+    } catch {
+      /* never break the error response */
+    }
     return new Response(renderErrorPage(), {
       status: 500,
       headers: { "content-type": "text/html; charset=utf-8" },
@@ -64,6 +76,16 @@ const timingFunctionMiddleware = createMiddleware({ type: "function" }).server(a
       status: "error",
       errorMessage: (error as Error)?.message,
     });
+    // Redirects/not-found travel as Response objects — those are control flow,
+    // not failures, so keep them out of the error tracker.
+    if (!(error instanceof Response)) {
+      const { recordServerError } = await import("./lib/monitor.server");
+      recordServerError({
+        message: (error as Error)?.message ?? String(error),
+        stack: (error as Error)?.stack ?? null,
+        path: name,
+      });
+    }
     throw error;
   }
 });

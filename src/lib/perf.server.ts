@@ -25,10 +25,12 @@ export function recordTiming(sample: PerfSample): void {
     if (!isError && sample.durationMs < SLOW_MS && Math.random() > SAMPLE_RATE) return;
 
     const url = process.env.SUPABASE_URL;
-    // Service role when available, otherwise the publishable key — the table
-    // is insert-only for anon, so no elevated rights are required.
-    const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_PUBLISHABLE_KEY;
-    if (!url || !key) return;
+    const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (!url || !key) {
+      // Fail loudly in logs instead of silently degrading to a weaker key.
+      console.error("[perf] SUPABASE_SERVICE_ROLE_KEY missing — timing not recorded");
+      return;
+    }
 
     void fetch(`${url}/rest/v1/perf_samples`, {
       method: "POST",

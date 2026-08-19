@@ -26,6 +26,17 @@ type ServerRow = {
   name: string; kind: string; calls: number; errors: number;
   avg_ms: number; p95_ms: number; max_ms: number;
 };
+type ErrorRow = {
+  id: string; message: string; source: string; path: string | null;
+  tenant_slug: string | null; count: number; status: string;
+  first_seen: string; last_seen: string;
+};
+type HealthRow = {
+  name: string; status: string; latency_ms: number | null;
+  error_message: string | null; last_ok_at: string | null;
+  checked_at: string; consecutive_failures: number;
+};
+
 
 const RANGES = [
   { hours: 1, label: "آخر ساعة" },
@@ -89,8 +100,31 @@ function PerformancePage() {
     },
   });
 
+  // Aggregated production errors (visible to super admins; returns empty otherwise).
+  const errors = useQuery({
+    queryKey: ["error-events", hours],
+    staleTime: 60_000,
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("error_events_summary", { _hours: hours, _limit: 30 });
+      if (error) throw error;
+      return (data ?? []) as ErrorRow[];
+    },
+  });
+
+  // Health of external dependencies (video Worker).
+  const health = useQuery({
+    queryKey: ["service-health"],
+    staleTime: 30_000,
+    refetchInterval: 60_000,
+    queryFn: async () => {
+      const { data } = await supabase.from("service_health").select("*");
+      return (data ?? []) as HealthRow[];
+    },
+  });
+
   const rows = vitals.data ?? [];
   const srv = server.data ?? [];
+
 
   // Overall per-metric numbers (weighted by sample count).
   const overview = ["LCP", "TTFB", "INP", "CLS"].map((metric) => {
@@ -167,7 +201,86 @@ function PerformancePage() {
         ))}
       </div>
 
+      {/* External service health */}
+      {(health.data ?? []).length > 0 && (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {(health.data ?? []).map((h) => (
+            <Card key={h.name} className={h.status === "ok" ? "" : "border-destructive/40 bg-destructive/5"}>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium flex items-center justify-between">
+                  <span className="flex items-center gap-1.5">
+                    <ServerCog className="h-4 w-4 text-muted-foreground" />
+                    {h.name === "video_worker" ? "خدمة الفيديو" : h.name}
+                  </span>
+                  {h.status === "ok" ? (
+                    <Badge className="bg-emerald-500/15 text-emerald-700 border-emerald-500/30">تعمل</Badge>
+                  ) : (
+                    <Badge variant="destructive">متوقفة</Badge>
+                  )}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="text-xs text-muted-foreground space-y-1">
+                <div>
+                  زمن الاستجابة: {h.latency_ms != null ? `${h.latency_ms} م.ث` : "—"}
+                  {h.consecutive_failures > 0 && ` · ${h.consecutive_failures} فشل متتالٍ`}
+                </div>
+                <div>آخر فحص: {new Date(h.checked_at).toLocaleString("ar")}</div>
+                {h.error_message && <div className="text-destructive">{h.error_message}</div>}
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+
+      {/* Production errors */}
+      {(errors.data ?? []).length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <AlertTriangle className="h-5 w-5 text-destructive" /> أخطاء الإنتاج
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="text-start">الرسالة</TableHead>
+                    <TableHead className="text-start">المصدر</TableHead>
+                    <TableHead className="text-start">المسار</TableHead>
+                    <TableHead className="text-start">التكرار</TableHead>
+                    <TableHead className="text-start">آخر ظهور</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {(errors.data ?? []).map((e) => (
+                    <TableRow key={e.id}>
+                      <TableCell className="max-w-[22rem] truncate font-mono text-xs" title={e.message}>
+                        {e.message}
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="secondary" className="text-[10px]">
+                          {e.source === "server" ? "خادم" : "متصفح"}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="font-mono text-xs max-w-[12rem] truncate" title={e.path ?? ""}>
+                        {e.path ?? "—"}
+                      </TableCell>
+                      <TableCell className="tabular-nums font-medium">{e.count}</TableCell>
+                      <TableCell className="text-xs text-muted-foreground">
+                        {new Date(e.last_seen).toLocaleString("ar")}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Server response times */}
+
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center justify-between text-base">
