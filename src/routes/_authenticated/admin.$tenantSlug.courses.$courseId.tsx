@@ -20,6 +20,7 @@ import { Plus, Trash2, ArrowRight, Sparkles, Send, QrCode, Eye, EyeOff, Video } 
 import { CourseCard } from "@/components/course-card";
 import { VideoUploader } from "@/components/video-uploader";
 import { getThumbnailUrl } from "@/lib/video.functions";
+import { useTenantRole } from "@/hooks/use-tenant-role";
 
 function LessonThumb({ assetId }: { assetId: string }) {
   const getThumb = useServerFn(getThumbnailUrl);
