@@ -141,8 +141,16 @@ function CourseEditor() {
           <Button variant="secondary" onClick={() => setQuickUploadOpen(true)}>
             <Video className="h-4 w-4 ml-1" /> رفع فيديو
           </Button>
-          {course.status === "draft" && (
-            <Button onClick={() => submitForApproval.mutate()}><Send className="h-4 w-4 ml-1" /> إرسال للموافقة</Button>
+          {course.status !== "published" && (
+            isOwner ? (
+              <Button onClick={() => publishNow.mutate()} disabled={publishNow.isPending}>
+                <Send className="h-4 w-4 ml-1" /> نشر الآن
+              </Button>
+            ) : course.status === "draft" ? (
+              <Button onClick={() => submitForApproval.mutate()} disabled={submitForApproval.isPending}>
+                <Send className="h-4 w-4 ml-1" /> إرسال للموافقة
+              </Button>
+            ) : null
           )}
           {course.status === "published" && (
             <Button variant="outline" onClick={() => update.mutate({ status: "draft" })}>إلغاء النشر</Button>
