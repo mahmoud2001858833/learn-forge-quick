@@ -26,6 +26,17 @@ type ServerRow = {
   name: string; kind: string; calls: number; errors: number;
   avg_ms: number; p95_ms: number; max_ms: number;
 };
+type ErrorRow = {
+  id: string; message: string; source: string; path: string | null;
+  tenant_slug: string | null; count: number; status: string;
+  first_seen: string; last_seen: string;
+};
+type HealthRow = {
+  name: string; status: string; latency_ms: number | null;
+  error_message: string | null; last_ok_at: string | null;
+  checked_at: string; consecutive_failures: number;
+};
+
 
 const RANGES = [
   { hours: 1, label: "آخر ساعة" },
