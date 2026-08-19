@@ -45,6 +45,9 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   const router = useRouter();
   useEffect(() => {
     reportLovableError(error, { boundary: "tanstack_root_error_component" });
+    import("@/lib/error-report")
+      .then((m) => m.reportClientError(error, { boundary: "root_error_component" }))
+      .catch(() => {});
   }, [error]);
 
   return (
@@ -136,6 +139,8 @@ function RootComponent() {
     import("@/lib/rum").then((m) => m.initRUM()).catch(() => {});
     // Progressive Web App — register offline service worker (guarded)
     import("@/lib/pwa").then((m) => m.registerPWA()).catch(() => {});
+    // Production error tracking — global handlers, deduplicated and rate limited
+    import("@/lib/error-report").then((m) => m.initErrorReporting()).catch(() => {});
 
 
     const { data: sub } = supabase.auth.onAuthStateChange((event) => {

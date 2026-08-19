@@ -41,6 +41,7 @@ import { Route as AuthenticatedAdminTenantSlugRouteImport } from './routes/_auth
 import { Route as TSlugCoursesIndexRouteImport } from './routes/t.$slug.courses.index'
 import { Route as AuthenticatedAdminTenantSlugIndexRouteImport } from './routes/_authenticated/admin.$tenantSlug.index'
 import { Route as TSlugCoursesCourseSlugRouteImport } from './routes/t.$slug.courses.$courseSlug'
+import { Route as ApiPublicHooksWorkerHealthRouteImport } from './routes/api/public/hooks/worker-health'
 import { Route as ApiPublicHooksVideoJobsRouteImport } from './routes/api/public/hooks/video-jobs'
 import { Route as ApiPublicHooksRumRouteImport } from './routes/api/public/hooks/rum'
 import { Route as ApiPublicHooksErrorsRouteImport } from './routes/api/public/hooks/errors'
@@ -232,6 +233,12 @@ const TSlugCoursesCourseSlugRoute = TSlugCoursesCourseSlugRouteImport.update({
   path: '/courses/$courseSlug',
   getParentRoute: () => TSlugRoute,
 } as any)
+const ApiPublicHooksWorkerHealthRoute =
+  ApiPublicHooksWorkerHealthRouteImport.update({
+    id: '/api/public/hooks/worker-health',
+    path: '/api/public/hooks/worker-health',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicHooksVideoJobsRoute = ApiPublicHooksVideoJobsRouteImport.update({
   id: '/api/public/hooks/video-jobs',
   path: '/api/public/hooks/video-jobs',
@@ -417,6 +424,7 @@ export interface FileRoutesByFullPath {
   '/api/public/hooks/errors': typeof ApiPublicHooksErrorsRoute
   '/api/public/hooks/rum': typeof ApiPublicHooksRumRoute
   '/api/public/hooks/video-jobs': typeof ApiPublicHooksVideoJobsRoute
+  '/api/public/hooks/worker-health': typeof ApiPublicHooksWorkerHealthRoute
   '/t/$slug/courses/$courseSlug': typeof TSlugCoursesCourseSlugRoute
   '/admin/$tenantSlug/': typeof AuthenticatedAdminTenantSlugIndexRoute
   '/t/$slug/courses/': typeof TSlugCoursesIndexRoute
@@ -471,6 +479,7 @@ export interface FileRoutesByTo {
   '/api/public/hooks/errors': typeof ApiPublicHooksErrorsRoute
   '/api/public/hooks/rum': typeof ApiPublicHooksRumRoute
   '/api/public/hooks/video-jobs': typeof ApiPublicHooksVideoJobsRoute
+  '/api/public/hooks/worker-health': typeof ApiPublicHooksWorkerHealthRoute
   '/t/$slug/courses/$courseSlug': typeof TSlugCoursesCourseSlugRoute
   '/admin/$tenantSlug': typeof AuthenticatedAdminTenantSlugIndexRoute
   '/t/$slug/courses': typeof TSlugCoursesIndexRoute
@@ -529,6 +538,7 @@ export interface FileRoutesById {
   '/api/public/hooks/errors': typeof ApiPublicHooksErrorsRoute
   '/api/public/hooks/rum': typeof ApiPublicHooksRumRoute
   '/api/public/hooks/video-jobs': typeof ApiPublicHooksVideoJobsRoute
+  '/api/public/hooks/worker-health': typeof ApiPublicHooksWorkerHealthRoute
   '/t/$slug/courses/$courseSlug': typeof TSlugCoursesCourseSlugRoute
   '/_authenticated/admin/$tenantSlug/': typeof AuthenticatedAdminTenantSlugIndexRoute
   '/t/$slug/courses/': typeof TSlugCoursesIndexRoute
@@ -587,6 +597,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/errors'
     | '/api/public/hooks/rum'
     | '/api/public/hooks/video-jobs'
+    | '/api/public/hooks/worker-health'
     | '/t/$slug/courses/$courseSlug'
     | '/admin/$tenantSlug/'
     | '/t/$slug/courses/'
@@ -641,6 +652,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/errors'
     | '/api/public/hooks/rum'
     | '/api/public/hooks/video-jobs'
+    | '/api/public/hooks/worker-health'
     | '/t/$slug/courses/$courseSlug'
     | '/admin/$tenantSlug'
     | '/t/$slug/courses'
@@ -698,6 +710,7 @@ export interface FileRouteTypes {
     | '/api/public/hooks/errors'
     | '/api/public/hooks/rum'
     | '/api/public/hooks/video-jobs'
+    | '/api/public/hooks/worker-health'
     | '/t/$slug/courses/$courseSlug'
     | '/_authenticated/admin/$tenantSlug/'
     | '/t/$slug/courses/'
@@ -718,6 +731,7 @@ export interface RootRouteChildren {
   ApiPublicHooksErrorsRoute: typeof ApiPublicHooksErrorsRoute
   ApiPublicHooksRumRoute: typeof ApiPublicHooksRumRoute
   ApiPublicHooksVideoJobsRoute: typeof ApiPublicHooksVideoJobsRoute
+  ApiPublicHooksWorkerHealthRoute: typeof ApiPublicHooksWorkerHealthRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -945,6 +959,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/t/$slug/courses/$courseSlug'
       preLoaderRoute: typeof TSlugCoursesCourseSlugRouteImport
       parentRoute: typeof TSlugRoute
+    }
+    '/api/public/hooks/worker-health': {
+      id: '/api/public/hooks/worker-health'
+      path: '/api/public/hooks/worker-health'
+      fullPath: '/api/public/hooks/worker-health'
+      preLoaderRoute: typeof ApiPublicHooksWorkerHealthRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/public/hooks/video-jobs': {
       id: '/api/public/hooks/video-jobs'
@@ -1274,6 +1295,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicHooksErrorsRoute: ApiPublicHooksErrorsRoute,
   ApiPublicHooksRumRoute: ApiPublicHooksRumRoute,
   ApiPublicHooksVideoJobsRoute: ApiPublicHooksVideoJobsRoute,
+  ApiPublicHooksWorkerHealthRoute: ApiPublicHooksWorkerHealthRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
